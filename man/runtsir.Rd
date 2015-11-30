@@ -6,9 +6,10 @@
 \usage{
 runtsir(data, xreg = "cumcases", IP = 2, nsim = 100,
   regtype = "gaussian", sigmamax = 3, userYhat = numeric(),
-  fittype = "all", fit = "glm", method = "deterministic",
-  epidemics = "cont", pred = "forward", threshold = 1, sbar = 0.05,
-  add.noise.sd = 0, mul.noise.sd = 0, printon = F)
+  fittype = "all", fit = "glm", family = "poisson",
+  method = "deterministic", epidemics = "cont", pred = "forward",
+  threshold = 1, sbar = 0.05, add.noise.sd = 0, mul.noise.sd = 0,
+  printon = F)
 }
 \arguments{
 \item{data,}{the data frame containing cases and interpolated births and populations.}
@@ -35,6 +36,9 @@ Smaller, stochastic outbreaks tend to need a lower sigma.}
 
 \item{fit,}{the fitting method used. Options are 'glm' or 'bayesglm' which is a cheap adaptation
 to include some bayesian approaches. For 'bayesglm' we use a gaussian prior with mean 1e-4.}
+
+\item{family,}{the family in the GLM regression, options are poisson and gaussian both with
+log link. Default is Poisson.}
 
 \item{method,}{the type of next step prediction used. Options are 'negbin' for negative binomial,
 'pois' for poisson distribution, and 'deterministic'. Defaults to 'deterministic'.}

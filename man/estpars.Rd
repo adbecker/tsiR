@@ -5,8 +5,8 @@
 \title{estpars function}
 \usage{
 estpars(data, xreg = "cumcases", IP = 2, regtype = "gaussian",
-  sigmamax = 3, userYhat = numeric(), fit = "glm", sbar = 0.05,
-  fittype = "all", printon = F)
+  sigmamax = 3, family = "poisson", userYhat = numeric(), fit = "glm",
+  sbar = 0.05, fittype = "all", printon = F)
 }
 \arguments{
 \item{data,}{the data frame containing cases and interpolated births and populations.}
@@ -22,6 +22,9 @@ Defaults to 'gaussian' and if that fails then defaults to loess.}
 
 \item{sigmamax,}{the inverse kernal width for the gaussian regression. Default is 3.
 Smaller, stochastic outbreaks tend to need a lower sigma.}
+
+\item{family,}{the family in the GLM regression, options are poisson and gaussian both with
+log link. Default is Poisson.}
 
 \item{userYhat,}{the inputed regression vector if regtype='user'. Defaults to NULL.}
 

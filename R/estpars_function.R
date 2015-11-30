@@ -15,13 +15,15 @@
 #' @param fittype, the type of fit used. Options are 'all' which fits beta, sbar, and alpha, 
 #' 'fixalpha', which fixes alpha at 0.97 and estimates beta and sbar, and
 #' 'less' which fits only beta and fixes alpha at 0.97.
+#' @param family, the family in the GLM regression, options are poisson and gaussian both with
+#' log link. Default is Poisson.
 #' @param fit, the fitting method used. Options are 'glm' or 'bayesglm' which is a cheap adaptation
 #' to include some bayesian approaches. For 'bayesglm' we use a gaussian prior with mean 1e-4.
 #' @param sbar, the mean number of susceptibles. Only used if fittype='less'. Defaults to 0.05*mean(pop).
 #' @param printon, whether to show diagnostic prints or not, defaults to FALSE.
 
 estpars <- function(data, xreg = 'cumcases',IP = 2,
-                    regtype = 'gaussian',sigmamax = 3,
+                    regtype = 'gaussian',sigmamax = 3,family='poisson',
                     userYhat = numeric(),fit='glm',sbar=0.05,
                     fittype = 'all',printon=F){
   
@@ -151,38 +153,84 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,
   llik <- rep(NA, length(Smean))
   if(fittype == 'all'){
     
-    for(i in 1:length(Smean)){
-      lSold <- log(Smean[i] + Zold)
+    
+    if(family == 'gaussian'){
       
+      for(i in 1:length(Smean)){
+        lSold <- log(Smean[i] + Zold)
+        
+        if(fit == 'glm'){
+          glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIold) + offset(lSold),
+                        family=gaussian(link='log'))
+        }
+        
+        if(fit == 'bayesglm'){
+          glmfit <- bayesglm(Inew ~ -1 +as.factor(period) + (lIold) + offset(lSold),
+                             family=gaussian(link='log'),prior.df=Inf,prior.mean=1e-4)
+        }
+        
+        
+        llik[i] <- glmfit$deviance
+        
+      }
+      
+      sbar <- Smean[which.min(llik)]
+      
+      lSold <- log(sbar + Zold)
       if(fit == 'glm'){
-        glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIold) + offset(lSold),
+        
+        glmfit <- glm(Inew ~ -1 +as.factor(period)+ (lIold) + offset(lSold),
                       family=gaussian(link='log'))
       }
       
       if(fit == 'bayesglm'){
-        glmfit <- bayesglm(Inew ~ -1 +as.factor(period) + (lIold) + offset(lSold),
+        
+        glmfit <- bayesglm(Inew ~ -1 +as.factor(period)+ (lIold) + offset(lSold),
                            family=gaussian(link='log'),prior.df=Inf,prior.mean=1e-4)
       }
       
       
-      llik[i] <- glmfit$deviance
+    }
+    
+    
+    if(family == 'poisson'){
+      
+      for(i in 1:length(Smean)){
+        lSold <- log(Smean[i] + Zold)
+        
+        if(fit == 'glm'){
+          glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIold) + offset(lSold),
+                        family=poisson(link='log'))
+        }
+        
+        if(fit == 'bayesglm'){
+          glmfit <- bayesglm(Inew ~ -1 +as.factor(period) + (lIold) + offset(lSold),
+                             family=poisson(link='log'),prior.df=Inf,prior.mean=1e-4)
+        }
+        
+        
+        llik[i] <- glmfit$deviance
+        
+      }
+      
+      sbar <- Smean[which.min(llik)]
+      
+      lSold <- log(sbar + Zold)
+      if(fit == 'glm'){
+        
+        glmfit <- glm(Inew ~ -1 +as.factor(period)+ (lIold) + offset(lSold),
+                      family=poisson(link='log'))
+      }
+      
+      if(fit == 'bayesglm'){
+        
+        glmfit <- bayesglm(Inew ~ -1 +as.factor(period)+ (lIold) + offset(lSold),
+                           family=poisson(link='log'),prior.df=Inf,prior.mean=1e-4)
+      }
+      
       
     }
     
-    sbar <- Smean[which.min(llik)]
-    
-    lSold <- log(sbar + Zold)
-    if(fit == 'glm'){
-      
-      glmfit <- glm(Inew ~ -1 +as.factor(period)+ (lIold) + offset(lSold),
-                    family=gaussian(link='log'))
-    }
-    
-    if(fit == 'bayesglm'){
-      
-      glmfit <- bayesglm(Inew ~ -1 +as.factor(period)+ (lIold) + offset(lSold),
-                         family=gaussian(link='log'),prior.df=Inf,prior.mean=1e-4)
-    }
     
     beta <- exp(head(coef(glmfit),-1))
     alpha <- tail(coef(glmfit),1)
@@ -193,47 +241,96 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,
     
     alpha <- 0.97
     
-    for(i in 1:length(Smean)){
-      lSold <- log(Smean[i] + Zold)
+    if(family == 'gaussian'){
+      
+      for(i in 1:length(Smean)){
+        lSold <- log(Smean[i] + Zold)
+        if(fit == 'glm'){
+          
+          
+          glmfit <- glm(Inew ~ -1 +as.factor(period) + offset(alpha*lIold) + offset(lSold),
+                        family=gaussian(link='log'))
+          
+        }
+        
+        if(fit == 'bayesglm'){
+          
+          
+          glmfit <- bayesglm(Inew ~ -1 +as.factor(period) + offset(alpha*lIold) + offset(lSold),
+                             family=gaussian(link='log'),prior.df=Inf,prior.mean=1e-4)
+          
+        }
+        
+        
+        llik[i] <- glmfit$deviance
+        
+      }
+      
+      sbar <- Smean[which.min(llik)]
+      
+      lSold <- log(sbar + Zold)
+      
       if(fit == 'glm'){
         
-        
-        glmfit <- glm(Inew ~ -1 +as.factor(period) + offset(alpha*lIold) + offset(lSold),
+        glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIold) + offset(lSold),
                       family=gaussian(link='log'))
         
       }
       
       if(fit == 'bayesglm'){
         
-        
-        glmfit <- bayesglm(Inew ~ -1 +as.factor(period) + offset(alpha*lIold) + offset(lSold),
+        glmfit <- bayesglm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIold) + offset(lSold),
                            family=gaussian(link='log'),prior.df=Inf,prior.mean=1e-4)
         
       }
       
-      
-      llik[i] <- glmfit$deviance
-      
     }
     
-    sbar <- Smean[which.min(llik)]
     
-    lSold <- log(sbar + Zold)
-    
-    if(fit == 'glm'){
+    if(family == 'poisson'){
       
-      glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIold) + offset(lSold),
-                    family=gaussian(link='log'))
+      for(i in 1:length(Smean)){
+        lSold <- log(Smean[i] + Zold)
+        if(fit == 'glm'){
+          
+          
+          glmfit <- glm(Inew ~ -1 +as.factor(period) + offset(alpha*lIold) + offset(lSold),
+                        family=poisson(link='log'))
+          
+        }
+        
+        if(fit == 'bayesglm'){
+          
+          
+          glmfit <- bayesglm(Inew ~ -1 +as.factor(period) + offset(alpha*lIold) + offset(lSold),
+                             family=poisson(link='log'),prior.df=Inf,prior.mean=1e-4)
+          
+        }
+        
+        
+        llik[i] <- glmfit$deviance
+        
+      }
+      
+      sbar <- Smean[which.min(llik)]
+      
+      lSold <- log(sbar + Zold)
+      
+      if(fit == 'glm'){
+        
+        glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIold) + offset(lSold),
+                      family=poisson(link='log'))
+        
+      }
+      
+      if(fit == 'bayesglm'){
+        
+        glmfit <- bayesglm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIold) + offset(lSold),
+                           family=poisson(link='log'),prior.df=Inf,prior.mean=1e-4)
+        
+      }
       
     }
-    
-    if(fit == 'bayesglm'){
-      
-      glmfit <- bayesglm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIold) + offset(lSold),
-                         family=gaussian(link='log'),prior.df=Inf,prior.mean=1e-4)
-      
-    }
-    
     
     beta <- exp(coef(glmfit))
   }
@@ -244,17 +341,39 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,
     alpha <- 0.97
     lSold <- log(sbar + Zold)
     
-    if(fit == 'glm'){
+    if(family == 'gaussian'){
       
-      glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIold) + offset(lSold),
-                    family=gaussian(link='log'))
+      if(fit == 'glm'){
+        
+        glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIold) + offset(lSold),
+                      family=gaussian(link='log'))
+        
+      }
+      
+      if(fit == 'bayesglm'){
+        
+        glmfit <- bayesglm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIold) + offset(lSold),
+                           family=gaussian(link='log'),prior.df=Inf,prior.mean=1e-4)
+        
+      }
       
     }
     
-    if(fit == 'bayesglm'){
+    if(family == 'poisson'){
       
-      glmfit <- bayesglm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIold) + offset(lSold),
-                         family=gaussian(link='log'),prior.df=Inf,prior.mean=1e-4)
+      if(fit == 'glm'){
+        
+        glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIold) + offset(lSold),
+                      family=poisson(link='log'))
+        
+      }
+      
+      if(fit == 'bayesglm'){
+        
+        glmfit <- bayesglm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIold) + offset(lSold),
+                           family=poisson(link='log'),prior.df=Inf,prior.mean=1e-4)
+        
+      }
       
     }
     
