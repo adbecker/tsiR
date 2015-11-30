@@ -144,7 +144,7 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,
   lIold <- log(head(Iadjusted,-1)+1)
   Zold <- head(Z,-1)
   
-  pop <- head(data$pop,-1)
+  pop <- data$pop
   
   Smean <- seq(0.001, 0.4, by=0.001)*mean(pop)
   
