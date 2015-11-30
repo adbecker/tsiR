@@ -4,7 +4,7 @@
 \alias{runtsir}
 \title{runtsir function}
 \usage{
-runtsir(data, xreg = "cum.cases", IP = 2, nsim = 100,
+runtsir(data, xreg = "cumcases", IP = 2, nsim = 100,
   regtype = "gaussian", sigmamax = 3, userYhat = numeric(),
   fittype = "all", fit = "glm", method = "deterministic",
   epidemics = "cont", pred = "forward", threshold = 1, sbar = 0.05,
@@ -13,7 +13,7 @@ runtsir(data, xreg = "cum.cases", IP = 2, nsim = 100,
 \arguments{
 \item{data,}{the data frame containing cases and interpolated births and populations.}
 
-\item{xreg,}{the x-axis for the regression. Options are 'cum.cases' and 'cum.births'. Defaults to 'cum.cases'.}
+\item{xreg,}{the x-axis for the regression. Options are 'cumcases' and 'cumbirths'. Defaults to 'cumcases'.}
 
 \item{IP,}{the infectious period in weeks. Defaults to 2 weeks.}
 

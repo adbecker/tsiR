@@ -4,14 +4,14 @@
 \alias{estpars}
 \title{estpars function}
 \usage{
-estpars(data, xreg = "cum.cases", IP = 2, regtype = "gaussian",
+estpars(data, xreg = "cumcases", IP = 2, regtype = "gaussian",
   sigmamax = 3, userYhat = numeric(), fit = "glm", sbar = 0.05,
   fittype = "all", printon = F)
 }
 \arguments{
 \item{data,}{the data frame containing cases and interpolated births and populations.}
 
-\item{xreg,}{the x-axis for the regression. Options are 'cum.cases' and 'cum.births'. Defaults to 'cum.cases'.}
+\item{xreg,}{the x-axis for the regression. Options are 'cumcases' and 'cumbirths'. Defaults to 'cumcases'.}
 
 \item{IP,}{the infectious period in weeks. Defaults to 2 weeks.}
 
