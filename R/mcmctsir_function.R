@@ -15,10 +15,11 @@
 #' @param fittype, the type of fit used. Options are 'all' which fits beta, sbar, and alpha, 
 #' 'fixalpha', which fixes alpha at 0.97 and estimates beta and sbar, and
 #' 'less' which fits only beta and fixes alpha at 0.97.
-#' @param fit, the fitting method used. Options are 'glm' or 'bayesglm' which is a cheap adaptation
-#' to include some bayesian approaches. For 'bayesglm' we use a gaussian prior with mean 1e-4.
-#' @param family, the family in the GLM regression, options are poisson and gaussian both with
-#' log link. Default is Poisson.
+#' @param n.chains, number of MCMC chains to use. Default is 3.
+#' @param update.iter, number of MCMC iterations to use in the update aspect. Default is 10000.
+#' @param n.iter, number of MCMC iterations to use. Default is 30000.
+#' @param n.adapt, adaptive number for MCMC. Default is 1000.
+#' @param burn.in, burn in number. Default is 100.
 #' @param sbar, the mean number of susceptibles. Only used if fittype='less'. Defaults to 0.05*mean(pop).
 #' @param method, the type of next step prediction used. Options are 'negbin' for negative binomial,
 #' 'pois' for poisson distribution, and 'deterministic'. Defaults to 'deterministic'.
@@ -34,7 +35,8 @@ mcmctsir <- function(data, xreg = 'cumcases',
                      regtype = 'gaussian',sigmamax = 3,
                      userYhat = numeric(),
                      fittype = 'all',
-                     n.iter=20000, nchains=3, 
+                     update.iter=10000,
+                     n.iter=30000, n.chains=3, 
                      n.adapt=1000,burn.in=100,
                      method='deterministic',epidemics='cont', pred ='forward',
                      threshold=1,sbar=0.05,
@@ -52,6 +54,8 @@ mcmctsir <- function(data, xreg = 'cumcases',
     print('number of MCMC iterations less than 5000 -- increase')
     
   }
+  
+  print('MCMC may take a while')
   
   cumbirths <- cumsum(data$births)
   cumcases <- cumsum(data$cases)
@@ -176,6 +180,9 @@ mcmctsir <- function(data, xreg = 'cumcases',
   
   Smean <- seq(0.001, 0.4, by=0.001)*mean(pop)
   
+  alphalow <- NA
+  alphahigh <- NA
+  
   llik <- rep(NA, length(Smean))
   if(fittype == 'all'){
     
@@ -231,8 +238,8 @@ mcmctsir <- function(data, xreg = 'cumcases',
       "N" = length(lIold)
     )
     
-    theModel <- jags.model(mymodel,data=jags_data_list,n.chains=3)
-    update(theModel,10000)
+    theModel <- jags.model(mymodel,data=jags_data_list,n.chains=n.chains)
+    update(theModel,update.iter)
     inits = list("alpha" = 0.97)
     mcmcsamples <- coda.samples(theModel,c("alpha","beta",'sigma'),
                                 inits=inits,n.iter=n.iter, n.adapt=n.adapt,burn.in=burn.in)
@@ -316,8 +323,8 @@ mcmctsir <- function(data, xreg = 'cumcases',
       "N" = length(lIold)
     )
     
-    theModel <- jags.model(mymodel,data=jags_data_list,n.chains=3)
-    update(theModel,10000)
+    theModel <- jags.model(mymodel,data=jags_data_list,n.chains=n.chains)
+    update(theModel,update.iter)
     mcmcsamples <- coda.samples(theModel,c("beta",'sigma'),
                                 n.iter=n.iter, n.adapt=n.adapt,burn.in=burn.in)
     
@@ -381,7 +388,7 @@ mcmctsir <- function(data, xreg = 'cumcases',
     )
     
     theModel <- jags.model(mymodel,data=jags_data_list,n.chains=n.chains)
-    update(theModel,10000)
+    update(theModel,update.iter)
     mcmcsamples <- coda.samples(theModel,c("beta",'sigma'),
                                 n.iter=n.iter, n.adapt=n.adapt,burn.in=burn.in)
     
@@ -399,7 +406,7 @@ mcmctsir <- function(data, xreg = 'cumcases',
     
   }
   
-  contact <- as.data.frame(cbind('time'=seq(1,length(beta),1),beta,low,high))
+  contact <- as.data.frame(cbind('time'=seq(1,length(beta),1),betalow,beta,betahigh))
   
   print(c('alpha'=unname(signif(alpha,2)),
           'mean beta'=unname(signif(mean(beta),3)),
@@ -474,6 +481,7 @@ mcmctsir <- function(data, xreg = 'cumcases',
   return(list('X'=X,'Y'=Y,'Yhat' =Yhat,'mcmcsamples'=mcmcsamples,
               'beta'=beta,'contact'=contact,'rho'=adj.rho,'pop'=pop,
               'Z'=Z,'sbar'=sbar,'alpha'=alpha,
+              'alphalow'=alphalow,'alphahigh'=alphahigh,
               'res'=res,'loglik'=llik))
   
   

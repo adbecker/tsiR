@@ -1,7 +1,7 @@
 #' plotres function
 #' 
 #' function to plot diagnostics and results of the runtsir function.
-#' @param dat, the list produced from the runtsir function
+#' @param dat, the list produced from the runtsir function or the mcmctsir function
 #' 
 plotres <- function(dat){
   regdf <- NULL
@@ -41,9 +41,20 @@ plotres <- function(dat){
   betadf$beta <- dat$beta
   betadf <- as.data.frame(betadf)
   
+  
   p4 <- ggplot(betadf,aes(time,beta))+geom_line(size=2)+theme_bw()+
     ggtitle(sprintf('mean beta = %g, alpha=%g',signif(mean(dat$beta),2),signif(dat$alpha,2)))
   
+  
+  if('contact' %in% names(dat)){
+    
+    p4 <- ggplot(dat$contact,aes(time,beta))+geom_line(size=2)+
+      geom_ribbon(ymin=dat$contact$betalow,ymax=dat$contact$betahigh,alpha=0.5,col='dodgerblue',fill='dodgerblue')+
+      ylim(c(min(dat$contact$betalow),max(dat$contact$betahigh)))+theme_bw()+
+      ggtitle(sprintf('mean beta = %g, alpha=%g',signif(mean(dat$beta),2),signif(dat$alpha,2)))
+    
+    
+  }
   
   obs <- dat$res$cases
   pred <- dat$res$mean
