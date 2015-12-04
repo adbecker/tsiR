@@ -24,7 +24,7 @@
 #' @param sbar, the mean number of susceptibles. Only used if fittype='less'. Defaults to 0.05*mean(pop).
 #' @param printon, whether to show diagnostic prints or not, defaults to FALSE.
 
-estpars <- function(data, xreg = 'cumcases',IP = 2,
+mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
                     regtype = 'gaussian',sigmamax = 3,
                     userYhat = numeric(),
                     update.iter=10000,
