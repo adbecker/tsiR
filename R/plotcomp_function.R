@@ -28,9 +28,17 @@ plotcomp <- function(sim,errtype='95'){
     geom_line(aes(y = mean), colour = "orangered4",size=1) + geom_ribbon(eb,alpha=0.3)+
     theme_bw()
 
+  meltdf <- melt(subset(sim,select=-c(mean,sd,error)),id='time')
+  
+  comp3 <- ggplot(meltdf,aes(x=time,y=value))+
+    geom_line(alpha=0.6,colour='orangered4')+
+    geom_line(data=sim,aes(x=time,y=cases),colour='dodgerblue',size=1)+
+    theme_bw()
+  
+  
   grid.newpage()
   pushViewport(viewport(layout = grid.layout(2, 1)))
-  print(comp1, vp = vplayout(1, 1))
+  print(comp3, vp = vplayout(1, 1))
   print(comp2, vp = vplayout(2, 1))
 
 

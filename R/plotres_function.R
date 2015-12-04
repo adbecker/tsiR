@@ -80,6 +80,12 @@ plotres <- function(dat){
     geom_line(aes(y = mean), colour = "orangered4",size=1) + geom_ribbon(eb,alpha=0.3)+
     theme_bw()
   
+  meltdf <- melt(subset(dat$res,select=-c(mean,sd,error)),id='time')
+  
+  p8 <- ggplot(meltdf,aes(x=time,y=value))+
+    geom_line(alpha=0.6,colour='orangered4')+
+    geom_line(data=dat$res,aes(x=time,y=cases),colour='dodgerblue',size=1)+
+    theme_bw()
   
   
   grid.newpage()
@@ -90,7 +96,7 @@ plotres <- function(dat){
   print(p3,vp=vplayout(2,1:2))
   print(p4,vp=vplayout(3,1))
   print(p5,vp=vplayout(3,2))
-  print(p6,vp=vplayout(4,1:2))
+  print(p8,vp=vplayout(4,1:2))
   print(p7,vp=vplayout(5,1:2))
   
   
