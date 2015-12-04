@@ -2,7 +2,7 @@
 % Please edit documentation in R/mcmctsir_function.R
 \name{mcmctsir}
 \alias{mcmctsir}
-\title{runtsir function}
+\title{mcmctsir function}
 \usage{
 mcmctsir(data, xreg = "cumcases", IP = 2, nsim = 100,
   regtype = "gaussian", sigmamax = 3, userYhat = numeric(),
@@ -63,6 +63,6 @@ and 'break' which breaks the epidemics up if there are a lot of zeros. Defaults 
 \item{printon,}{whether to show diagnostic prints or not, defaults to FALSE.}
 }
 \description{
-This function runs the TSIR model
+This function runs the TSIR model using MCMC estimation.
 }
 
