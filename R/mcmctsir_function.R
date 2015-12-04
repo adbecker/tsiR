@@ -1,6 +1,6 @@
-#' runtsir function
+#' mcmctsir function
 #' 
-#' This function runs the TSIR model
+#' This function runs the TSIR model using MCMC estimation.
 #' @param data, the data frame containing cases and interpolated births and populations.
 #' @param nsim, the number of simulations to do. Defaults to 100.
 #' @param xreg, the x-axis for the regression. Options are 'cumcases' and 'cumbirths'. Defaults to 'cumcases'.
