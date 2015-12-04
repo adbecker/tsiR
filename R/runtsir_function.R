@@ -473,7 +473,8 @@ runtsir <- function(data, xreg = 'cumcases',
   return(list('X'=X,'Y'=Y,'Yhat' =Yhat,
               'beta'=beta,'rho'=adj.rho,'pop'=pop,
               'Z'=Z,'sbar'=sbar,'alpha'=alpha,
-              'res'=res,'loglik'=llik))
+              'res'=res,'loglik'=llik,
+              'nsim'=nsim))
   
   
 }
