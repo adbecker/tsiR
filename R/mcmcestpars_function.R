@@ -401,11 +401,12 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
   
   
   
-  return(list('mcmcsamples'=mcmcsamples,
+  return(list('X'=X,'Y'=Y,'Yhat'=Yhat,
+              'mcmcsamples'=mcmcsamples,
               'beta'=beta,'contact'=contact,'rho'=adj.rho,'pop'=pop,
               'Z'=Z,'sbar'=sbar,'alpha'=alpha,
               'alphalow'=alphalow,'alphahigh'=alphahigh,
-              'res'=res,'loglik'=loglik
-              ))
+              'loglik'=loglik
+  ))
   
 }

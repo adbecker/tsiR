@@ -384,6 +384,8 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,
     
   }
   
-  return(list('beta'=beta,'rho'=adj.rho,'Z'=Z,'sbar'=sbar,'alpha'=alpha,'loglik'=loglik))
+  return(list('X'=X,'Y'=Y,'Yhat'=Yhat,
+              'beta'=beta,'rho'=adj.rho,'Z'=Z,
+              'sbar'=sbar,'alpha'=alpha,'loglik'=loglik))
   
 }

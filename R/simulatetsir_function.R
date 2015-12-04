@@ -19,6 +19,14 @@ simulatetsir <- function(data, nsim = 100, IP=2,
   Z <- parms$Z
   sbar <- parms$sbar
   alpha <- parms$alpha
+  X <- parms$X
+  Y <- parms$Y
+  Yhat <- parms$Yhat
+  contact <- parms$contact
+  alphalow <- parms$alphalow
+  alphahigh <- parms$alphahigh
+  loglik <- parms$loglik
+  pop <- parms$pop
   
   datacopy <- data
   
@@ -30,8 +38,6 @@ simulatetsir <- function(data, nsim = 100, IP=2,
     
   }  
   
-  
-  nsim <- nsim
   res <- matrix(0,length(data$cases),nsim)
   for(ct in 1:nsim){
     
@@ -93,5 +99,12 @@ simulatetsir <- function(data, nsim = 100, IP=2,
   res$time <- data$time
   res$cases <- data$cases
   
-  return(res)
+  return(list(
+  'X'=X,'Y'=Y,'Yhat' =Yhat,'pop'=pop,
+  'beta'=beta,'contact'=contact,'rho'=adj.rho,
+  'Z'=Z,'sbar'=sbar,'alpha'=alpha,
+  'alphalow'=alphalow,'alphahigh'=alphahigh,
+  'res'=res,'loglik'=loglik,
+  'nsim'=nsim))
+  
 }
