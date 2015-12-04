@@ -198,6 +198,10 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,
     
     if(family == 'poisson'){
       
+      Inew <- round(Inew)
+      
+      
+      
       for(i in 1:length(Smean)){
         lSminus <- log(Smean[i] + Zminus)
         
@@ -292,6 +296,10 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,
     
     if(family == 'poisson'){
       
+      Inew <- round(Inew)
+      
+      
+      
       for(i in 1:length(Smean)){
         lSminus <- log(Smean[i] + Zminus)
         if(fit == 'glm'){
@@ -363,6 +371,10 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,
     }
     
     if(family == 'poisson'){
+      
+      Inew <- round(Inew)
+      
+      
       
       if(fit == 'glm'){
         

@@ -174,12 +174,19 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
   alphalow <- NA
   alphahigh <- NA
   
+  Inew <- round(Inew)
+  
+  
+  
   loglik <- rep(NA, length(Smean))
   if(fittype == 'all'){
     
     
+    
     for(i in 1:length(Smean)){
       lSminus <- log(Smean[i] + Zminus)
+      
+      
       
       glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
                     family=poisson(link='log'))

@@ -9,16 +9,14 @@ maxthreshold <- function(data,nsim=2,IP=2,method='deterministic',
       print(sprintf('trying threshold=%d',threshvec[it]))
     }
     res <- simulatetsir(data, nsim = nsim, IP=IP,
-                        beta = parms$beta,Z = parms$Z,
-                        sbar = parms$sbar,adj.rho =parms$rho,
-                        alpha =parms$alpha,
+                        parms=parms,
                         method=method,
                         epidemics='break', pred ='forward',
                         threshold=threshvec[it],
                         add.noise.sd = 0, mul.noise.sd = 0)
     
-    obs <- res$cases
-    pred <- res$mean
+    obs <- res$res$cases
+    pred <- res$res$mean
     
     fit <- lm(pred ~ obs)
     r.squared <- summary(fit)$r.squared 

@@ -216,6 +216,8 @@ runtsir <- function(data, xreg = 'cumcases',
     
     if(family == 'poisson'){
       
+        Inew <- round(Inew)
+      
       for(i in 1:length(Smean)){
         lSminus <- log(Smean[i] + Zminus)
         
@@ -310,6 +312,9 @@ runtsir <- function(data, xreg = 'cumcases',
     
     if(family == 'poisson'){
       
+      Inew <- round(Inew)
+      
+      
       for(i in 1:length(Smean)){
         lSminus <- log(Smean[i] + Zminus)
         if(fit == 'glm'){
@@ -381,6 +386,9 @@ runtsir <- function(data, xreg = 'cumcases',
     }
     
     if(family == 'poisson'){
+      
+      Inew <- round(Inew)
+
       
       if(fit == 'glm'){
         
