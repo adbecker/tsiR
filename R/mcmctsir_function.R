@@ -159,10 +159,14 @@ mcmctsir <- function(data, xreg = 'cumcases',
     
   }
   
+  
+  if(length(which(adj.rho < 1 )) > 1){
+    stop('Reporting exceeds 100% -- use different regression')
+  }
+  
   Iadjusted <- data$cases * adj.rho
   
   datacopy <- data
-  data$cases[data$cases ==0] <- 1
   
   period <- rep(1:(52/IP), round(nrow(data)+1))[1:(nrow(data)-1)]
   
@@ -173,8 +177,8 @@ mcmctsir <- function(data, xreg = 'cumcases',
   }
   
   Inew <- tail(Iadjusted,-1)+1
-  lIold <- log(head(Iadjusted,-1)+1)
-  Zold <- head(Z,-1)
+  lIminus <- log(head(Iadjusted,-1)+1)
+  Zminus <- head(Z,-1)
   
   pop <- data$pop
   
@@ -183,27 +187,27 @@ mcmctsir <- function(data, xreg = 'cumcases',
   alphalow <- NA
   alphahigh <- NA
   
-  llik <- rep(NA, length(Smean))
+  loglik <- rep(NA, length(Smean))
   if(fittype == 'all'){
     
     
     for(i in 1:length(Smean)){
-      lSold <- log(Smean[i] + Zold)
+      lSminus <- log(Smean[i] + Zminus)
       
-      glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIold) + offset(lSold),
+      glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
                     family=poisson(link='log'))
       
       
-      llik[i] <- glmfit$deviance
+      loglik[i] <- glmfit$deviance
       
     }
     
-    sbar <- Smean[which.min(llik)]
+    sbar <- Smean[which.min(loglik)]
     
-    lSold <- log(sbar + Zold)
+    lSminus <- log(sbar + Zminus)
     
-    lSold[is.nan(lSold)] <- 0
-    lSold[lSold < 0] <- 0
+    lSminus[is.nan(lSminus)] <- 0
+    lSminus[lSminus < 0] <- 0
     
     
     factorperiod <- as.factor(period)
@@ -221,7 +225,7 @@ mcmctsir <- function(data, xreg = 'cumcases',
                                 for (t in 1:N){
                                 
                                 ## no intercept
-                                regsum[t] <- mod[t,] %*%beta + alpha*lIold[t] + lSold[t] + e[t]
+                                regsum[t] <- mod[t,] %*%beta + alpha*lIminus[t] + lSminus[t] + e[t]
                                 rate[t] <- exp(regsum[t])
                                 Inew[t] ~ dpois(rate[t])
                                 e[t] ~ dnorm(0, (1/sigma^2))
@@ -232,10 +236,10 @@ mcmctsir <- function(data, xreg = 'cumcases',
     jags_data_list=list(
       "mod" = mod,
       "Inew"=round(Inew),
-      "lIold"=as.numeric(lIold),
-      "lSold"=as.numeric(lSold),
+      "lIminus"=as.numeric(lIminus),
+      "lSminus"=as.numeric(lSminus),
       "numseas" = numseas,
-      "N" = length(lIold)
+      "N" = length(lIminus)
     )
     
     theModel <- jags.model(mymodel,data=jags_data_list,n.chains=n.chains)
@@ -269,26 +273,26 @@ mcmctsir <- function(data, xreg = 'cumcases',
     
     
     for(i in 1:length(Smean)){
-      lSold <- log(Smean[i] + Zold)
+      lSminus <- log(Smean[i] + Zminus)
       
       
-      glmfit <- glm(Inew ~ -1 +as.factor(period) + offset(alpha*lIold) + offset(lSold),
+      glmfit <- glm(Inew ~ -1 +as.factor(period) + offset(alpha*lIminus) + offset(lSminus),
                     family=poisson(link='log'))
       
       
-      llik[i] <- glmfit$deviance
+      loglik[i] <- glmfit$deviance
       
     }
     
     
     
-    sbar <- Smean[which.min(llik)]
+    sbar <- Smean[which.min(loglik)]
     
-    lSold <- log(sbar + Zold)
+    lSminus <- log(sbar + Zminus)
     
     
-    lSold[is.nan(lSold)] <- 0
-    lSold[lSold < 0] <- 0
+    lSminus[is.nan(lSminus)] <- 0
+    lSminus[lSminus < 0] <- 0
     
     
     factorperiod <- as.factor(period)
@@ -305,7 +309,7 @@ mcmctsir <- function(data, xreg = 'cumcases',
                               for (t in 1:N){
                               
                               ## no intercept
-                              regsum[t] <- mod[t,] %*%beta + alpha*lIold[t] + lSold[t] + e[t]
+                              regsum[t] <- mod[t,] %*%beta + alpha*lIminus[t] + lSminus[t] + e[t]
                               rate[t] <- exp(regsum[t])
                               Inew[t] ~ dpois(rate[t])
                               e[t] ~ dnorm(0, (1/sigma^2))
@@ -317,10 +321,10 @@ mcmctsir <- function(data, xreg = 'cumcases',
       "mod" = mod,
       "alpha" = alpha,
       "Inew"=round(Inew),
-      "lIold"=as.numeric(lIold),
-      "lSold"=as.numeric(lSold),
+      "lIminus"=as.numeric(lIminus),
+      "lSminus"=as.numeric(lSminus),
       "numseas" = numseas,
-      "N" = length(lIold)
+      "N" = length(lIminus)
     )
     
     theModel <- jags.model(mymodel,data=jags_data_list,n.chains=n.chains)
@@ -347,12 +351,12 @@ mcmctsir <- function(data, xreg = 'cumcases',
   if(fittype == 'less'){
     sbar <- sbar * mean(pop)
     alpha <- 0.97
-    lSold <- log(sbar + Zold)
+    lSminus <- log(sbar + Zminus)
     
     
     
-    lSold[is.nan(lSold)] <- 0
-    lSold[lSold < 0] <- 0
+    lSminus[is.nan(lSminus)] <- 0
+    lSminus[lSminus < 0] <- 0
     
     
     factorperiod <- as.factor(period)
@@ -369,7 +373,7 @@ mcmctsir <- function(data, xreg = 'cumcases',
                               for (t in 1:N){
                               
                               ## no intercept
-                              regsum[t] <- mod[t,] %*%beta + alpha*lIold[t] + lSold[t] + e[t]
+                              regsum[t] <- mod[t,] %*%beta + alpha*lIminus[t] + lSminus[t] + e[t]
                               rate[t] <- exp(regsum[t])
                               Inew[t] ~ dpois(rate[t])
                               e[t] ~ dnorm(0, (1/sigma^2))
@@ -381,10 +385,10 @@ mcmctsir <- function(data, xreg = 'cumcases',
       "mod" = mod,
       "alpha" = alpha,
       "Inew"=round(Inew),
-      "lIold"=as.numeric(lIold),
-      "lSold"=as.numeric(lSold),
+      "lIminus"=as.numeric(lIminus),
+      "lSminus"=as.numeric(lSminus),
       "numseas" = numseas,
-      "N" = length(lIold)
+      "N" = length(lIminus)
     )
     
     theModel <- jags.model(mymodel,data=jags_data_list,n.chains=n.chains)
@@ -468,8 +472,8 @@ mcmctsir <- function(data, xreg = 'cumcases',
     
   }
   
-  res[is.nan(res)] <- 1
-  res[res < 1] <- 1
+  res[is.nan(res)] <- 0
+  res[res < 1] <- 0
   
   res <- as.data.frame(res)
   res$mean <- apply(res, 1, function(row) mean(row[-1],na.rm=T))
@@ -482,7 +486,7 @@ mcmctsir <- function(data, xreg = 'cumcases',
               'beta'=beta,'contact'=contact,'rho'=adj.rho,'pop'=pop,
               'Z'=Z,'sbar'=sbar,'alpha'=alpha,
               'alphalow'=alphalow,'alphahigh'=alphahigh,
-              'res'=res,'loglik'=llik,
+              'res'=res,'loglik'=loglik,
               'nsim'=nsim))
   
   

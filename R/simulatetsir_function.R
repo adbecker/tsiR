@@ -1,7 +1,5 @@
 simulatetsir <- function(data, nsim = 100, IP=2,
-                         beta = numeric(),Z = numeric(),
-                         sbar = numeric(),adj.rho = numeric(),
-                         alpha = numeric(),
+                         parms,
                          method='deterministic',
                          epidemics='cont', pred ='forward',
                          threshold=1,
@@ -10,12 +8,17 @@ simulatetsir <- function(data, nsim = 100, IP=2,
   
   
   
-  
   nzeros <- length(which(data$cases==0))
   ltot <- length(data$cases)
   if(nzeros > 0.3 * ltot && epidemics == 'cont'){
     print(sprintf('time series is %.0f%% zeros, consider using break method',100*nzeros/ltot))
   }
+  
+  beta <- parms$beta
+  adj.rho <- parms$rho
+  Z <- parms$Z
+  sbar <- parms$sbar
+  alpha <- parms$alpha
   
   datacopy <- data
   
@@ -81,8 +84,8 @@ simulatetsir <- function(data, nsim = 100, IP=2,
     
   }
   
-  res[is.nan(res)] <- 1
-  res[res < 1] <- 1
+  res[is.nan(res)] <- 0
+  res[res < 1] <- 0
   
   res <- as.data.frame(res)
   res$mean <- apply(res, 1, function(row) mean(row[-1],na.rm=T))
