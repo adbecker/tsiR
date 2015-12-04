@@ -23,7 +23,7 @@
 #' @param printon, whether to show diagnostic prints or not, defaults to FALSE.
 
 estpars <- function(data, xreg = 'cumcases',IP = 2,
-                    regtype = 'gaussian',sigmamax = 3,family='poisson',
+                    regtype = 'gaussian',sigmamax = 3,family='gaussian',
                     userYhat = numeric(),fit='glm',sbar=0.05,
                     fittype = 'all',printon=F){
   
