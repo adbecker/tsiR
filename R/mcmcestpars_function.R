@@ -397,7 +397,15 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
     
   }
   
+  contact <- as.data.frame(cbind('time'=seq(1,length(beta),1),betalow,beta,betahigh))
   
-  return(list('beta'=beta,'rho'=adj.rho,'Z'=Z,'sbar'=sbar,'alpha'=alpha,'loglik'=loglik))
+  
+  
+  return(list('mcmcsamples'=mcmcsamples,
+              'beta'=beta,'contact'=contact,'rho'=adj.rho,'pop'=pop,
+              'Z'=Z,'sbar'=sbar,'alpha'=alpha,
+              'alphalow'=alphalow,'alphahigh'=alphahigh,
+              'res'=res,'loglik'=loglik
+              ))
   
 }
