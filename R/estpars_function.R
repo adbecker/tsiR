@@ -40,9 +40,9 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,
     Y <- cumcases
   }
   
-  x = linspace(X[1], X[length(X)], length(X))
-  y = approxfun(X, Y)(x)
-  y[1] = y[2] - (y[3]-y[2])
+  x <- seq(X[1], X[length(X)], length=length(X))
+  y <- approxfun(X, Y)(x)
+  y[1] <- y[2] - (y[3]-y[2])
   
   if(regtype == 'lm'){
     Yhat <- predict(lm(Y~X))
