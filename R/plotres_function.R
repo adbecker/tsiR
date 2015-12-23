@@ -76,14 +76,14 @@ plotres <- function(dat){
     theme_bw()
   
   p7 <- ggplot(data=dat$res, aes(time)) + theme(legend.position = "none") +
-    geom_line(aes(y = -cases), colour = "dodgerblue",size=1) + xlab('year')+ylab('cases')+
+    geom_line(aes(y = -cases), colour = "dodgerblue",size=1) + xlab('time')+ylab('cases')+
     geom_line(aes(y = mean), colour = "orangered4",size=1) + geom_ribbon(eb,alpha=0.3)+
     theme_bw()
   
   meltdf <- melt(subset(dat$res,select=-c(mean,sd,error)),id='time')
   
   p8 <- ggplot(meltdf,aes(x=time,y=value))+
-    geom_line(alpha=0.6,colour='orangered4')+
+    geom_line(alpha=0.6,colour='orangered4')+ylab('cases')+xlab('time')
     geom_line(data=dat$res,aes(x=time,y=cases),colour='dodgerblue',size=1)+
     theme_bw()
   
