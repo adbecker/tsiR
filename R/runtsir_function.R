@@ -169,7 +169,7 @@ runtsir <- function(data, xreg = 'cumcases',
   
   pop <- data$pop
   
-  Smean <- seq(0.001, 0.4, by=0.001)*mean(pop)
+  Smean <- seq(0.01, 0.4, by=0.001)*mean(pop)
   
   loglik <- rep(NA, length(Smean))
   if(fittype == 'all'){
