@@ -169,8 +169,9 @@ runtsir <- function(data, xreg = 'cumcases',
   
   pop <- data$pop
   
-  Smean <- seq(0.01, 0.4, by=0.001)*mean(pop)
-  
+  minSmean <- max(0.01*pop,-(min(Z)+1))
+  Smean <- seq(minSmean, 0.4*mean(pop), length=250)
+    
   loglik <- rep(NA, length(Smean))
   if(fittype == 'all'){
     
@@ -436,7 +437,7 @@ runtsir <- function(data, xreg = 'cumcases',
         I <- I
       }
       
-      lambda <- unname(beta[period[t-1]] * S[t-1] * (I[t-1])^alpha)
+      lambda <- min(S[t-1],unname(beta[period[t-1]] * S[t-1] * (I[t-1])^alpha))
       
       if(lambda < 1 || is.nan(lambda) == T){lambda <- 0}
       
