@@ -83,7 +83,7 @@ plotres <- function(dat){
   meltdf <- melt(subset(dat$res,select=-c(mean,sd,error)),id='time')
   
   p8 <- ggplot(meltdf,aes(x=time,y=value))+
-    geom_line(alpha=0.6,colour='orangered4')+ylab('cases')+xlab('time')
+    geom_line(alpha=0.6,colour='orangered4')+ylab('cases')+xlab('time')+
     geom_line(data=dat$res,aes(x=time,y=cases),colour='dodgerblue',size=1)+
     theme_bw()
   

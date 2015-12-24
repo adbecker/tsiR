@@ -24,14 +24,14 @@ plotcomp <- function(sim,errtype='95'){
     theme_bw()
 
   comp2 <- ggplot(data=sim, aes(time)) + theme(legend.position = "none") +
-    geom_line(aes(y = -cases), colour = "dodgerblue",size=1) + xlab('year')+xlab('cases')+
+    geom_line(aes(y = -cases), colour = "dodgerblue",size=1) + 
     geom_line(aes(y = mean), colour = "orangered4",size=1) + geom_ribbon(eb,alpha=0.3)+
-    theme_bw()
+    theme_bw()+xlab('time')+ylab('cases')
 
   meltdf <- melt(subset(sim,select=-c(mean,sd,error)),id='time')
   
   comp3 <- ggplot(meltdf,aes(x=time,y=value))+
-    geom_line(alpha=0.6,colour='orangered4')+xlab('time')+ylab('cases')
+    geom_line(alpha=0.6,colour='orangered4')+xlab('time')+ylab('cases')+
     geom_line(data=sim,aes(x=time,y=cases),colour='dodgerblue',size=1)+
     theme_bw()
   
@@ -43,3 +43,4 @@ plotcomp <- function(sim,errtype='95'){
 
 
 }
+

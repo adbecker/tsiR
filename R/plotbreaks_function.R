@@ -8,7 +8,7 @@ plotbreaks <- function(data,threshold){
   p <- ggplot()+
     geom_line(data=data, aes(x=time,y=cases),colour='dodgerblue',size=1) + 
     theme_bw() + theme(legend.position = "none") +
-    xlab('year')+ylab('cases') + 
+    xlab('time')+ylab('cases') + 
     geom_vline(xintercept = data$time[t0s],linetype='dashed')
   #+geom_point(data=ptsdat,aes(x=t,y=cpts),col='orangered1',size=3)
   
