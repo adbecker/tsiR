@@ -31,10 +31,15 @@ plotres <- function(dat){
   resdf <- as.data.frame(resdf)
   meltres <- melt(resdf, id.vars = "time")
   
-  p3 <- ggplot(meltres, aes(time, value,col=variable)) + geom_line(size=2)+theme_bw()+
-    ggtitle(sprintf('Sbar=%g: %g of population',signif(dat$sbar,2),dat$sbar/mean(dat$pop)))
+  p3 <- ggplot(meltres, aes(time, value,col=variable)) + geom_line(size=2)+theme_bw()
   
-  
+  loglikdf <- NULL
+  loglikdf$sbar <- dat$Smean
+  loglikdf$loglik <- dat$loglik
+  loglikdf <- as.data.frame(loglikdf)
+  p9 <- ggplot(loglikdf,aes(sbar,loglik))+geom_line()+geom_point()+
+    theme_bw()+geom_vline(xintercept = dat$sbar,linetype = "longdash")+
+    ggtitle(sprintf('Sbar=%g: %g of population',signif(dat$sbar,2),signif(dat$sbar/mean(dat$pop),2)))
   
   betadf <- NULL
   betadf$time <- seq(1,length(dat$beta),1)
@@ -91,6 +96,7 @@ plotres <- function(dat){
   grid.newpage()
   pushViewport(viewport(layout = grid.layout(5, 2)))
   
+  if(all(is.na(dat$loglik)) == T){
   print(p1,vp=vplayout(1,1))
   print(p2,vp=vplayout(1,2))
   print(p3,vp=vplayout(2,1:2))
@@ -98,6 +104,18 @@ plotres <- function(dat){
   print(p5,vp=vplayout(3,2))
   print(p8,vp=vplayout(4,1:2))
   print(p7,vp=vplayout(5,1:2))
+  }
+  
+  
+  print(p1,vp=vplayout(1,1))
+  print(p2,vp=vplayout(1,2))
+  print(p3,vp=vplayout(2,1))
+  print(p9,vp=vplayout(2,2))
+  print(p4,vp=vplayout(3,1))
+  print(p5,vp=vplayout(3,2))
+  print(p8,vp=vplayout(4,1:2))
+  print(p7,vp=vplayout(5,1:2))
+  
   
   
   
