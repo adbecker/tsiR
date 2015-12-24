@@ -19,10 +19,11 @@
 #' log link. Default is Poisson.
 #' @param fit, the fitting method used. Options are 'glm' or 'bayesglm' which is a cheap adaptation
 #' to include some bayesian approaches. For 'bayesglm' we use a gaussian prior with mean 1e-4.
+#' @param seasonality, the type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.
 #' @param sbar, the mean number of susceptibles. Only used if fittype='less'. Defaults to 0.05*mean(pop).
 #' @param printon, whether to show diagnostic prints or not, defaults to FALSE.
 
-estpars <- function(data, xreg = 'cumcases',IP = 2,
+estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
                     regtype = 'gaussian',sigmamax = 3,family='gaussian',
                     userYhat = numeric(),fit='glm',sbar=0.05,
                     fittype = 'all',printon=F){
@@ -137,11 +138,26 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,
   
   datacopy <- data
   
-  period <- rep(1:(52/IP), round(nrow(data)+1))[1:(nrow(data)-1)]
-  
-  if(IP == 1){
+  if(seasonality == 'standard'){
     
-    period <- rep(1:(52/2),each=2, round(nrow(data)+1))[1:(nrow(data)-1)]
+    period <- rep(1:(52/IP), round(nrow(data)+1))[1:(nrow(data)-1)]
+    
+    if(IP == 1){
+      
+      period <- rep(1:(52/2),each=2, round(nrow(data)+1))[1:(nrow(data)-1)]
+      
+    }
+    
+  }
+  
+  if(seasonality == 'schoolterm'){
+    
+    ## do school time in base two weeks and then interpolate
+    term <- rep(1,26)
+    term[c(1,8,15,16,17,18,19,23,26)] <- 2
+    
+    iterm <- round(approx(term,n=52/IP)$y)
+    period <- rep(iterm, round(nrow(data)+1))[1:(nrow(data)-1)]
     
   }
   
@@ -398,7 +414,7 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,
   }
   
   return(list('X'=X,'Y'=Y,'Yhat'=Yhat,'Smean'=Smean,
-              'beta'=beta,'rho'=adj.rho,'Z'=Z,
+              'beta'=head(beta[period],52/IP),'rho'=adj.rho,'Z'=Z,
               'sbar'=sbar,'alpha'=alpha,'loglik'=loglik))
   
 }
