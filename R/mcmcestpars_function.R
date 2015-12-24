@@ -422,13 +422,15 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
     
   }
   
-  contact <- as.data.frame(cbind('time'=seq(1,length(beta),1),betalow,beta,betahigh))
-  
+  contact <- as.data.frame(cbind('time'=seq(1,length(beta[period]),1),
+                                 betalow[period],beta[period],betahigh[period]),row.names=F)
+  names(contact) <- c('time','betalow','beta','betahigh')
+  contact <- head(contact,52/IP)
   
   
   return(list('X'=X,'Y'=Y,'Yhat'=Yhat,
               'mcmcsamples'=mcmcsamples,
-              'beta'=beta,'contact'=contact,'rho'=adj.rho,'pop'=pop,
+              'beta'=contact$beta,'contact'=contact,'rho'=adj.rho,'pop'=pop,
               'Z'=Z,'sbar'=sbar,'alpha'=alpha,
               'alphalow'=alphalow,'alphahigh'=alphahigh,
               'loglik'=loglik,'Smean'=Smean
