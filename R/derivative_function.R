@@ -17,7 +17,7 @@ derivative <- function(X,Y){
     dy[i-4] <- sum(weights * y[(i-4):(i+4)]) / dx  
   }
   
-  dy <- approxfun(linspace(X[1], X[length(X)], length(dy)), dy)(X)
+  dy <- approxfun(seq(X[1], X[length(X)], length=length(dy)), dy)(X)
   #dy <- approx(dy,n=length(X))$y
   return(dy)
 }
