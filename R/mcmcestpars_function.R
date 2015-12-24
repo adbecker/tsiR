@@ -145,10 +145,6 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
     
   }
   
-  if(adj.rho < 1){
-    stop()
-  }
-  
   if(length(which(adj.rho < 1 )) > 1){
     stop('Reporting exceeds 100% -- use different regression')
   }

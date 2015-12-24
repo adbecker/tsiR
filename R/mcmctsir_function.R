@@ -28,6 +28,7 @@
 #' @param pred, the type of prediction used. Options are 'forward' and 'step-ahead'. Defaults to 'forward'.
 #' @param threshold, the cut off for a new epidemic if epidemics = 'break'. Defaults to 1.
 #' @param add.noise.sd, the sd for additive noise, defaults to zero.
+#' @param seasonality, the type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.
 #' @param mul.noise.sd, the sd for multiplicative noise, defaults to zero.
 #' @param printon, whether to show diagnostic prints or not, defaults to FALSE.
 mcmctsir <- function(data, xreg = 'cumcases',
@@ -39,6 +40,7 @@ mcmctsir <- function(data, xreg = 'cumcases',
                      n.iter=30000, n.chains=3, 
                      n.adapt=1000,burn.in=100,
                      method='deterministic',epidemics='cont', pred ='forward',
+                     seasonality='standard',
                      threshold=1,sbar=0.05,
                      add.noise.sd = 0, mul.noise.sd = 0,
                      printon=F){
@@ -168,11 +170,26 @@ mcmctsir <- function(data, xreg = 'cumcases',
   
   datacopy <- data
   
-  period <- rep(1:(52/IP), round(nrow(data)+1))[1:(nrow(data)-1)]
-  
-  if(IP == 1){
+  if(seasonality == 'standard'){
     
-    period <- rep(1:(52/2),each=2, round(nrow(data)+1))[1:(nrow(data)-1)]
+    period <- rep(1:(52/IP), round(nrow(data)+1))[1:(nrow(data)-1)]
+    
+    if(IP == 1){
+      
+      period <- rep(1:(52/2),each=2, round(nrow(data)+1))[1:(nrow(data)-1)]
+      
+    }
+    
+  }
+  
+  if(seasonality == 'schoolterm'){
+    
+    ## do school time in base two weeks and then interpolate
+    term <- rep(1,26)
+    term[c(1,8,15,16,17,18,19,23,26)] <- 2
+    
+    iterm <- round(approx(term,n=52/IP)$y)
+    period <- rep(iterm, round(nrow(data)+1))[1:(nrow(data)-1)]
     
   }
   
@@ -411,7 +428,10 @@ mcmctsir <- function(data, xreg = 'cumcases',
     
   }
   
-  contact <- as.data.frame(cbind('time'=seq(1,length(beta),1),betalow,beta,betahigh))
+  contact <- as.data.frame(cbind('time'=seq(1,length(beta[period]),1),
+                                 betalow[period],beta[period],betahigh[period]),row.names=F)
+  names(contact) <- c('time','betalow','beta','betahigh')
+  contact <- head(contact,52/IP)
   
   print(c('alpha'=unname(signif(alpha,2)),
           'mean beta'=unname(signif(mean(beta),3)),
@@ -484,7 +504,7 @@ mcmctsir <- function(data, xreg = 'cumcases',
   
   
   return(list('X'=X,'Y'=Y,'Yhat' =Yhat,'mcmcsamples'=mcmcsamples,
-              'beta'=beta,'contact'=contact,'rho'=adj.rho,'pop'=pop,
+              'beta'=contact$beta,'contact'=contact,'rho'=adj.rho,'pop'=pop,
               'Z'=Z,'sbar'=sbar,'alpha'=alpha,
               'alphalow'=alphalow,'alphahigh'=alphahigh,
               'res'=res,'loglik'=loglik,'Smean'=Smean,
