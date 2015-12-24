@@ -168,7 +168,7 @@ runtsir <- function(data, xreg = 'cumcases',
   Zminus <- head(Z,-1)
   
   pop <- data$pop
-  
+   
   minSmean <- max(0.01*pop,-(min(Z)+1))
   Smean <- seq(minSmean, 0.4*mean(pop), length=250)
     
