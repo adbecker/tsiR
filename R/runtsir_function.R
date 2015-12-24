@@ -25,6 +25,7 @@
 #' @param epidemics, the type of data splitting. Options are 'cont' which doesn't split the data up at all,
 #' and 'break' which breaks the epidemics up if there are a lot of zeros. Defaults to 'cont'.
 #' @param pred, the type of prediction used. Options are 'forward' and 'step-ahead'. Defaults to 'forward'.
+#' @param seasonality, the type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.
 #' @param threshold, the cut off for a new epidemic if epidemics = 'break'. Defaults to 1.
 #' @param add.noise.sd, the sd for additive noise, defaults to zero.
 #' @param mul.noise.sd, the sd for multiplicative noise, defaults to zero.
@@ -35,7 +36,7 @@ runtsir <- function(data, xreg = 'cumcases',
                     userYhat = numeric(),
                     fittype = 'all',fit='glm',family='gaussian',
                     method='deterministic',epidemics='cont', pred ='forward',
-                    threshold=1,sbar=0.05,
+                    threshold=1,sbar=0.05,seasonality='standard',
                     add.noise.sd = 0, mul.noise.sd = 0,
                     printon=F){
   
@@ -155,11 +156,26 @@ runtsir <- function(data, xreg = 'cumcases',
   
   datacopy <- data
   
-  period <- rep(1:(52/IP), round(nrow(data)+1))[1:(nrow(data)-1)]
-  
-  if(IP == 1){
+  if(seasonality == 'standard'){
     
-    period <- rep(1:(52/2),each=2, round(nrow(data)+1))[1:(nrow(data)-1)]
+    period <- rep(1:(52/IP), round(nrow(data)+1))[1:(nrow(data)-1)]
+    
+    if(IP == 1){
+      
+      period <- rep(1:(52/2),each=2, round(nrow(data)+1))[1:(nrow(data)-1)]
+      
+    }
+    
+  }
+  
+  if(seasonality == 'schoolterm'){
+    
+    ## do school time in base two weeks and then interpolate
+    term <- rep(1,26)
+    term[c(1,8,15,16,17,18,19,23,26)] <- 2
+    
+    iterm <- round(approx(term,n=52/IP)$y)
+    period <- rep(iterm, round(nrow(data)+1))[1:(nrow(data)-1)]
     
   }
   
