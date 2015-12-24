@@ -8,8 +8,9 @@ mcmctsir(data, xreg = "cumcases", IP = 2, nsim = 100,
   regtype = "gaussian", sigmamax = 3, userYhat = numeric(),
   fittype = "all", update.iter = 10000, n.iter = 30000, n.chains = 3,
   n.adapt = 1000, burn.in = 100, method = "deterministic",
-  epidemics = "cont", pred = "forward", threshold = 1, sbar = 0.05,
-  add.noise.sd = 0, mul.noise.sd = 0, printon = F)
+  epidemics = "cont", pred = "forward", seasonality = "standard",
+  threshold = 1, sbar = 0.05, add.noise.sd = 0, mul.noise.sd = 0,
+  printon = F)
 }
 \arguments{
 \item{data,}{the data frame containing cases and interpolated births and populations.}
@@ -51,6 +52,8 @@ Smaller, stochastic outbreaks tend to need a lower sigma.}
 and 'break' which breaks the epidemics up if there are a lot of zeros. Defaults to 'cont'.}
 
 \item{pred,}{the type of prediction used. Options are 'forward' and 'step-ahead'. Defaults to 'forward'.}
+
+\item{seasonality,}{the type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.}
 
 \item{threshold,}{the cut off for a new epidemic if epidemics = 'break'. Defaults to 1.}
 

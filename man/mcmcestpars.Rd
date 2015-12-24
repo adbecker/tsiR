@@ -5,9 +5,9 @@
 \title{mcmcestpars function}
 \usage{
 mcmcestpars(data, xreg = "cumcases", IP = 2, regtype = "gaussian",
-  sigmamax = 3, userYhat = numeric(), update.iter = 10000,
-  n.iter = 30000, n.chains = 3, n.adapt = 1000, burn.in = 100,
-  sbar = 0.05, fittype = "all", printon = F)
+  sigmamax = 3, seasonality = "standard", userYhat = numeric(),
+  update.iter = 10000, n.iter = 30000, n.chains = 3, n.adapt = 1000,
+  burn.in = 100, sbar = 0.05, fittype = "all", printon = F)
 }
 \arguments{
 \item{data,}{the data frame containing cases and interpolated births and populations.}
@@ -23,6 +23,8 @@ Defaults to 'gaussian' and if that fails then defaults to loess.}
 
 \item{sigmamax,}{the inverse kernal width for the gaussian regression. Default is 3.
 Smaller, stochastic outbreaks tend to need a lower sigma.}
+
+\item{seasonality,}{the type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.}
 
 \item{userYhat,}{the inputed regression vector if regtype='user'. Defaults to NULL.}
 

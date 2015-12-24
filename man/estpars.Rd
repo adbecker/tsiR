@@ -4,9 +4,10 @@
 \alias{estpars}
 \title{estpars function}
 \usage{
-estpars(data, xreg = "cumcases", IP = 2, regtype = "gaussian",
-  sigmamax = 3, family = "poisson", userYhat = numeric(), fit = "glm",
-  sbar = 0.05, fittype = "all", printon = F)
+estpars(data, xreg = "cumcases", IP = 2, seasonality = "standard",
+  regtype = "gaussian", sigmamax = 3, family = "gaussian",
+  userYhat = numeric(), fit = "glm", sbar = 0.05, fittype = "all",
+  printon = F)
 }
 \arguments{
 \item{data,}{the data frame containing cases and interpolated births and populations.}
@@ -14,6 +15,8 @@ estpars(data, xreg = "cumcases", IP = 2, regtype = "gaussian",
 \item{xreg,}{the x-axis for the regression. Options are 'cumcases' and 'cumbirths'. Defaults to 'cumcases'.}
 
 \item{IP,}{the infectious period in weeks. Defaults to 2 weeks.}
+
+\item{seasonality,}{the type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.}
 
 \item{regtype,}{the type of regression used in susceptible reconstruction.
 Options are 'gaussian', 'lm' (linear model), 'spline' (smooth.spline with 2.5 degrees freedom),
