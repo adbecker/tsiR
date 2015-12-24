@@ -487,7 +487,7 @@ mcmctsir <- function(data, xreg = 'cumcases',
               'beta'=beta,'contact'=contact,'rho'=adj.rho,'pop'=pop,
               'Z'=Z,'sbar'=sbar,'alpha'=alpha,
               'alphalow'=alphalow,'alphahigh'=alphahigh,
-              'res'=res,'loglik'=loglik,
+              'res'=res,'loglik'=loglik,'Smean'=Smean,
               'nsim'=nsim))
   
   

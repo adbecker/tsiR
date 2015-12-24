@@ -414,7 +414,7 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
               'beta'=beta,'contact'=contact,'rho'=adj.rho,'pop'=pop,
               'Z'=Z,'sbar'=sbar,'alpha'=alpha,
               'alphalow'=alphalow,'alphahigh'=alphahigh,
-              'loglik'=loglik
+              'loglik'=loglik,'Smean'=Smean
   ))
   
 }
