@@ -49,7 +49,6 @@ plotres <- function(dat){
   
   p4 <- ggplot(betadf,aes(time,beta))+geom_line(size=2)+theme_bw()+
     ggtitle(sprintf('mean beta = %g, alpha=%g',signif(mean(dat$beta),2),signif(dat$alpha,2)))
-  
    
   if('contact' %in% names(dat)){
     
@@ -60,6 +59,9 @@ plotres <- function(dat){
     
     
   }
+  
+  
+  p4 <- p4 + xlab(sprintf('time mod %g',length(dat$beta)))
   
   obs <- dat$res$cases
   pred <- dat$res$mean
