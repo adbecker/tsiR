@@ -109,8 +109,8 @@ runtsir <- function(data, xreg = 'cumcases',
         }
       }
       if(xreg == 'cumbirths'){
-        Z <- residual.births(Yhat,Y)
         rho <- derivative(X,Yhat)
+        Z <- residual.births(rho,Yhat,Y)
         if(length(which(rho>=1))==0 && length(which(rho<0)) == 0){
           break()
         }
@@ -133,7 +133,7 @@ runtsir <- function(data, xreg = 'cumcases',
   }
   
   if(xreg == 'cumbirths'){
-    Z <- residual.births(Yhat,Y)
+    Z <- residual.births(rho,Yhat,Y)
   }
   
   if(xreg == 'cumcases'){

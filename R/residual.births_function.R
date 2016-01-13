@@ -1,6 +1,6 @@
-residual.births <- function(Yhat,Y){
+residual.births <- function(rho,Yhat,Y){
   ## when X is cum.births
-  Z <- -(Y-Yhat)
+  Z <- -rho*(Y-Yhat)
   return(Z)
 }
 

@@ -106,8 +106,8 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
         }
       }
       if(xreg == 'cumbirths'){
-        Z <- residual.births(Yhat,Y)
         rho <- derivative(X,Yhat)
+        Z <- residual.births(rho,Yhat,Y)
         if(length(which(rho>=1))==0 && length(which(rho<0)) == 0){
           break()
         }
@@ -130,7 +130,7 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
   }
   
   if(xreg == 'cumbirths'){
-    Z <- residual.births(Yhat,Y)
+    Z <- residual.births(rho,Yhat,Y)
   }
   
   if(xreg == 'cumcases'){
