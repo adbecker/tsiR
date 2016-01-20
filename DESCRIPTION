@@ -4,7 +4,7 @@ Version: 0.0.0.9000
 Authors@R: person("Alexander D.", "Becker", email = "adbecker@princeton.edu", role = c("aut", "cre"))
 Description: An implementation of the TSIR model using a number of different fitting options
     for disease disease time series data.
-Depends: R (>= 3.2.2)
+Depends: R (>= 3.1.0)
 License: GPL-3
 LazyData: true
 Imports: ggplot2, kernlab, magrittr, matlab, reshape2, grid, plyr, arm
