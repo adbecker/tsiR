@@ -149,7 +149,7 @@ runtsir <- function(data, xreg = 'cumcases',
   }
   
   if(length(which(adj.rho < 1 )) > 1){
-    stop('Reporting exceeds 100% -- use different regression')
+    warning('Reporting exceeds 100% -- use different regression')
   }
   
   Iadjusted <- data$cases * adj.rho
@@ -497,12 +497,17 @@ runtsir <- function(data, xreg = 'cumcases',
   res$time <- data$time
   res$cases <- data$cases
   
+  obs <- res$cases
+  pred <- res$mean
+  
+  fit <- lm(pred ~ obs)
+  rsquared <- signif(summary(fit)$adj.r.squared, 2)
   
   return(list('X'=X,'Y'=Y,'Yhat' =Yhat,
               'beta'=head(beta[period],52/IP),'rho'=adj.rho,'pop'=pop,
               'Z'=Z,'sbar'=sbar,'alpha'=alpha,
               'res'=res,'loglik'=loglik,'Smean'=Smean,
-              'nsim'=nsim))
+              'nsim'=nsim,'rsquared'=rsquared))
   
   
 }
