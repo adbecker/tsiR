@@ -33,7 +33,7 @@
 runtsir <- function(data, xreg = 'cumcases',
                     IP = 2,nsim = 100,
                     regtype = 'gaussian',sigmamax = 3,
-                    userYhat = numeric(),
+                    userYhat = numeric(),alpha=0.97,
                     fittype = 'all',fit='glm',family='gaussian',
                     method='deterministic',epidemics='cont', pred ='forward',
                     threshold=1,sbar=0.05,seasonality='standard',
@@ -279,7 +279,7 @@ runtsir <- function(data, xreg = 'cumcases',
   
   if(fittype == 'fixalpha'){
     
-    alpha <- 0.97
+    alpha <- alpha
     
     if(family == 'gaussian'){
       

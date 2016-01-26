@@ -32,7 +32,7 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
                         update.iter=10000,
                         n.iter=30000, n.chains=3, 
                         n.adapt=1000,burn.in=100,
-                        sbar=0.05,
+                        sbar=0.05,alpha=0.97,
                         fittype = 'all',printon=F){
   
   if(n.iter < 5000){
@@ -191,69 +191,53 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
   Inew <- round(Inew)
   
   
+  sbarlow <- NA
+  sbarhigh <- NA
   
+  ## even though dont profile to get sbar
+  ## keep this in there for plotting function
   loglik <- rep(NA, length(Smean))
   if(fittype == 'all'){
-    
-    
-    
-    for(i in 1:length(Smean)){
-      lSminus <- log(Smean[i] + Zminus)
-      
-      
-      
-      glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
-                    family=poisson(link='log'))
-      
-      
-      loglik[i] <- glmfit$deviance
-      
-    }
-    
-    sbar <- Smean[which.min(loglik)]
-    
-    lSminus <- log(sbar + Zminus)
-    
-    lSminus[is.nan(lSminus)] <- 0
-    lSminus[lSminus < 0] <- 0
-    
     
     factorperiod <- as.factor(period)
     mod <- model.matrix(~-1+factorperiod)
     
     numseas <- length(unique(period))
     mymodel <- textConnection('model{
-                                alpha ~ dunif(0.5,0.99)
-                                for(season in 1:numseas){
-                                beta[season] ~ dunif(-12,-3)
-                                }
-                                
-                                sigma ~ dunif(0,10)
-                                
-                                for (t in 1:N){
-                                
-                                ## no intercept
-                                regsum[t] <- mod[t,] %*%beta + alpha*lIminus[t] + lSminus[t] + e[t]
-                                rate[t] <- exp(regsum[t])
-                                Inew[t] ~ dpois(rate[t])
-                                e[t] ~ dnorm(0, (1/sigma^2))
-                                }
-                                
-    }')
+                              alpha ~ dunif(0.5,0.99)
+                              for(season in 1:numseas){
+                              beta[season] ~ dunif(-13,-3)
+                              }
+                              sbar ~ dunif(minSmean, 0.4*mean(pop))
+                              
+                              sigma ~ dunif(0,10)
+                              
+                              for (t in 1:N){
+                              
+                              ## no intercept
+                              regsum[t] <- mod[t,] %*%beta + alpha*lIminus[t] + log(Zminus[t]+sbar) + e[t]
+                              rate[t] <- exp(regsum[t])
+                              Inew[t] ~ dpois(rate[t])
+                              e[t] ~ dnorm(0, (1/sigma^2))
+                              }
+                              
+  }')
     
     jags_data_list=list(
       "mod" = mod,
       "Inew"=round(Inew),
       "lIminus"=as.numeric(lIminus),
-      "lSminus"=as.numeric(lSminus),
+      "Zminus"=as.numeric(Zminus),
       "numseas" = numseas,
+      'pop'=pop,
+      'minSmean'=minSmean,
       "N" = length(lIminus)
     )
     
     theModel <- jags.model(mymodel,data=jags_data_list,n.chains=n.chains)
     update(theModel,update.iter)
     inits = list("alpha" = 0.97)
-    mcmcsamples <- coda.samples(theModel,c("alpha","beta",'sigma'),
+    mcmcsamples <- coda.samples(theModel,c("alpha","beta",'sigma','sbar'),
                                 inits=inits,n.iter=n.iter, n.adapt=n.adapt,burn.in=burn.in)
     
     results <-  as.data.frame(mcmcsamples[[1]])
@@ -270,6 +254,12 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
     alpha <- jagsres[1,1]
     alphalow <- jagsres[1,2]
     alphahigh <- jagsres[1,3]
+    
+    sbar <- jagsres[length(unique(period))+2,1]
+    sbarlow <- jagsres[length(unique(period))+2,2]
+    sbarhigh <- jagsres[length(unique(period))+2,3]
+    
+    
   }
   
   
@@ -277,68 +267,47 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
   
   if(fittype == 'fixalpha'){
     
-    alpha <- 0.97
+    alpha <- alpha
     
-    
-    for(i in 1:length(Smean)){
-      lSminus <- log(Smean[i] + Zminus)
-      
-      
-      glmfit <- glm(Inew ~ -1 +as.factor(period) + offset(alpha*lIminus) + offset(lSminus),
-                    family=poisson(link='log'))
-      
-      
-      loglik[i] <- glmfit$deviance
-      
-    }
-    
-    
-    
-    sbar <- Smean[which.min(loglik)]
-    
-    lSminus <- log(sbar + Zminus)
-    
-    
-    lSminus[is.nan(lSminus)] <- 0
-    lSminus[lSminus < 0] <- 0
-    
-    
-    factorperiod <- as.factor(period)
+    ffactorperiod <- as.factor(period)
     mod <- model.matrix(~-1+factorperiod)
     
     numseas <- length(unique(period))
     mymodel <- textConnection('model{
-                              for(season in 1:numseas){
-                              beta[season] ~ dunif(-12,-3)
-                              }
-                              
-                              sigma ~ dunif(0,10)
-                              
-                              for (t in 1:N){
-                              
-                              ## no intercept
-                              regsum[t] <- mod[t,] %*%beta + alpha*lIminus[t] + lSminus[t] + e[t]
-                              rate[t] <- exp(regsum[t])
-                              Inew[t] ~ dpois(rate[t])
-                              e[t] ~ dnorm(0, (1/sigma^2))
-                              }
-                              
-  }')
+                            for(season in 1:numseas){
+                            beta[season] ~ dunif(-13,-3)
+                            }
+                            sbar ~ dunif(minSmean, 0.4*mean(pop))
+                            
+                            sigma ~ dunif(0,10)
+                            
+                            for (t in 1:N){
+                            
+                            ## no intercept
+                            regsum[t] <- mod[t,] %*%beta + lIminus[t] + log(Zminus[t]+sbar) + e[t]
+                            rate[t] <- exp(regsum[t])
+                            Inew[t] ~ dpois(rate[t])
+                            e[t] ~ dnorm(0, (1/sigma^2))
+                            }
+                            
+}')
     
     jags_data_list=list(
       "mod" = mod,
-      "alpha" = alpha,
       "Inew"=round(Inew),
       "lIminus"=as.numeric(lIminus),
-      "lSminus"=as.numeric(lSminus),
+      "Zminus"=as.numeric(Zminus),
       "numseas" = numseas,
+      'pop'=pop,
+      'minSmean'=minSmean,
       "N" = length(lIminus)
     )
     
     theModel <- jags.model(mymodel,data=jags_data_list,n.chains=n.chains)
     update(theModel,update.iter)
-    mcmcsamples <- coda.samples(theModel,c("beta",'sigma'),
-                                n.iter=n.iter, n.adapt=n.adapt,burn.in=burn.in)
+    inits = list("alpha" = 0.97)
+    mcmcsamples <- coda.samples(theModel,c("beta",'sigma','sbar'),
+                                inits=inits,n.iter=n.iter, n.adapt=n.adapt,burn.in=burn.in)
     
     results <-  as.data.frame(mcmcsamples[[1]])
     
@@ -347,9 +316,13 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
     jagsres <- jagsresults(x=mcmctruncated, param=names(results))
     jagsres <- jagsres[,c('mean', '2.5%', '97.5%')]
     
-    beta <- exp(jagsres[1:length(unique(period)),1])
-    betalow <- exp(jagsres[1:length(unique(period)),2])
-    betahigh <- exp(jagsres[1:length(unique(period)),3])
+    beta <- exp(jagsres[1:(length(unique(period))+1),1])
+    betalow <- exp(jagsres[1:(length(unique(period))+1),2])
+    betahigh <- exp(jagsres[1:(length(unique(period))+1),3])
+    
+    sbar <- jagsres[length(unique(period))+2,1]
+    sbarlow <- jagsres[length(unique(period))+2,2]
+    sbarhigh <- jagsres[length(unique(period))+2,3]
     
     
   }
@@ -361,33 +334,30 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
     alpha <- 0.97
     lSminus <- log(sbar + Zminus)
     
-    
-    
     lSminus[is.nan(lSminus)] <- 0
-    lSminus[lSminus < 0] <- 0
-    
+    lSminus[lSminus < 0] <- 0   
     
     factorperiod <- as.factor(period)
     mod <- model.matrix(~-1+factorperiod)
     
     numseas <- length(unique(period))
     mymodel <- textConnection('model{
-                              for(season in 1:numseas){
-                              beta[season] ~ dunif(-12,-3)
-                              }
-                              
-                              sigma ~ dunif(0,10)
-                              
-                              for (t in 1:N){
-                              
-                              ## no intercept
-                              regsum[t] <- mod[t,] %*%beta + alpha*lIminus[t] + lSminus[t] + e[t]
-                              rate[t] <- exp(regsum[t])
-                              Inew[t] ~ dpois(rate[t])
-                              e[t] ~ dnorm(0, (1/sigma^2))
-                              }
-                              
-  }')
+                            for(season in 1:numseas){
+                            beta[season] ~ dunif(-13,-3)
+                            }
+                            
+                            sigma ~ dunif(0,10)
+                            
+                            for (t in 1:N){
+                            
+                            ## no intercept
+                            regsum[t] <- mod[t,] %*%beta + alpha*lIminus[t] + lSminus[t] + e[t]
+                            rate[t] <- exp(regsum[t])
+                            Inew[t] ~ dpois(rate[t])
+                            e[t] ~ dnorm(0, (1/sigma^2))
+                            }
+                            
+}')
     
     jags_data_list=list(
       "mod" = mod,
@@ -415,8 +385,8 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
     betalow <- exp(jagsres[1:length(unique(period)),2])
     betahigh <- exp(jagsres[1:length(unique(period)),3])
     
-    
   }
+  
   
   contact <- as.data.frame(cbind('time'=seq(1,length(beta[period]),1),
                                  betalow[period],beta[period],betahigh[period]),row.names=F)
@@ -427,8 +397,8 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
   return(list('X'=X,'Y'=Y,'Yhat'=Yhat,
               'mcmcsamples'=mcmcsamples,
               'beta'=contact$beta,'contact'=contact,'rho'=adj.rho,'pop'=pop,
-              'Z'=Z,'sbar'=sbar,'alpha'=alpha,
-              'alphalow'=alphalow,'alphahigh'=alphahigh,
+              'Z'=Z,'sbar'=sbar,'sbarlow'=sbarlow,'sbarhigh'=sbarhigh,
+              'alpha'=alpha, 'alphalow'=alphalow,'alphahigh'=alphahigh,
               'loglik'=loglik,'Smean'=Smean
   ))
   

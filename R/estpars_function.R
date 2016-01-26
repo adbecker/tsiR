@@ -25,7 +25,7 @@
 
 estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
                     regtype = 'gaussian',sigmamax = 3,family='gaussian',
-                    userYhat = numeric(),fit='glm',sbar=0.05,
+                    userYhat = numeric(),fit='glm',sbar=0.05,alpha=0.97,
                     fittype = 'all',printon=F){
   
   cumbirths <- cumsum(data$births)
@@ -263,7 +263,7 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
   
   if(fittype == 'fixalpha'){
     
-    alpha <- 0.97
+    alpha <- alpha
     
     if(family == 'gaussian'){
       
