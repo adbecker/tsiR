@@ -244,8 +244,7 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
     
     mcmctruncated <- tail(mcmcsamples,5000)
     
-    jagsres <- jagsresults(x=mcmctruncated, param=names(results))
-    jagsres <- jagsres[,c('mean', '2.5%', '97.5%')]
+    jagsres <- jagsfilter(mcmcresults = mcmctruncated)
     
     beta <- exp(jagsres[2:(length(unique(period))+1),1])
     betalow <- exp(jagsres[2:(length(unique(period))+1),2])
@@ -313,8 +312,7 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
     
     mcmctruncated <- tail(mcmcsamples,5000)
     
-    jagsres <- jagsresults(x=mcmctruncated, param=names(results))
-    jagsres <- jagsres[,c('mean', '2.5%', '97.5%')]
+    jagsres <- jagsfilter(mcmcresults = mcmctruncated)
     
     beta <- exp(jagsres[1:(length(unique(period))+1),1])
     betalow <- exp(jagsres[1:(length(unique(period))+1),2])
@@ -378,8 +376,7 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
     
     mcmctruncated <- tail(mcmcsamples,5000)
     
-    jagsres <- jagsresults(x=mcmctruncated, param=names(results))
-    jagsres <- jagsres[,c('mean', '2.5%', '97.5%')]
+    jagsres <- jagsfilter(mcmcresults = mcmctruncated)
     
     beta <- exp(jagsres[1:length(unique(period)),1])
     betalow <- exp(jagsres[1:length(unique(period)),2])
