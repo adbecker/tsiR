@@ -6,8 +6,8 @@
 \usage{
 mcmctsir(data, xreg = "cumcases", IP = 2, nsim = 100,
   regtype = "gaussian", sigmamax = 3, userYhat = numeric(),
-  fittype = "all", update.iter = 10000, n.iter = 30000, n.chains = 3,
-  n.adapt = 1000, burn.in = 100, method = "deterministic",
+  fittype = "all", alpha = 0.97, update.iter = 10000, n.iter = 30000,
+  n.chains = 3, n.adapt = 1000, burn.in = 100, method = "deterministic",
   epidemics = "cont", pred = "forward", seasonality = "standard",
   threshold = 1, sbar = 0.05, add.noise.sd = 0, mul.noise.sd = 0,
   printon = F)

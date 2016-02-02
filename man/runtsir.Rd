@@ -6,7 +6,7 @@
 \usage{
 runtsir(data, xreg = "cumcases", IP = 2, nsim = 100,
   regtype = "gaussian", sigmamax = 3, userYhat = numeric(),
-  fittype = "all", fit = "glm", family = "gaussian",
+  alpha = 0.97, fittype = "all", fit = "glm", family = "gaussian",
   method = "deterministic", epidemics = "cont", pred = "forward",
   threshold = 1, sbar = 0.05, seasonality = "standard",
   add.noise.sd = 0, mul.noise.sd = 0, printon = F)

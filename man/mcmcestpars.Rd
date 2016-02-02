@@ -7,7 +7,8 @@
 mcmcestpars(data, xreg = "cumcases", IP = 2, regtype = "gaussian",
   sigmamax = 3, seasonality = "standard", userYhat = numeric(),
   update.iter = 10000, n.iter = 30000, n.chains = 3, n.adapt = 1000,
-  burn.in = 100, sbar = 0.05, fittype = "all", printon = F)
+  burn.in = 100, sbar = 0.05, alpha = 0.97, fittype = "all",
+  printon = F)
 }
 \arguments{
 \item{data,}{the data frame containing cases and interpolated births and populations.}
