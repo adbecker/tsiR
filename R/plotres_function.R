@@ -20,8 +20,8 @@ plotres <- function(dat){
   rhodf <- as.data.frame(rhodf)
   
   p2 <- ggplot(rhodf,aes(time,1/rho))+geom_line(size=2)+theme_bw()+
-    ggtitle(sprintf('mean rho=%g',signif(mean(1/dat$rho),2)))
-  
+    ggtitle(bquote(Average~''~reporting~''~bar(rho)==.(signif(mean(1/dat$rho),2))))+
+    ylab(bquote(1/rho))
   
   
   resdf <- NULL
@@ -39,7 +39,10 @@ plotres <- function(dat){
   loglikdf <- as.data.frame(loglikdf)
   p9 <- ggplot(loglikdf,aes(sbar,loglik))+geom_line()+geom_point()+
     theme_bw()+geom_vline(xintercept = dat$sbar,linetype = "longdash")+
-    ggtitle(sprintf('Sbar=%g: %g of population',signif(dat$sbar,2),signif(dat$sbar/mean(dat$pop),2)))
+    ggtitle(bquote(bar(S) ==.(signif(dat$sbar,2))~','~.(signif(dat$sbar/mean(dat$pop),2))
+                   ~''~of~''~the~''~population))+
+    xlab(bquote(bar(S)))
+      
   
   betadf <- NULL
   betadf$time <- seq(1,length(dat$beta),1)
@@ -48,7 +51,8 @@ plotres <- function(dat){
   
   
   p4 <- ggplot(betadf,aes(time,beta))+geom_line(size=2)+theme_bw()+
-    ggtitle(sprintf('mean beta = %g, alpha=%g',signif(mean(dat$beta),2),signif(dat$alpha,2)))
+    ggtitle(bquote(Average~''~contact~''~bar(beta)==.(signif(mean(dat$beta),2))~','~alpha==.(signif(dat$alpha,2))))+
+    ylab(bquote(beta))
    
   if('contact' %in% names(dat)){
     
