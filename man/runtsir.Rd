@@ -63,10 +63,4 @@ and 'break' which breaks the epidemics up if there are a lot of zeros. Defaults 
 \description{
 This function runs the TSIR model
 }
-\examples{
-## some example data
-london <- twentymeas[["London]]
-res <- runtsir(london)
-plotres(res)
-}
 
