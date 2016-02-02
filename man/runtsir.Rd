@@ -74,7 +74,7 @@ res <- runtsir(london,alpha=0.97)
 plotres(res)
 
 ## we can fix sbar the same way, or both
-## fix sbar at 5\% of the population
+## fix sbar at 5 percent of the population
 res <- runtsir(london,alpha=0.97,sbar=0.05)
 }
 
