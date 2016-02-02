@@ -31,7 +31,7 @@
 #' @param mul.noise.sd, the sd for multiplicative noise, defaults to zero.
 #' @param printon, whether to show diagnostic prints or not, defaults to FALSE.
 #' 
-#' #' @examples
+#' @examples
 #' ## some example data
 #' london <- twentymeas[["London]]
 #' res <- runtsir(london)
