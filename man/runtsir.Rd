@@ -58,9 +58,7 @@ and 'break' which breaks the epidemics up if there are a lot of zeros. Defaults 
 
 \item{mul.noise.sd,}{the sd for multiplicative noise, defaults to zero.}
 
-\item{printon,}{whether to show diagnostic prints or not, defaults to FALSE.
-
-#'}
+\item{printon,}{whether to show diagnostic prints or not, defaults to FALSE.}
 }
 \description{
 This function runs the TSIR model
