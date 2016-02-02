@@ -36,15 +36,7 @@
 #' london <- twentymeas[["London]]
 #' res <- runtsir(london)
 #' plotres(res)
-#' 
-#' ## now if we want to fix alpha
-#' res <- runtsir(london,alpha=0.97)
-#' plotres(res)
-#' 
-#' ## we can fix sbar the same way, or both
-#' ## fix sbar at 5 percent of the population
-#' res <- runtsir(london,alpha=0.97,sbar=0.05)
-#' 
+ 
 runtsir <- function(data, xreg = 'cumcases',
                     IP = 2,nsim = 100,
                     regtype = 'gaussian',sigmamax = 3,
