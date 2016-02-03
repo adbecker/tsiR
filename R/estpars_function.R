@@ -12,22 +12,23 @@
 #' @param sigmamax, the inverse kernal width for the gaussian regression. Default is 3. 
 #' Smaller, stochastic outbreaks tend to need a lower sigma.
 #' @param userYhat, the inputed regression vector if regtype='user'. Defaults to NULL.
-#' @param fittype, the type of fit used. Options are 'all' which fits beta, sbar, and alpha, 
-#' 'fixalpha', which fixes alpha at 0.97 and estimates beta and sbar, and
-#' 'less' which fits only beta and fixes alpha at 0.97.
 #' @param family, the family in the GLM regression, options are poisson and gaussian both with
 #' log link. Default is Poisson.
 #' @param fit, the fitting method used. Options are 'glm' or 'bayesglm' which is a cheap adaptation
 #' to include some bayesian approaches. For 'bayesglm' we use a gaussian prior with mean 1e-4.
 #' @param seasonality, the type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.
-#' @param sbar, the mean number of susceptibles. Only used if fittype='less'. Defaults to 0.05*mean(pop).
+#' @param sbar, the mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.
+#' @param alpha, the mixing parameter. Defaults to NULL, i.e. the function estimates alpha.
 #' @param printon, whether to show diagnostic prints or not, defaults to FALSE.
 
 estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
                     regtype = 'gaussian',sigmamax = 3,family='gaussian',
-                    userYhat = numeric(),fit='glm',sbar=0.05,alpha=0.97,
-                    fittype = 'all',printon=F){
+                    userYhat = numeric(),alpha=NULL,sbar=NULL,
+                    printon=F){
   
+  input.alpha <- alpha
+  input.sbar <- sbar
+
   cumbirths <- cumsum(data$births)
   cumcases <- cumsum(data$cases)
   
@@ -131,7 +132,7 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
   }
   
   if(length(which(adj.rho < 1 )) > 1){
-    stop('Reporting exceeds 100% -- use different regression')
+    warning('Reporting exceeds 100% -- use different regression')
   }
   
   Iadjusted <- data$cases * adj.rho
@@ -171,24 +172,16 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
   Smean <- seq(minSmean, 0.4*mean(pop), length=250)
   
   loglik <- rep(NA, length(Smean))
-  if(fittype == 'all'){
-    
+  
+  if(length(input.alpha) == 0 && length(input.sbar) == 0){
     
     if(family == 'gaussian'){
       
       for(i in 1:length(Smean)){
         lSminus <- log(Smean[i] + Zminus)
         
-        if(fit == 'glm'){
-          glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
-                        family=gaussian(link='log'))
-        }
-        
-        if(fit == 'bayesglm'){
-          glmfit <- bayesglm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
-                             family=gaussian(link='log'),prior.df=Inf,prior.mean=1e-4)
-        }
-        
+        glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
+                      family=gaussian(link='log'))
         
         loglik[i] <- glmfit$deviance
         
@@ -197,17 +190,9 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
       sbar <- Smean[which.min(loglik)]
       
       lSminus <- log(sbar + Zminus)
-      if(fit == 'glm'){
-        
-        glmfit <- glm(Inew ~ -1 +as.factor(period)+ (lIminus) + offset(lSminus),
-                      family=gaussian(link='log'))
-      }
       
-      if(fit == 'bayesglm'){
-        
-        glmfit <- bayesglm(Inew ~ -1 +as.factor(period)+ (lIminus) + offset(lSminus),
-                           family=gaussian(link='log'),prior.df=Inf,prior.mean=1e-4)
-      }
+      glmfit <- glm(Inew ~ -1 +as.factor(period)+ (lIminus) + offset(lSminus),
+                    family=gaussian(link='log'))
       
       
     }
@@ -217,21 +202,11 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
       
       Inew <- round(Inew)
       
-      
-      
       for(i in 1:length(Smean)){
         lSminus <- log(Smean[i] + Zminus)
         
-        if(fit == 'glm'){
-          glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
-                        family=poisson(link='log'))
-        }
-        
-        if(fit == 'bayesglm'){
-          glmfit <- bayesglm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
-                             family=poisson(link='log'),prior.df=Inf,prior.mean=1e-4)
-        }
-        
+        glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
+                      family=poisson(link='log'))
         
         loglik[i] <- glmfit$deviance
         
@@ -239,18 +214,10 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
       
       sbar <- Smean[which.min(loglik)]
       
-      lSminus <- log(sbar + Zminus)
-      if(fit == 'glm'){
-        
-        glmfit <- glm(Inew ~ -1 +as.factor(period)+ (lIminus) + offset(lSminus),
-                      family=poisson(link='log'))
-      }
+      lSminus<- log(sbar + Zminus)
       
-      if(fit == 'bayesglm'){
-        
-        glmfit <- bayesglm(Inew ~ -1 +as.factor(period)+ (lIminus) + offset(lSminus),
-                           family=poisson(link='log'),prior.df=Inf,prior.mean=1e-4)
-      }
+      glmfit <- glm(Inew ~ -1 +as.factor(period)+ (lIminus) + offset(lSminus),
+                    family=poisson(link='log'))
       
       
     }
@@ -261,29 +228,18 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
   }
   
   
-  if(fittype == 'fixalpha'){
-    
-    alpha <- alpha
+  if(length(input.alpha) == 1 && length(input.sbar) == 0){
     
     if(family == 'gaussian'){
       
       for(i in 1:length(Smean)){
         lSminus <- log(Smean[i] + Zminus)
-        if(fit == 'glm'){
-          
-          
-          glmfit <- glm(Inew ~ -1 +as.factor(period) + offset(alpha*lIminus) + offset(lSminus),
-                        family=gaussian(link='log'))
-          
-        }
         
-        if(fit == 'bayesglm'){
-          
-          
-          glmfit <- bayesglm(Inew ~ -1 +as.factor(period) + offset(alpha*lIminus) + offset(lSminus),
-                             family=gaussian(link='log'),prior.df=Inf,prior.mean=1e-4)
-          
-        }
+        
+        glmfit <- glm(Inew ~ -1 +as.factor(period) + offset(alpha*lIminus) + offset(lSminus),
+                      family=gaussian(link='log'))
+        
+        
         
         
         loglik[i] <- glmfit$deviance
@@ -294,19 +250,9 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
       
       lSminus <- log(sbar + Zminus)
       
-      if(fit == 'glm'){
-        
-        glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
-                      family=gaussian(link='log'))
-        
-      }
       
-      if(fit == 'bayesglm'){
-        
-        glmfit <- bayesglm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
-                           family=gaussian(link='log'),prior.df=Inf,prior.mean=1e-4)
-        
-      }
+      glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
+                    family=gaussian(link='log'))
       
     }
     
@@ -316,24 +262,12 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
       Inew <- round(Inew)
       
       
-      
       for(i in 1:length(Smean)){
         lSminus <- log(Smean[i] + Zminus)
-        if(fit == 'glm'){
-          
-          
-          glmfit <- glm(Inew ~ -1 +as.factor(period) + offset(alpha*lIminus) + offset(lSminus),
-                        family=poisson(link='log'))
-          
-        }
         
-        if(fit == 'bayesglm'){
-          
-          
-          glmfit <- bayesglm(Inew ~ -1 +as.factor(period) + offset(alpha*lIminus) + offset(lSminus),
-                             family=poisson(link='log'),prior.df=Inf,prior.mean=1e-4)
-          
-        }
+        
+        glmfit <- glm(Inew ~ -1 +as.factor(period) + offset(alpha*lIminus) + offset(lSminus),
+                      family=poisson(link='log'))
         
         
         loglik[i] <- glmfit$deviance
@@ -344,19 +278,10 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
       
       lSminus <- log(sbar + Zminus)
       
-      if(fit == 'glm'){
-        
-        glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
-                      family=poisson(link='log'))
-        
-      }
       
-      if(fit == 'bayesglm'){
-        
-        glmfit <- bayesglm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
-                           family=poisson(link='log'),prior.df=Inf,prior.mean=1e-4)
-        
-      }
+      glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
+                    family=poisson(link='log'))
+      
       
     }
     
@@ -364,26 +289,48 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
   }
   
   
-  if(fittype == 'less'){
+  if(length(input.alpha) == 0 && length(input.sbar) == 1){
+    
     sbar <- sbar * mean(pop)
-    alpha <- 0.97
     lSminus <- log(sbar + Zminus)
     
     if(family == 'gaussian'){
       
-      if(fit == 'glm'){
-        
-        glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
-                      family=gaussian(link='log'))
-        
-      }
       
-      if(fit == 'bayesglm'){
-        
-        glmfit <- bayesglm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
-                           family=gaussian(link='log'),prior.df=Inf,prior.mean=1e-4)
-        
-      }
+      glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
+                    family=gaussian(link='log'))
+      
+    }
+    
+    
+    if(family == 'poisson'){
+      
+      Inew <- round(Inew)
+      
+      glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
+                    family=poisson(link='log'))
+      
+      
+    }
+    
+    
+    
+    beta <- exp(head(coef(glmfit),-1))
+    alpha <- tail(coef(glmfit),1)
+  }
+  
+  
+  if(length(input.alpha) == 1 && length(input.sbar) == 1){
+    
+    sbar <- sbar * mean(pop)
+    lSminus <- log(sbar + Zminus)
+    
+    if(family == 'gaussian'){
+      
+      
+      glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
+                    family=gaussian(link='log'))
+      
       
     }
     
@@ -391,27 +338,16 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
       
       Inew <- round(Inew)
       
+      glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
+                    family=poisson(link='log'))
       
-      
-      if(fit == 'glm'){
-        
-        glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
-                      family=poisson(link='log'))
-        
-      }
-      
-      if(fit == 'bayesglm'){
-        
-        glmfit <- bayesglm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
-                           family=poisson(link='log'),prior.df=Inf,prior.mean=1e-4)
-        
-      }
       
     }
     
     beta <- exp(coef(glmfit))
     
   }
+  
   
   return(list('X'=X,'Y'=Y,'Yhat'=Yhat,'Smean'=Smean,
               'beta'=head(beta[period],52/IP),'rho'=adj.rho,'Z'=Z,

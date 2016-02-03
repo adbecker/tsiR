@@ -13,16 +13,14 @@
 #' @param sigmamax, the inverse kernal width for the gaussian regression. Default is 3. 
 #' Smaller, stochastic outbreaks tend to need a lower sigma.
 #' @param userYhat, the inputed regression vector if regtype='user'. Defaults to NULL.
-#' @param fittype, the type of fit used. Options are 'all' which fits beta, sbar, and alpha, 
-#' 'fixalpha', which fixes alpha at 0.97 and estimates beta and sbar, and
-#' 'less' which fits only beta and fixes alpha at 0.97.
 #' @param n.chains, number of MCMC chains to use. Default is 3.
 #' @param update.iter, number of MCMC iterations to use in the update aspect. Default is 10000.
 #' @param n.iter, number of MCMC iterations to use. Default is 30000.
 #' @param n.adapt, adaptive number for MCMC. Default is 1000.
 #' @param burn.in, burn in number. Default is 100.
 #' @param seasonality, the type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.
-#' @param sbar, the mean number of susceptibles. Only used if fittype='less'. Defaults to 0.05*mean(pop).
+#' @param sbar, the mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.
+#' @param alpha, the mixing parameter. Defaults to NULL, i.e. the function estimates alpha.
 #' @param printon, whether to show diagnostic prints or not, defaults to FALSE.
 
 mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
@@ -32,8 +30,14 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
                         update.iter=10000,
                         n.iter=30000, n.chains=3, 
                         n.adapt=1000,burn.in=100,
-                        sbar=0.05,alpha=0.97,
-                        fittype = 'all',printon=F){
+                        sbar=NULL,alpha=NULL,
+                        printon=F){
+  
+  nzeros <- length(which(data$cases==0))
+  ltot <- length(data$cases)
+  if(nzeros > 0.3 * ltot && epidemics == 'cont'){
+    print(sprintf('time series is %.0f%% zeros, consider using break method',100*nzeros/ltot))
+  }
   
   if(n.iter < 5000){
     
@@ -42,6 +46,9 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
   }
   
   print('MCMC may take a while')
+  
+  input.alpha <- alpha
+  input.sbar <- sbar
   
   cumbirths <- cumsum(data$births)
   cumcases <- cumsum(data$cases)
@@ -99,8 +106,8 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
       
       
       if(xreg == 'cumcases'){
-        Z <- residual.cases(Yhat,Y)
         rho <- derivative(X,Yhat)
+        Z <- residual.cases(Yhat,Y)
         if(length(which(rho<=1))==0){
           break()
         }
@@ -145,8 +152,9 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
     
   }
   
+  
   if(length(which(adj.rho < 1 )) > 1){
-    stop('Reporting exceeds 100% -- use different regression')
+    warning('Reporting exceeds 100% -- use different regression')
   }
   
   Iadjusted <- data$cases * adj.rho
@@ -188,16 +196,13 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
   alphalow <- NA
   alphahigh <- NA
   
-  Inew <- round(Inew)
-  
-  
   sbarlow <- NA
   sbarhigh <- NA
   
   ## even though dont profile to get sbar
   ## keep this in there for plotting function
   loglik <- rep(NA, length(Smean))
-  if(fittype == 'all'){
+  if(length(input.alpha) == 0 && length(input.sbar) == 0){
     
     factorperiod <- as.factor(period)
     mod <- model.matrix(~-1+factorperiod)
@@ -222,7 +227,7 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
                               }
                               
   }')
-    
+
     jags_data_list=list(
       "mod" = mod,
       "Inew"=round(Inew),
@@ -258,21 +263,15 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
     sbarlow <- jagsres[length(unique(period))+2,2]
     sbarhigh <- jagsres[length(unique(period))+2,3]
     
-    
-  }
+}
+
+if(length(input.alpha) == 1 && length(input.sbar) == 0){
   
+  factorperiod <- as.factor(period)
+  mod <- model.matrix(~-1+factorperiod)
   
-  
-  
-  if(fittype == 'fixalpha'){
-    
-    alpha <- alpha
-    
-    ffactorperiod <- as.factor(period)
-    mod <- model.matrix(~-1+factorperiod)
-    
-    numseas <- length(unique(period))
-    mymodel <- textConnection('model{
+  numseas <- length(unique(period))
+  mymodel <- textConnection('model{
                             for(season in 1:numseas){
                             beta[season] ~ dunif(-13,-3)
                             }
@@ -283,63 +282,118 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
                             for (t in 1:N){
                             
                             ## no intercept
-                            regsum[t] <- mod[t,] %*%beta + lIminus[t] + log(Zminus[t]+sbar) + e[t]
+                            regsum[t] <- mod[t,] %*%beta + alpha*lIminus[t] + log(Zminus[t]+sbar) + e[t]
                             rate[t] <- exp(regsum[t])
                             Inew[t] ~ dpois(rate[t])
                             e[t] ~ dnorm(0, (1/sigma^2))
                             }
                             
 }')
-    
-    jags_data_list=list(
-      "mod" = mod,
-      "Inew"=round(Inew),
-      "lIminus"=as.numeric(lIminus),
-      "Zminus"=as.numeric(Zminus),
-      "numseas" = numseas,
-      'pop'=pop,
-      'minSmean'=minSmean,
-      "N" = length(lIminus)
-    )
-    
-    theModel <- jags.model(mymodel,data=jags_data_list,n.chains=n.chains)
-    update(theModel,update.iter)
-    inits = list("alpha" = 0.97)
-    mcmcsamples <- coda.samples(theModel,c("beta",'sigma','sbar'),
-                                inits=inits,n.iter=n.iter, n.adapt=n.adapt,burn.in=burn.in)
-    
-    results <-  as.data.frame(mcmcsamples[[1]])
-    
-    mcmctruncated <- tail(mcmcsamples,5000)
-    
-    jagsres <- jagsfilter(mcmcresults = mcmctruncated)
-    
-    beta <- exp(jagsres[1:(length(unique(period))+1),1])
-    betalow <- exp(jagsres[1:(length(unique(period))+1),2])
-    betahigh <- exp(jagsres[1:(length(unique(period))+1),3])
-    
-    sbar <- jagsres[length(unique(period))+2,1]
-    sbarlow <- jagsres[length(unique(period))+2,2]
-    sbarhigh <- jagsres[length(unique(period))+2,3]
-    
-    
+
+  jags_data_list=list(
+    "mod" = mod,
+    "Inew"=round(Inew),
+    "lIminus"=as.numeric(lIminus),
+    "Zminus"=as.numeric(Zminus),
+    "numseas" = numseas,
+    'alpha' = alpha,
+    'pop'=pop,
+    'minSmean'=minSmean,
+    "N" = length(lIminus)
+  )
+  
+  theModel <- jags.model(mymodel,data=jags_data_list,n.chains=n.chains)
+  update(theModel,update.iter)
+  mcmcsamples <- coda.samples(theModel,c("beta",'sigma','sbar'),
+                              inits=inits,n.iter=n.iter, n.adapt=n.adapt,burn.in=burn.in)
+  
+  results <-  as.data.frame(mcmcsamples[[1]])
+  
+  mcmctruncated <- tail(mcmcsamples,5000)
+  
+  jagsres <- jagsfilter(mcmcresults = mcmctruncated)
+  
+  beta <- exp(jagsres[1:(length(unique(period))),1])
+  betalow <- exp(jagsres[1:(length(unique(period))),2])
+  betahigh <- exp(jagsres[1:(length(unique(period))),3])
+  
+  sbar <- jagsres[length(unique(period))+1,1]
+  sbarlow <- jagsres[length(unique(period))+1,2]
+  sbarhigh <- jagsres[length(unique(period))+1,3]
+  
   }
+
+if(length(input.alpha) == 0 && length(input.sbar) == 1){
   
+  sbar <- sbar*mean(pop)
   
+  factorperiod <- as.factor(period)
+  mod <- model.matrix(~-1+factorperiod)
   
-  if(fittype == 'less'){
-    sbar <- sbar * mean(pop)
-    alpha <- 0.97
-    lSminus <- log(sbar + Zminus)
-    
-    lSminus[is.nan(lSminus)] <- 0
-    lSminus[lSminus < 0] <- 0   
-    
-    factorperiod <- as.factor(period)
-    mod <- model.matrix(~-1+factorperiod)
-    
-    numseas <- length(unique(period))
-    mymodel <- textConnection('model{
+  numseas <- length(unique(period))
+  mymodel <- textConnection('model{
+                            for(season in 1:numseas){
+                            beta[season] ~ dunif(-13,-3)
+                            }
+                            alpha ~ dunif(0.3, 0.99)
+                            
+                            sigma ~ dunif(0,10)
+                            
+                            for (t in 1:N){
+                            
+                            ## no intercept
+                            regsum[t] <- mod[t,] %*%beta + alpha*lIminus[t] + log(Zminus[t]+sbar) + e[t]
+                            rate[t] <- exp(regsum[t])
+                            Inew[t] ~ dpois(rate[t])
+                            e[t] ~ dnorm(0, (1/sigma^2))
+                            }
+                            
+}')
+
+  jags_data_list=list(
+    "mod" = mod,
+    "Inew"=round(Inew),
+    "lIminus"=as.numeric(lIminus),
+    "Zminus"=as.numeric(Zminus),
+    "numseas" = numseas,
+    'sbar' = sbar,
+    "N" = length(lIminus)
+  )
+  
+  theModel <- jags.model(mymodel,data=jags_data_list,n.chains=n.chains)
+  update(theModel,update.iter)
+  mcmcsamples <- coda.samples(theModel,c("beta",'sigma','alpha'),
+                              inits=inits,n.iter=n.iter, n.adapt=n.adapt,burn.in=burn.in)
+  
+  results <-  as.data.frame(mcmcsamples[[1]])
+  
+  mcmctruncated <- tail(mcmcsamples,5000)
+  
+  jagsres <- jagsfilter(mcmcresults = mcmctruncated)
+  
+  beta <- exp(jagsres[2:(length(unique(period))+1),1])
+  betalow <- exp(jagsres[2:(length(unique(period))+1),2])
+  betahigh <- exp(jagsres[2:(length(unique(period))+1),3])
+  
+  alpha <- jagsres[1,1]
+  alphalow <- jagsres[1,2]
+  alphahigh <- jagsres[1,3]
+  
+  }
+
+if(length(input.alpha) == 1 && length(input.sbar) == 1){
+  
+  sbar <- sbar * mean(pop)
+  lSminus <- log(sbar + Zminus)
+  
+  lSminus[is.nan(lSminus)] <- 0
+  lSminus[lSminus < 0] <- 0   
+  
+  factorperiod <- as.factor(period)
+  mod <- model.matrix(~-1+factorperiod)
+  
+  numseas <- length(unique(period))
+  mymodel <- textConnection('model{
                             for(season in 1:numseas){
                             beta[season] ~ dunif(-13,-3)
                             }
@@ -383,7 +437,6 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
     betahigh <- exp(jagsres[1:length(unique(period)),3])
     
   }
-  
   
   contact <- as.data.frame(cbind('time'=seq(1,length(beta[period]),1),
                                  betalow[period],beta[period],betahigh[period]),row.names=F)

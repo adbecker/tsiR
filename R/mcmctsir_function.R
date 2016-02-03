@@ -20,7 +20,8 @@
 #' @param n.iter, number of MCMC iterations to use. Default is 30000.
 #' @param n.adapt, adaptive number for MCMC. Default is 1000.
 #' @param burn.in, burn in number. Default is 100.
-#' @param sbar, the mean number of susceptibles. Only used if fittype='less'. Defaults to 0.05*mean(pop).
+#' @param sbar, the mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.
+#' @param alpha, the mixing parameter. Defaults to NULL, i.e. the function estimates alpha.
 #' @param method, the type of next step prediction used. Options are 'negbin' for negative binomial,
 #' 'pois' for poisson distribution, and 'deterministic'. Defaults to 'deterministic'.
 #' @param epidemics, the type of data splitting. Options are 'cont' which doesn't split the data up at all,
@@ -35,13 +36,12 @@ mcmctsir <- function(data, xreg = 'cumcases',
                      IP = 2,nsim = 100,
                      regtype = 'gaussian',sigmamax = 3,
                      userYhat = numeric(),
-                     fittype = 'all',alpha=0.97,
                      update.iter=10000,
                      n.iter=30000, n.chains=3, 
                      n.adapt=1000,burn.in=100,
                      method='deterministic',epidemics='cont', pred ='forward',
                      seasonality='standard',
-                     threshold=1,sbar=0.05,
+                     threshold=1,sbar=NULL,alpha=NULL,
                      add.noise.sd = 0, mul.noise.sd = 0,
                      printon=F){
   
@@ -58,6 +58,9 @@ mcmctsir <- function(data, xreg = 'cumcases',
   }
   
   print('MCMC may take a while')
+  
+  input.alpha <- alpha
+  input.sbar <- sbar
   
   cumbirths <- cumsum(data$births)
   cumcases <- cumsum(data$cases)
@@ -211,8 +214,8 @@ mcmctsir <- function(data, xreg = 'cumcases',
   ## even though dont profile to get sbar
   ## keep this in there for plotting function
   loglik <- rep(NA, length(Smean))
-  if(fittype == 'all'){
-
+  if(length(input.alpha) == 0 && length(input.sbar) == 0){
+    
     factorperiod <- as.factor(period)
     mod <- model.matrix(~-1+factorperiod)
     
@@ -272,17 +275,11 @@ mcmctsir <- function(data, xreg = 'cumcases',
     sbarlow <- jagsres[length(unique(period))+2,2]
     sbarhigh <- jagsres[length(unique(period))+2,3]
     
-
   }
   
-  
-  
-  
-  if(fittype == 'fixalpha'){
-    
-    alpha <- alpha
-    
-    ffactorperiod <- as.factor(period)
+  if(length(input.alpha) == 1 && length(input.sbar) == 0){
+        
+    factorperiod <- as.factor(period)
     mod <- model.matrix(~-1+factorperiod)
     
     numseas <- length(unique(period))
@@ -297,7 +294,7 @@ mcmctsir <- function(data, xreg = 'cumcases',
                               for (t in 1:N){
                               
                               ## no intercept
-                              regsum[t] <- mod[t,] %*%beta + lIminus[t] + log(Zminus[t]+sbar) + e[t]
+                              regsum[t] <- mod[t,] %*%beta + alpha*lIminus[t] + log(Zminus[t]+sbar) + e[t]
                               rate[t] <- exp(regsum[t])
                               Inew[t] ~ dpois(rate[t])
                               e[t] ~ dnorm(0, (1/sigma^2))
@@ -311,6 +308,7 @@ mcmctsir <- function(data, xreg = 'cumcases',
       "lIminus"=as.numeric(lIminus),
       "Zminus"=as.numeric(Zminus),
       "numseas" = numseas,
+      'alpha' = alpha,
       'pop'=pop,
       'minSmean'=minSmean,
       "N" = length(lIminus)
@@ -318,7 +316,6 @@ mcmctsir <- function(data, xreg = 'cumcases',
     
     theModel <- jags.model(mymodel,data=jags_data_list,n.chains=n.chains)
     update(theModel,update.iter)
-    inits = list("alpha" = 0.97)
     mcmcsamples <- coda.samples(theModel,c("beta",'sigma','sbar'),
                                 inits=inits,n.iter=n.iter, n.adapt=n.adapt,burn.in=burn.in)
     
@@ -328,22 +325,77 @@ mcmctsir <- function(data, xreg = 'cumcases',
     
     jagsres <- jagsfilter(mcmcresults = mcmctruncated)
     
-    beta <- exp(jagsres[1:(length(unique(period))+1),1])
-    betalow <- exp(jagsres[1:(length(unique(period))+1),2])
-    betahigh <- exp(jagsres[1:(length(unique(period))+1),3])
+    beta <- exp(jagsres[1:(length(unique(period))),1])
+    betalow <- exp(jagsres[1:(length(unique(period))),2])
+    betahigh <- exp(jagsres[1:(length(unique(period))),3])
   
-    sbar <- jagsres[length(unique(period))+2,1]
-    sbarlow <- jagsres[length(unique(period))+2,2]
-    sbarhigh <- jagsres[length(unique(period))+2,3]
+    sbar <- jagsres[length(unique(period))+1,1]
+    sbarlow <- jagsres[length(unique(period))+1,2]
+    sbarhigh <- jagsres[length(unique(period))+1,3]
+  
+  }
+  
+  if(length(input.alpha) == 0 && length(input.sbar) == 1){
     
+    sbar <- sbar*mean(pop)
+    
+    factorperiod <- as.factor(period)
+    mod <- model.matrix(~-1+factorperiod)
+    
+    numseas <- length(unique(period))
+    mymodel <- textConnection('model{
+                              for(season in 1:numseas){
+                              beta[season] ~ dunif(-13,-3)
+                              }
+                              alpha ~ dunif(0.3, 0.99)
+                              
+                              sigma ~ dunif(0,10)
+                              
+                              for (t in 1:N){
+                              
+                              ## no intercept
+                              regsum[t] <- mod[t,] %*%beta + alpha*lIminus[t] + log(Zminus[t]+sbar) + e[t]
+                              rate[t] <- exp(regsum[t])
+                              Inew[t] ~ dpois(rate[t])
+                              e[t] ~ dnorm(0, (1/sigma^2))
+                              }
+                              
+  }')
+
+    jags_data_list=list(
+      "mod" = mod,
+      "Inew"=round(Inew),
+      "lIminus"=as.numeric(lIminus),
+      "Zminus"=as.numeric(Zminus),
+      "numseas" = numseas,
+      'sbar' = sbar,
+      "N" = length(lIminus)
+    )
+    
+    theModel <- jags.model(mymodel,data=jags_data_list,n.chains=n.chains)
+    update(theModel,update.iter)
+    mcmcsamples <- coda.samples(theModel,c("beta",'sigma','alpha'),
+                                inits=inits,n.iter=n.iter, n.adapt=n.adapt,burn.in=burn.in)
+    
+    results <-  as.data.frame(mcmcsamples[[1]])
+    
+    mcmctruncated <- tail(mcmcsamples,5000)
+    
+    jagsres <- jagsfilter(mcmcresults = mcmctruncated)
+    
+    beta <- exp(jagsres[2:(length(unique(period))+1),1])
+    betalow <- exp(jagsres[2:(length(unique(period))+1),2])
+    betahigh <- exp(jagsres[2:(length(unique(period))+1),3])
+  
+    alpha <- jagsres[1,1]
+    alphalow <- jagsres[1,2]
+    alphahigh <- jagsres[1,3]
     
   }
   
-  
-  
-  if(fittype == 'less'){
+  if(length(input.alpha) == 1 && length(input.sbar) == 1){
+    
     sbar <- sbar * mean(pop)
-    alpha <- 0.97
     lSminus <- log(sbar + Zminus)
     
     lSminus[is.nan(lSminus)] <- 0

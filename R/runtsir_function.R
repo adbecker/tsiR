@@ -12,14 +12,10 @@
 #' @param sigmamax, the inverse kernal width for the gaussian regression. Default is 3. 
 #' Smaller, stochastic outbreaks tend to need a lower sigma.
 #' @param userYhat, the inputed regression vector if regtype='user'. Defaults to NULL.
-#' @param fittype, the type of fit used. Options are 'all' which fits beta, sbar, and alpha, 
-#' 'fixalpha', which fixes alpha at 0.97 and estimates beta and sbar, and
-#' 'less' which fits only beta and fixes alpha at 0.97.
-#' @param fit, the fitting method used. Options are 'glm' or 'bayesglm' which is a cheap adaptation
-#' to include some bayesian approaches. For 'bayesglm' we use a gaussian prior with mean 1e-4.
 #' @param family, the family in the GLM regression, options are poisson and gaussian both with
 #' log link. Default is Poisson.
-#' @param sbar, the mean number of susceptibles. Only used if fittype='less'. Defaults to 0.05*mean(pop).
+#' @param sbar, the mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.
+#' @param alpha, the mixing parameter. Defaults to NULL, i.e. the function estimates alpha.
 #' @param method, the type of next step prediction used. Options are 'negbin' for negative binomial,
 #' 'pois' for poisson distribution, and 'deterministic'. Defaults to 'deterministic'.
 #' @param epidemics, the type of data splitting. Options are 'cont' which doesn't split the data up at all,
@@ -30,18 +26,46 @@
 #' @param add.noise.sd, the sd for additive noise, defaults to zero.
 #' @param mul.noise.sd, the sd for multiplicative noise, defaults to zero.
 #' @param printon, whether to show diagnostic prints or not, defaults to FALSE.
+#' @examples
+#' ## some example data
+#' ##london <- twentymeas[["London]]
+#' res <- runtsir(london)
+#' plotres(res)
 #' 
-
- 
+#' ## now if we want to fix alpha
+#' res <- runtsir(london,alpha=0.97)
+#' plotres(res)
+#' 
+#' ## we can fix sbar the same way, or both
+#' ## fix sbar at 5% of the population
+#' res <- runtsir(london,alpha=0.97,sbar=0.05)
+#' 
 runtsir <- function(data, xreg = 'cumcases',
-                    IP = 2,nsim = 100,
+                    IP = 2,nsim = 10,
                     regtype = 'gaussian',sigmamax = 3,
-                    userYhat = numeric(),alpha=0.97,
-                    fittype = 'all',fit='glm',family='gaussian',
-                    method='deterministic',epidemics='cont', pred ='forward',
-                    threshold=1,sbar=0.05,seasonality='standard',
+                    userYhat = numeric(),alpha=NULL,sbar=NULL,
+                    family='gaussian',method='deterministic',
+                    epidemics='cont', pred ='forward',
+                    threshold=1,seasonality='standard',
                     add.noise.sd = 0, mul.noise.sd = 0,
-                    printon=F){
+                    printon=F,fit = NULL){
+  
+  
+  if(length(fit) == 1){
+    warning('Argument fit is deprecated; 
+            if fixing alpha or sbar (or both!) set alpha =, and/or sbar = in the function.
+            For now defaulting to alpha = 0.97, sbar = 0.05. Will be removed soon.')
+    
+    if(fit == 'less'){
+      sbar = 0.05; alpha=0.97
+    }
+    if(fit == 'fixalpha')
+      alpha = 0.97
+    
+  }
+  
+  input.alpha <- alpha
+  input.sbar <- sbar
   
   nzeros <- length(which(data$cases==0))
   ltot <- length(data$cases)
@@ -187,29 +211,21 @@ runtsir <- function(data, xreg = 'cumcases',
   Zminus <- head(Z,-1)
   
   pop <- data$pop
-   
+  
   minSmean <- max(0.01*pop,-(min(Z)+1))
   Smean <- seq(minSmean, 0.4*mean(pop), length=250)
-    
+  
   loglik <- rep(NA, length(Smean))
-  if(fittype == 'all'){
-    
+  
+  if(length(input.alpha) == 0 && length(input.sbar) == 0){
     
     if(family == 'gaussian'){
       
       for(i in 1:length(Smean)){
         lSminus <- log(Smean[i] + Zminus)
         
-        if(fit == 'glm'){
-          glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
-                        family=gaussian(link='log'))
-        }
-        
-        if(fit == 'bayesglm'){
-          glmfit <- bayesglm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
-                             family=gaussian(link='log'),prior.df=Inf,prior.mean=1e-4)
-        }
-        
+        glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
+                      family=gaussian(link='log'))
         
         loglik[i] <- glmfit$deviance
         
@@ -218,17 +234,9 @@ runtsir <- function(data, xreg = 'cumcases',
       sbar <- Smean[which.min(loglik)]
       
       lSminus <- log(sbar + Zminus)
-      if(fit == 'glm'){
-        
-        glmfit <- glm(Inew ~ -1 +as.factor(period)+ (lIminus) + offset(lSminus),
-                      family=gaussian(link='log'))
-      }
       
-      if(fit == 'bayesglm'){
-        
-        glmfit <- bayesglm(Inew ~ -1 +as.factor(period)+ (lIminus) + offset(lSminus),
-                           family=gaussian(link='log'),prior.df=Inf,prior.mean=1e-4)
-      }
+      glmfit <- glm(Inew ~ -1 +as.factor(period)+ (lIminus) + offset(lSminus),
+                    family=gaussian(link='log'))
       
       
     }
@@ -236,21 +244,13 @@ runtsir <- function(data, xreg = 'cumcases',
     
     if(family == 'poisson'){
       
-        Inew <- round(Inew)
+      Inew <- round(Inew)
       
       for(i in 1:length(Smean)){
         lSminus <- log(Smean[i] + Zminus)
         
-        if(fit == 'glm'){
-          glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
-                        family=poisson(link='log'))
-        }
-        
-        if(fit == 'bayesglm'){
-          glmfit <- bayesglm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
-                             family=poisson(link='log'),prior.df=Inf,prior.mean=1e-4)
-        }
-        
+        glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
+                      family=poisson(link='log'))
         
         loglik[i] <- glmfit$deviance
         
@@ -259,17 +259,9 @@ runtsir <- function(data, xreg = 'cumcases',
       sbar <- Smean[which.min(loglik)]
       
       lSminus<- log(sbar + Zminus)
-      if(fit == 'glm'){
-        
-        glmfit <- glm(Inew ~ -1 +as.factor(period)+ (lIminus) + offset(lSminus),
-                      family=poisson(link='log'))
-      }
       
-      if(fit == 'bayesglm'){
-        
-        glmfit <- bayesglm(Inew ~ -1 +as.factor(period)+ (lIminus) + offset(lSminus),
-                           family=poisson(link='log'),prior.df=Inf,prior.mean=1e-4)
-      }
+      glmfit <- glm(Inew ~ -1 +as.factor(period)+ (lIminus) + offset(lSminus),
+                    family=poisson(link='log'))
       
       
     }
@@ -280,29 +272,18 @@ runtsir <- function(data, xreg = 'cumcases',
   }
   
   
-  if(fittype == 'fixalpha'){
-    
-    alpha <- alpha
+  if(length(input.alpha) == 1 && length(input.sbar) == 0){
     
     if(family == 'gaussian'){
       
       for(i in 1:length(Smean)){
         lSminus <- log(Smean[i] + Zminus)
-        if(fit == 'glm'){
-          
-          
-          glmfit <- glm(Inew ~ -1 +as.factor(period) + offset(alpha*lIminus) + offset(lSminus),
-                        family=gaussian(link='log'))
-          
-        }
         
-        if(fit == 'bayesglm'){
-          
-          
-          glmfit <- bayesglm(Inew ~ -1 +as.factor(period) + offset(alpha*lIminus) + offset(lSminus),
-                             family=gaussian(link='log'),prior.df=Inf,prior.mean=1e-4)
-          
-        }
+        
+        glmfit <- glm(Inew ~ -1 +as.factor(period) + offset(alpha*lIminus) + offset(lSminus),
+                      family=gaussian(link='log'))
+        
+        
         
         
         loglik[i] <- glmfit$deviance
@@ -313,19 +294,9 @@ runtsir <- function(data, xreg = 'cumcases',
       
       lSminus <- log(sbar + Zminus)
       
-      if(fit == 'glm'){
-        
-        glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
-                      family=gaussian(link='log'))
-        
-      }
       
-      if(fit == 'bayesglm'){
-        
-        glmfit <- bayesglm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
-                           family=gaussian(link='log'),prior.df=Inf,prior.mean=1e-4)
-        
-      }
+      glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
+                    family=gaussian(link='log'))
       
     }
     
@@ -337,21 +308,10 @@ runtsir <- function(data, xreg = 'cumcases',
       
       for(i in 1:length(Smean)){
         lSminus <- log(Smean[i] + Zminus)
-        if(fit == 'glm'){
-          
-          
-          glmfit <- glm(Inew ~ -1 +as.factor(period) + offset(alpha*lIminus) + offset(lSminus),
-                        family=poisson(link='log'))
-          
-        }
         
-        if(fit == 'bayesglm'){
-          
-          
-          glmfit <- bayesglm(Inew ~ -1 +as.factor(period) + offset(alpha*lIminus) + offset(lSminus),
-                             family=poisson(link='log'),prior.df=Inf,prior.mean=1e-4)
-          
-        }
+        
+        glmfit <- glm(Inew ~ -1 +as.factor(period) + offset(alpha*lIminus) + offset(lSminus),
+                      family=poisson(link='log'))
         
         
         loglik[i] <- glmfit$deviance
@@ -362,19 +322,10 @@ runtsir <- function(data, xreg = 'cumcases',
       
       lSminus <- log(sbar + Zminus)
       
-      if(fit == 'glm'){
-        
-        glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
-                      family=poisson(link='log'))
-        
-      }
       
-      if(fit == 'bayesglm'){
-        
-        glmfit <- bayesglm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
-                           family=poisson(link='log'),prior.df=Inf,prior.mean=1e-4)
-        
-      }
+      glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
+                    family=poisson(link='log'))
+      
       
     }
     
@@ -382,47 +333,58 @@ runtsir <- function(data, xreg = 'cumcases',
   }
   
   
-  if(fittype == 'less'){
+  if(length(input.alpha) == 0 && length(input.sbar) == 1){
+    
     sbar <- sbar * mean(pop)
-    alpha <- 0.97
     lSminus <- log(sbar + Zminus)
     
     if(family == 'gaussian'){
       
-      if(fit == 'glm'){
-        
-        glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
-                      family=gaussian(link='log'))
-        
-      }
       
-      if(fit == 'bayesglm'){
-        
-        glmfit <- bayesglm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
-                           family=gaussian(link='log'),prior.df=Inf,prior.mean=1e-4)
-        
-      }
+      glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
+                    family=gaussian(link='log'))
+      
+    }
+    
+    
+    if(family == 'poisson'){
+      
+      Inew <- round(Inew)
+      
+      glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
+                    family=poisson(link='log'))
+      
+      
+    }
+    
+    
+    
+    beta <- exp(head(coef(glmfit),-1))
+    alpha <- tail(coef(glmfit),1)
+  }
+  
+  
+  if(length(input.alpha) == 1 && length(input.sbar) == 1){
+    
+    sbar <- sbar * mean(pop)
+    lSminus <- log(sbar + Zminus)
+    
+    if(family == 'gaussian'){
+      
+      
+      glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
+                    family=gaussian(link='log'))
+      
       
     }
     
     if(family == 'poisson'){
       
       Inew <- round(Inew)
-
       
-      if(fit == 'glm'){
-        
-        glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
-                      family=poisson(link='log'))
-        
-      }
+      glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
+                    family=poisson(link='log'))
       
-      if(fit == 'bayesglm'){
-        
-        glmfit <- bayesglm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
-                           family=poisson(link='log'),prior.df=Inf,prior.mean=1e-4)
-        
-      }
       
     }
     
@@ -514,3 +476,4 @@ runtsir <- function(data, xreg = 'cumcases',
   
   
 }
+
