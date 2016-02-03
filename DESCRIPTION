@@ -9,6 +9,6 @@ Description: An implementation of the TSIR model using a number of different fit
 Depends: R (>= 3.1.0)
 License: GPL-3
 LazyData: true
-Imports: ggplot2, kernlab, magrittr, matlab, reshape2, grid, plyr, arm
+Imports: ggplot2, kernlab, magrittr, reshape2, grid, plyr, rjags
 Contact: adbecker at princeton dot edu
 

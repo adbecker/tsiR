@@ -53,21 +53,7 @@ and 'break' which breaks the epidemics up if there are a lot of zeros. Defaults 
 
 \item{mul.noise.sd,}{the sd for multiplicative noise, defaults to zero.}
 
-\item{printon,}{whether to show diagnostic prints or not, defaults to FALSE.
-\examples{
-## some example data
-##london <- twentymeas[["London]]
-res <- runtsir(london)
-plotres(res)
-
-## now if we want to fix alpha
-res <- runtsir(london,alpha=0.97)
-plotres(res)
-
-## we can fix sbar the same way, or both
-## fix sbar at 5% of the population
-res <- runtsir(london,alpha=0.97,sbar=0.05)
-}}
+\item{printon,}{whether to show diagnostic prints or not, defaults to FALSE.}
 }
 \description{
 This function runs the TSIR model
