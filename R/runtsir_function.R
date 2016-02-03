@@ -26,7 +26,7 @@
 #' @param add.noise.sd, the sd for additive noise, defaults to zero.
 #' @param mul.noise.sd, the sd for multiplicative noise, defaults to zero.
 #' @param printon, whether to show diagnostic prints or not, defaults to FALSE.
-#' @examples
+#' \examples{
 #' ## some example data
 #' ##london <- twentymeas[["London]]
 #' res <- runtsir(london)
@@ -39,6 +39,7 @@
 #' ## we can fix sbar the same way, or both
 #' ## fix sbar at 5% of the population
 #' res <- runtsir(london,alpha=0.97,sbar=0.05)
+#' }
 #' 
 runtsir <- function(data, xreg = 'cumcases',
                     IP = 2,nsim = 10,
