@@ -48,21 +48,27 @@ runtsir <- function(data, xreg = 'cumcases',
                     epidemics='cont', pred ='forward',
                     threshold=1,seasonality='standard',
                     add.noise.sd = 0, mul.noise.sd = 0,
-                    printon=F,fit = NULL){
+                    printon=F,fit = NULL,fittype = NULL){
   
   
-  if(length(fit) == 1){
-    warning('Argument fit is deprecated; 
+  if(length(fittype) == 1){
+    warning('Argument fittype is deprecated; 
             if fixing alpha or sbar (or both!) set alpha =, and/or sbar = in the function.
             For now defaulting to alpha = 0.97, sbar = 0.05. Will be removed soon.')
     
-    if(fit == 'less'){
+    if(fittype == 'less'){
       sbar = 0.05; alpha=0.97
     }
-    if(fit == 'fixalpha')
+    if(fittype == 'fixalpha')
       alpha = 0.97
-    
   }
+  
+  if(length(fit) == 1){
+    
+    stop('Argument fit is deprecated; the only fit option here is using a glm. 
+         Please use mcmctsir for an mcmc version of the tsir model.')
+  }
+  
   
   input.alpha <- alpha
   input.sbar <- sbar
