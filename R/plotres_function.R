@@ -67,10 +67,6 @@ plotres <- function(dat){
   
   p4 <- p4 + xlab(sprintf('time mod %g',length(dat$beta)))
   
-  obs <- dat$res$cases
-  pred <- dat$res$mean
-  fit <- lm(pred ~ obs)
-  
   p5 <- corr(dat)
   
   n <- nrow(dat$res)
