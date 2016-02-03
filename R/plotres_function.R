@@ -40,9 +40,9 @@ plotres <- function(dat){
   p9 <- ggplot(loglikdf,aes(sbar,loglik))+geom_line()+geom_point()+
     theme_bw()+geom_vline(xintercept = dat$sbar,linetype = "longdash")+
     ggtitle(bquote(bar(S) ==.(signif(dat$sbar,2))~','~.(signif(dat$sbar/mean(dat$pop),2))
-                   ~''~of~''~population))+
+                   ~'%'))+
     xlab(bquote(bar(S)))
-      
+  
   
   betadf <- NULL
   betadf$time <- seq(1,length(dat$beta),1)
@@ -53,7 +53,7 @@ plotres <- function(dat){
   p4 <- ggplot(betadf,aes(time,beta))+geom_line(size=2)+theme_bw()+
     ggtitle(bquote(bar(beta)==.(signif(mean(dat$beta),2))~','~alpha==.(signif(dat$alpha,2))))+
     ylab(bquote(beta))
-   
+  
   if('contact' %in% names(dat)){
     
     p4 <- ggplot(dat$contact,aes(time,beta))+geom_line(size=2)+
@@ -103,25 +103,23 @@ plotres <- function(dat){
   pushViewport(viewport(layout = grid.layout(5, 2)))
   
   if(all(is.na(dat$loglik)) == T){
-  print(p1,vp=vplayout(1,1))
-  print(p2,vp=vplayout(1,2))
-  print(p3,vp=vplayout(2,1:2))
-  print(p4,vp=vplayout(3,1))
-  print(p5,vp=vplayout(3,2))
-  print(p8,vp=vplayout(4,1:2))
-  print(p7,vp=vplayout(5,1:2))
+    print(p1,vp=vplayout(1,1))
+    print(p2,vp=vplayout(1,2))
+    print(p3,vp=vplayout(2,1:2))
+    print(p4,vp=vplayout(3,1))
+    print(p5,vp=vplayout(3,2))
+    print(p8,vp=vplayout(4,1:2))
+    print(p7,vp=vplayout(5,1:2))
+  }else{
+    print(p1,vp=vplayout(1,1))
+    print(p2,vp=vplayout(1,2))
+    print(p3,vp=vplayout(2,1))
+    print(p9,vp=vplayout(2,2))
+    print(p4,vp=vplayout(3,1))
+    print(p5,vp=vplayout(3,2))
+    print(p8,vp=vplayout(4,1:2))
+    print(p7,vp=vplayout(5,1:2))
   }
-  
-  
-  print(p1,vp=vplayout(1,1))
-  print(p2,vp=vplayout(1,2))
-  print(p3,vp=vplayout(2,1))
-  print(p9,vp=vplayout(2,2))
-  print(p4,vp=vplayout(3,1))
-  print(p5,vp=vplayout(3,2))
-  print(p8,vp=vplayout(4,1:2))
-  print(p7,vp=vplayout(5,1:2))
-  
   
   
   
