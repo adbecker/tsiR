@@ -1,1 +1,6 @@
 exportPattern("^[^\\.]")
+import(ggplot2)
+import(rjags)
+importFrom(grid,grid.newpage)
+import(reshape2)
+importFrom(kernlab,gausspr)
