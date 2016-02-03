@@ -20,7 +20,7 @@ plotres <- function(dat){
   rhodf <- as.data.frame(rhodf)
   
   p2 <- ggplot(rhodf,aes(time,1/rho))+geom_line(size=2)+theme_bw()+
-    ggtitle(bquote(Average~''~reporting~''~bar(rho)==.(signif(mean(1/dat$rho),2))))+
+    ggtitle(bquote(bar(rho)==.(signif(mean(1/dat$rho),2))))+
     ylab(bquote(1/rho))
   
   
@@ -40,7 +40,7 @@ plotres <- function(dat){
   p9 <- ggplot(loglikdf,aes(sbar,loglik))+geom_line()+geom_point()+
     theme_bw()+geom_vline(xintercept = dat$sbar,linetype = "longdash")+
     ggtitle(bquote(bar(S) ==.(signif(dat$sbar,2))~','~.(signif(dat$sbar/mean(dat$pop),2))
-                   ~''~of~''~the~''~population))+
+                   ~''~of~''~population))+
     xlab(bquote(bar(S)))
       
   
@@ -51,7 +51,7 @@ plotres <- function(dat){
   
   
   p4 <- ggplot(betadf,aes(time,beta))+geom_line(size=2)+theme_bw()+
-    ggtitle(bquote(Average~''~contact~''~bar(beta)==.(signif(mean(dat$beta),2))~','~alpha==.(signif(dat$alpha,2))))+
+    ggtitle(bquote(bar(beta)==.(signif(mean(dat$beta),2))~','~alpha==.(signif(dat$alpha,2))))+
     ylab(bquote(beta))
    
   if('contact' %in% names(dat)){
@@ -59,8 +59,8 @@ plotres <- function(dat){
     p4 <- ggplot(dat$contact,aes(time,beta))+geom_line(size=2)+
       geom_ribbon(ymin=dat$contact$betalow,ymax=dat$contact$betahigh,alpha=0.5,col='dodgerblue',fill='dodgerblue')+
       ylim(c(min(dat$contact$betalow),max(dat$contact$betahigh)))+theme_bw()+
-      ggtitle(sprintf('mean beta = %g, alpha=%g',signif(mean(dat$beta),2),signif(dat$alpha,2)))
-    
+      ggtitle(bquote(bar(beta)==.(signif(mean(dat$beta),2))~','~alpha==.(signif(dat$alpha,2))))+
+      ylab(bquote(beta))
     
   }
   
