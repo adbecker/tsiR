@@ -7,7 +7,7 @@
 corr(sim)
 }
 \arguments{
-\item{sim,}{the dataframe produced by the 'runtsir' function}
+\item{sim}{the dataframe produced by the 'runtsir' function}
 }
 \description{
 corr function

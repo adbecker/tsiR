@@ -62,10 +62,6 @@ and 'break' which breaks the epidemics up if there are a lot of zeros. Defaults 
 \item{mul.noise.sd,}{the sd for multiplicative noise, defaults to zero.}
 
 \item{printon,}{whether to show diagnostic prints or not, defaults to FALSE.}
-
-\item{fittype,}{the type of fit used. Options are 'all' which fits beta, sbar, and alpha,
-'fixalpha', which fixes alpha at 0.97 and estimates beta and sbar, and
-'less' which fits only beta and fixes alpha at 0.97.}
 }
 \description{
 This function runs the TSIR model using MCMC estimation.

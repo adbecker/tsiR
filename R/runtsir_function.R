@@ -1,32 +1,34 @@
 #' runtsir function
-#' 
+#'
 #' This function runs the TSIR model
-#' @param data, the data frame containing cases and interpolated births and populations.
-#' @param nsim, the number of simulations to do. Defaults to 100.
-#' @param xreg, the x-axis for the regression. Options are 'cumcases' and 'cumbirths'. Defaults to 'cumcases'.
-#' @param IP, the infectious period in weeks. Defaults to 2 weeks.
-#' @param regtype, the type of regression used in susceptible reconstruction. 
+#' @param data the data frame containing cases and interpolated births and populations.
+#' @param nsim the number of simulations to do. Defaults to 100.
+#' @param xreg the x-axis for the regression. Options are 'cumcases' and 'cumbirths'. Defaults to 'cumcases'.
+#' @param IP the infectious period in weeks. Defaults to 2 weeks.
+#' @param regtype the type of regression used in susceptible reconstruction.
 #' Options are 'gaussian', 'lm' (linear model), 'spline' (smooth.spline with 2.5 degrees freedom),
 #' 'lowess' (with f = 2/3, iter = 1), 'loess' (degree 1), and 'user' which is just a user inputed vector.
 #' Defaults to 'gaussian' and if that fails then defaults to loess.
-#' @param sigmamax, the inverse kernal width for the gaussian regression. Default is 3. 
+#' @param sigmamax the inverse kernal width for the gaussian regression. Default is 3.
 #' Smaller, stochastic outbreaks tend to need a lower sigma.
-#' @param userYhat, the inputed regression vector if regtype='user'. Defaults to NULL.
-#' @param family, the family in the GLM regression, options are poisson and gaussian both with
+#' @param userYhat the inputed regression vector if regtype='user'. Defaults to NULL.
+#' @param family the family in the GLM regression, options are poisson and gaussian both with
 #' log link. Default is Poisson.
-#' @param sbar, the mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.
-#' @param alpha, the mixing parameter. Defaults to NULL, i.e. the function estimates alpha.
-#' @param method, the type of next step prediction used. Options are 'negbin' for negative binomial,
+#' @param sbar the mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.
+#' @param alpha the mixing parameter. Defaults to NULL, i.e. the function estimates alpha.
+#' @param method the type of next step prediction used. Options are 'negbin' for negative binomial,
 #' 'pois' for poisson distribution, and 'deterministic'. Defaults to 'deterministic'.
-#' @param epidemics, the type of data splitting. Options are 'cont' which doesn't split the data up at all,
+#' @param epidemics the type of data splitting. Options are 'cont' which doesn't split the data up at all,
 #' and 'break' which breaks the epidemics up if there are a lot of zeros. Defaults to 'cont'.
-#' @param pred, the type of prediction used. Options are 'forward' and 'step-ahead'. Defaults to 'forward'.
-#' @param seasonality, the type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.
-#' @param threshold, the cut off for a new epidemic if epidemics = 'break'. Defaults to 1.
-#' @param add.noise.sd, the sd for additive noise, defaults to zero.
-#' @param mul.noise.sd, the sd for multiplicative noise, defaults to zero.
-#' @param printon, whether to show diagnostic prints or not, defaults to FALSE.
-#' 
+#' @param pred the type of prediction used. Options are 'forward' and 'step-ahead'. Defaults to 'forward'.
+#' @param seasonality the type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.
+#' @param threshold the cut off for a new epidemic if epidemics = 'break'. Defaults to 1.
+#' @param add.noise.sd the sd for additive noise, defaults to zero.
+#' @param mul.noise.sd the sd for multiplicative noise, defaults to zero.
+#' @param printon whether to show diagnostic prints or not, defaults to FALSE.
+#' @param fit now removed but gives a warning
+#' @param fittype now removed but gives a warning
+
 runtsir <- function(data, xreg = 'cumcases',
                     IP = 2,nsim = 10,
                     regtype = 'gaussian',sigmamax = 3,
@@ -36,91 +38,91 @@ runtsir <- function(data, xreg = 'cumcases',
                     threshold=1,seasonality='standard',
                     add.noise.sd = 0, mul.noise.sd = 0,
                     printon=F,fit = NULL,fittype = NULL){
-  
-  
+
+
   if(length(fittype) == 1){
-    warning('Argument fittype is deprecated; 
+    warning('Argument fittype is deprecated;
             if fixing alpha or sbar (or both!) set alpha =, and/or sbar = in the function.
             For now defaulting to alpha = 0.97, sbar = 0.05. Will be removed soon.')
-    
+
     if(fittype == 'less'){
       sbar = 0.05; alpha=0.97
     }
     if(fittype == 'fixalpha')
       alpha = 0.97
   }
-  
+
   if(length(fit) == 1){
-    
-    stop('Argument fit is deprecated; the only fit option here is using a glm. 
+
+    stop('Argument fit is deprecated; the only fit option here is using a glm.
          Please use mcmctsir for an mcmc version of the tsir model.')
   }
-  
-  
+
+
   input.alpha <- alpha
   input.sbar <- sbar
-  
+
   nzeros <- length(which(data$cases==0))
   ltot <- length(data$cases)
   if(nzeros > 0.3 * ltot && epidemics == 'cont'){
     print(sprintf('time series is %.0f%% zeros, consider using break method',100*nzeros/ltot))
   }
-  
+
   cumbirths <- cumsum(data$births)
   cumcases <- cumsum(data$cases)
-  
+
   if(xreg == 'cumcases'){
     X <- cumcases
     Y <- cumbirths
   }
-  
+
   if(xreg == 'cumbirths'){
     X <- cumbirths
     Y <- cumcases
   }
-  
+
   x <- seq(X[1], X[length(X)], length=length(X))
   y <- approxfun(X, Y)(x)
   y[1] <- y[2] - (y[3]-y[2])
-  
+
   if(regtype == 'lm'){
     Yhat <- predict(lm(Y~X))
   }
-  
+
   if(regtype == 'lowess'){
     Yhat <- lowess(X,Y,f = 2/3, iter = 1)$y
   }
-  
+
   if(regtype == 'loess'){
     Yhat <- predict(loess(y~x,se=T,family='gaussian',degree=1,model=T),X)
   }
-  
+
   if(regtype == 'spline'){
     Yhat <- predict(smooth.spline(x,y,df=2.5),X)$y
   }
-  
+
   if(regtype == 'gaussian'){
-    
+
     sigvec <- seq(sigmamax,0,-0.1)
     for(it in 1:length(sigvec)){
-      
+
       if(printon == T){
         print(sprintf('gaussian regression attempt number %d',it))
       }
-      
+
       Yhat <- predict(gausspr(x,y,variance.model=T,fit=T,tol=1e-7,
                               var=9.999999999999999999e-3,
                               kernel="rbfdot",
                               kpar=list(sigma=sigvec[it])),X)
-      
-      
+
+
       if(sigvec[it] <= min(sigvec)){
         ## use the loess then
         print('guassian regressian failed -- switching to loess regression')
         Yhat <- predict(loess(y~x,se=T,family='gaussian',degree=1,model=T),X)
       }
-      
-      
+
+
       if(xreg == 'cumcases'){
         Z <- residual.cases(Yhat,Y)
         rho <- derivative(X,Yhat)
@@ -137,284 +139,284 @@ runtsir <- function(data, xreg = 'cumcases',
       }
     }
   }
-  
-  
+
+
   if(regtype == 'user'){
     Yhat <- userYhat
     if(length(Yhat)==0){
       stop('Yhat returns numeric(0) -- make sure to input a userYhat under regtype=user')
     }
   }
-  
+
   rho <- derivative(X,Yhat)
-  
+
   if(xreg == 'cumcases'){
     Z <- residual.cases(Yhat,Y)
   }
-  
+
   if(xreg == 'cumbirths'){
     Z <- residual.births(rho,Yhat,Y)
   }
-  
+
   if(xreg == 'cumcases'){
     adj.rho <- rho
   }
   if(xreg == 'cumbirths'){
     adj.rho <- 1/rho
   }
-  
+
   if(regtype == 'lm'){
     adj.rho <- signif(adj.rho,3)
-    
+
   }
-  
+
   if(length(which(adj.rho < 1 )) > 1){
     warning('Reporting exceeds 100% -- use different regression')
   }
-  
+
   Iadjusted <- data$cases * adj.rho
-  
+
   datacopy <- data
-  
+
   if(seasonality == 'standard'){
-    
+
     period <- rep(1:(52/IP), round(nrow(data)+1))[1:(nrow(data)-1)]
-    
+
     if(IP == 1){
-      
+
       period <- rep(1:(52/2),each=2, round(nrow(data)+1))[1:(nrow(data)-1)]
-      
+
     }
-    
+
   }
-  
+
   if(seasonality == 'schoolterm'){
-    
+
     ## do school time in base two weeks and then interpolate
     term <- rep(1,26)
     term[c(1,8,15,16,17,18,19,23,26)] <- 2
-    
+
     iterm <- round(approx(term,n=52/IP)$y)
     period <- rep(iterm, round(nrow(data)+1))[1:(nrow(data)-1)]
-    
+
   }
-  
+
   Inew <- tail(Iadjusted,-1)+1
   lIminus <- log(head(Iadjusted,-1)+1)
   Zminus <- head(Z,-1)
-  
+
   pop <- data$pop
-  
+
   minSmean <- max(0.01*pop,-(min(Z)+1))
   Smean <- seq(minSmean, 0.4*mean(pop), length=250)
-  
+
   loglik <- rep(NA, length(Smean))
-  
+
   if(length(input.alpha) == 0 && length(input.sbar) == 0){
-    
+
     if(family == 'gaussian'){
-      
+
       for(i in 1:length(Smean)){
         lSminus <- log(Smean[i] + Zminus)
-        
+
         glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
                       family=gaussian(link='log'))
-        
+
         loglik[i] <- glmfit$deviance
-        
+
       }
-      
+
       sbar <- Smean[which.min(loglik)]
-      
+
       lSminus <- log(sbar + Zminus)
-      
+
       glmfit <- glm(Inew ~ -1 +as.factor(period)+ (lIminus) + offset(lSminus),
                     family=gaussian(link='log'))
-      
-      
+
+
     }
-    
-    
+
+
     if(family == 'poisson'){
-      
+
       Inew <- round(Inew)
-      
+
       for(i in 1:length(Smean)){
         lSminus <- log(Smean[i] + Zminus)
-        
+
         glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
                       family=poisson(link='log'))
-        
+
         loglik[i] <- glmfit$deviance
-        
+
       }
-      
+
       sbar <- Smean[which.min(loglik)]
-      
+
       lSminus<- log(sbar + Zminus)
-      
+
       glmfit <- glm(Inew ~ -1 +as.factor(period)+ (lIminus) + offset(lSminus),
                     family=poisson(link='log'))
-      
-      
+
+
     }
-    
-    
+
+
     beta <- exp(head(coef(glmfit),-1))
     alpha <- tail(coef(glmfit),1)
   }
-  
-  
+
+
   if(length(input.alpha) == 1 && length(input.sbar) == 0){
-    
+
     if(family == 'gaussian'){
-      
+
       for(i in 1:length(Smean)){
         lSminus <- log(Smean[i] + Zminus)
-        
-        
+
+
         glmfit <- glm(Inew ~ -1 +as.factor(period) + offset(alpha*lIminus) + offset(lSminus),
                       family=gaussian(link='log'))
-        
-        
-        
-        
+
+
+
+
         loglik[i] <- glmfit$deviance
-        
+
       }
-      
+
       sbar <- Smean[which.min(loglik)]
-      
+
       lSminus <- log(sbar + Zminus)
-      
-      
+
+
       glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
                     family=gaussian(link='log'))
-      
+
     }
-    
-    
+
+
     if(family == 'poisson'){
-      
+
       Inew <- round(Inew)
-      
-      
+
+
       for(i in 1:length(Smean)){
         lSminus <- log(Smean[i] + Zminus)
-        
-        
+
+
         glmfit <- glm(Inew ~ -1 +as.factor(period) + offset(alpha*lIminus) + offset(lSminus),
                       family=poisson(link='log'))
-        
-        
+
+
         loglik[i] <- glmfit$deviance
-        
+
       }
-      
+
       sbar <- Smean[which.min(loglik)]
-      
+
       lSminus <- log(sbar + Zminus)
-      
-      
+
+
       glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
                     family=poisson(link='log'))
-      
-      
+
+
     }
-    
+
     beta <- exp(coef(glmfit))
   }
-  
-  
+
+
   if(length(input.alpha) == 0 && length(input.sbar) == 1){
-    
+
     sbar <- sbar * mean(pop)
     lSminus <- log(sbar + Zminus)
-    
+
     if(family == 'gaussian'){
-      
-      
+
+
       glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
                     family=gaussian(link='log'))
-      
+
     }
-    
-    
+
+
     if(family == 'poisson'){
-      
+
       Inew <- round(Inew)
-      
+
       glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
                     family=poisson(link='log'))
-      
-      
+
+
     }
-    
-    
-    
+
+
+
     beta <- exp(head(coef(glmfit),-1))
     alpha <- tail(coef(glmfit),1)
   }
-  
-  
+
+
   if(length(input.alpha) == 1 && length(input.sbar) == 1){
-    
+
     sbar <- sbar * mean(pop)
     lSminus <- log(sbar + Zminus)
-    
+
     if(family == 'gaussian'){
-      
-      
+
+
       glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
                     family=gaussian(link='log'))
-      
-      
+
+
     }
-    
+
     if(family == 'poisson'){
-      
+
       Inew <- round(Inew)
-      
+
       glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
                     family=poisson(link='log'))
-      
-      
+
+
     }
-    
+
     beta <- exp(coef(glmfit))
-    
+
   }
-  
-  
+
+
   print(c('alpha'=unname(signif(alpha,2)),
           'mean beta'=unname(signif(mean(beta),3)),
           'mean rho' =unname(signif(mean(1/adj.rho),3)),
           'mean sus' =unname(signif(sbar,3)),
           'est R0'=unname(signif(mean(beta)*mean(pop)),2)))
-  
-  
+
+
   nsim <- nsim
   res <- matrix(0,length(data$cases),nsim)
   for(ct in 1:nsim){
-    
+
     S <- rep(0,length(data$cases))
     I <- rep(0,length(data$cases))
     S[1] <- sbar+Z[1]
     I[1] <- datacopy$cases[1] * adj.rho[1]
-    
+
     for (t in 2:(nrow(data))){
-      
+
       if(pred == 'step-ahead'){
         I <- (adj.rho*data$cases)^alpha
       }
       if(pred == 'forward'){
         I <- I
       }
-      
+
       lambda <- min(S[t-1],unname(beta[period[t-1]] * S[t-1] * (I[t-1])^alpha))
-      
+
       if(lambda < 1 || is.nan(lambda) == T){lambda <- 0}
-      
+
       if(method == 'deterministic'){
         I[t] <- lambda * rnorm( n = 1, mean = 1, sd=mul.noise.sd)
         if(I[t] < 0 && lambda >= 0 ){
@@ -431,7 +433,7 @@ runtsir <- function(data, xreg = 'cumcases',
         I[t] <- I[t]
       }
       if(epidemics == 'break'){
-        
+
         t0s <- epitimes(data,threshold)
         if(t %in% t0s){
           I[t] <- adj.rho[t]*data$cases[t]
@@ -443,30 +445,29 @@ runtsir <- function(data, xreg = 'cumcases',
       }
     }
     res[,ct] <- I / adj.rho
-    
+
   }
-  
+
   res[is.nan(res)] <- 0
   res[res < 1] <- 0
-  
+
   res <- as.data.frame(res)
   res$mean <- apply(res, 1, function(row) mean(row[-1],na.rm=T))
   res$sd   <- apply(res, 1, function(row) sd(row[-1],na.rm=T))
   res$time <- data$time
   res$cases <- data$cases
-  
+
   obs <- res$cases
   pred <- res$mean
-  
+
   fit <- lm(pred ~ obs)
   rsquared <- signif(summary(fit)$adj.r.squared, 2)
-  
+
   return(list('X'=X,'Y'=Y,'Yhat' =Yhat,
               'beta'=head(beta[period],52/IP),'rho'=adj.rho,'pop'=pop,
               'Z'=Z,'sbar'=sbar,'alpha'=alpha,
               'res'=res,'loglik'=loglik,'Smean'=Smean,
               'nsim'=nsim,'rsquared'=rsquared))
-  
-  
-}
 
+
+}

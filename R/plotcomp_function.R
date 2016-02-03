@@ -1,7 +1,12 @@
+#' plotcomp Function
+#' plots just the comparison of the forward simulation fit to the data
+#' @param sim is list produced by runtsir or mcmctsir
+#' @param errtype is the type of error bands to show. Defaults to '95' for 95 percent CI, the other option is 'sd' to standard deviation.
+
 
 plotcomp <- function(sim,errtype='95'){
-  
-  if(class(sim) == "list"){  
+
+  if(class(sim) == "list"){
     sim <- sim$res
   }
   if(class(sim) == "data.frame"){
@@ -25,20 +30,20 @@ plotcomp <- function(sim,errtype='95'){
 
   inversecases <- sim
   inversecases$cases <- -sim$cases
-  
+
   comp2 <- ggplot(data=inversecases, aes_string('time')) + theme(legend.position = "none") +
     geom_line(aes_string(y = 'cases'), colour = "dodgerblue",size=1) + xlab('time')+ylab('cases')+
     geom_line(aes_string(y = 'mean'), colour = "orangered4",size=1) + geom_ribbon(eb,alpha=0.3)+
     theme_bw()
-  
+
   meltdf <- melt(subset(sim,select=-c(mean,sd,error)),id='time')
-  
+
   comp3 <- ggplot(meltdf,aes_string(x='time',y='value'))+
     geom_line(alpha=0.6,colour='orangered4')+xlab('time')+ylab('cases')+
     geom_line(data=sim,aes_string(x='time',y='cases'),colour='dodgerblue',size=1)+
     theme_bw()
-  
-  
+
+
   grid.newpage()
   pushViewport(viewport(layout = grid.layout(2, 1)))
   print(comp3, vp = vplayout(1, 1))
@@ -46,4 +51,3 @@ plotcomp <- function(sim,errtype='95'){
 
 
 }
-

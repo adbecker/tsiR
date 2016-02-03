@@ -7,9 +7,9 @@
 plotbreaks(data, threshold)
 }
 \arguments{
-\item{data,}{dataframe with the cases vector.}
+\item{data}{dataframe with the cases vector.}
 
-\item{threshold,}{the epidemic threshold.}
+\item{threshold}{the epidemic threshold.}
 }
 \description{
 plotbreaks function

@@ -7,7 +7,7 @@
 plotres(dat)
 }
 \arguments{
-\item{dat,}{the list produced from the runtsir function or the mcmctsir function}
+\item{dat}{the list produced from the runtsir function or the mcmctsir function}
 }
 \description{
 function to plot diagnostics and results of the runtsir function.

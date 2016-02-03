@@ -7,9 +7,9 @@
 epitimes(data, threshold)
 }
 \arguments{
-\item{data,}{dataframe with the cases vector.}
+\item{data}{dataframe with the cases vector.}
 
-\item{threshold,}{the required number of cases to call an outbreak.}
+\item{threshold}{the required number of cases to call an outbreak.}
 }
 \description{
 epitimes Function

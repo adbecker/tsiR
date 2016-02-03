@@ -9,35 +9,33 @@ estpars(data, xreg = "cumcases", IP = 2, seasonality = "standard",
   userYhat = numeric(), alpha = NULL, sbar = NULL, printon = F)
 }
 \arguments{
-\item{data,}{the data frame containing cases and interpolated births and populations.}
+\item{data}{the data frame containing cases and interpolated births and populations.}
 
-\item{xreg,}{the x-axis for the regression. Options are 'cumcases' and 'cumbirths'. Defaults to 'cumcases'.}
+\item{xreg}{the x-axis for the regression. Options are 'cumcases' and 'cumbirths'. Defaults to 'cumcases'.}
 
-\item{IP,}{the infectious period in weeks. Defaults to 2 weeks.}
+\item{IP}{the infectious period in weeks. Defaults to 2 weeks.}
 
 \item{seasonality,}{the type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.}
 
-\item{regtype,}{the type of regression used in susceptible reconstruction.
+\item{regtype}{the type of regression used in susceptible reconstruction.
 Options are 'gaussian', 'lm' (linear model), 'spline' (smooth.spline with 2.5 degrees freedom),
 'lowess' (with f = 2/3, iter = 1), 'loess' (degree 1), and 'user' which is just a user inputed vector.
 Defaults to 'gaussian' and if that fails then defaults to loess.}
 
-\item{sigmamax,}{the inverse kernal width for the gaussian regression. Default is 3.
+\item{sigmamax}{the inverse kernal width for the gaussian regression. Default is 3.
 Smaller, stochastic outbreaks tend to need a lower sigma.}
 
-\item{family,}{the family in the GLM regression, options are poisson and gaussian both with
-log link. Default is Poisson.}
-
-\item{userYhat,}{the inputed regression vector if regtype='user'. Defaults to NULL.}
-
-\item{alpha,}{the mixing parameter. Defaults to NULL, i.e. the function estimates alpha.}
-
-\item{sbar,}{the mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.}
-
-\item{printon,}{whether to show diagnostic prints or not, defaults to FALSE.}
-
-\item{fit,}{the fitting method used. Options are 'glm' or 'bayesglm' which is a cheap adaptation
+\item{family}{the family in the GLM regression, options are poisson and gaussian both with
+log link. Default is Poisson.
 to include some bayesian approaches. For 'bayesglm' we use a gaussian prior with mean 1e-4.}
+
+\item{userYhat}{the inputed regression vector if regtype='user'. Defaults to NULL.}
+
+\item{alpha}{the mixing parameter. Defaults to NULL, i.e. the function estimates alpha.}
+
+\item{sbar}{the mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.}
+
+\item{printon}{whether to show diagnostic prints or not, defaults to FALSE.}
 }
 \description{
 This function computes the set up to run the TSIR model, i.e. reconstructes susecptibles and

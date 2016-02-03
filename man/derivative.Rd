@@ -6,6 +6,11 @@
 \usage{
 derivative(X, Y)
 }
+\arguments{
+\item{X}{what to differentiate with respect to}
+
+\item{Y}{the function to differentiate}
+}
 \description{
 This function computes an 8 point derivative
 Differentiate Y with respect to X
