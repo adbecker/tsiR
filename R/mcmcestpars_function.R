@@ -33,12 +33,6 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
                         sbar=NULL,alpha=NULL,
                         printon=F){
   
-  nzeros <- length(which(data$cases==0))
-  ltot <- length(data$cases)
-  if(nzeros > 0.3 * ltot && epidemics == 'cont'){
-    print(sprintf('time series is %.0f%% zeros, consider using break method',100*nzeros/ltot))
-  }
-  
   if(n.iter < 5000){
     
     print('number of MCMC iterations less than 5000 -- increase')

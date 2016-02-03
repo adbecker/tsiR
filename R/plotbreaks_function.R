@@ -6,7 +6,7 @@ plotbreaks <- function(data,threshold){
   t0s <- epitimes(data,threshold) 
   ptsdat <- as.data.frame(cbind('t'=data$time[t0s],'cpts'=data$cases[t0s]))
   p <- ggplot()+
-    geom_line(data=data, aes(x=time,y=cases),colour='dodgerblue',size=1) + 
+    geom_line(data=data, aes_string(x='time',y='cases'),colour='dodgerblue',size=1) + 
     theme_bw() + theme(legend.position = "none") +
     xlab('time')+ylab('cases') + 
     geom_vline(xintercept = data$time[t0s],linetype='dashed')
