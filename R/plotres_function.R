@@ -71,9 +71,7 @@ plotres <- function(dat){
   pred <- dat$res$mean
   fit <- lm(pred ~ obs)
   
-  p5 <- ggreg(fit)+xlab('observed')+ylab('predicted')
-  
-  
+  p5 <- corr(dat)
   
   n <- nrow(dat$res)
   error <- qt(0.975,df=n-1)*dat$res$sd/sqrt(n)
