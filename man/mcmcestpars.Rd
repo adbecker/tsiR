@@ -7,8 +7,7 @@
 mcmcestpars(data, xreg = "cumcases", IP = 2, regtype = "gaussian",
   sigmamax = 3, seasonality = "standard", userYhat = numeric(),
   update.iter = 10000, n.iter = 30000, n.chains = 3, n.adapt = 1000,
-  burn.in = 100, sbar = 0.05, alpha = 0.97, fittype = "all",
-  printon = F)
+  burn.in = 100, sbar = NULL, alpha = NULL, printon = F)
 }
 \arguments{
 \item{data,}{the data frame containing cases and interpolated births and populations.}
@@ -39,11 +38,9 @@ Smaller, stochastic outbreaks tend to need a lower sigma.}
 
 \item{burn.in,}{burn in number. Default is 100.}
 
-\item{sbar,}{the mean number of susceptibles. Only used if fittype='less'. Defaults to 0.05*mean(pop).}
+\item{sbar,}{the mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.}
 
-\item{fittype,}{the type of fit used. Options are 'all' which fits beta, sbar, and alpha,
-'fixalpha', which fixes alpha at 0.97 and estimates beta and sbar, and
-'less' which fits only beta and fixes alpha at 0.97.}
+\item{alpha,}{the mixing parameter. Defaults to NULL, i.e. the function estimates alpha.}
 
 \item{printon,}{whether to show diagnostic prints or not, defaults to FALSE.}
 }

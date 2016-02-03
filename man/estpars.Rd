@@ -6,8 +6,7 @@
 \usage{
 estpars(data, xreg = "cumcases", IP = 2, seasonality = "standard",
   regtype = "gaussian", sigmamax = 3, family = "gaussian",
-  userYhat = numeric(), fit = "glm", sbar = 0.05, alpha = 0.97,
-  fittype = "all", printon = F)
+  userYhat = numeric(), alpha = NULL, sbar = NULL, printon = F)
 }
 \arguments{
 \item{data,}{the data frame containing cases and interpolated births and populations.}
@@ -31,16 +30,14 @@ log link. Default is Poisson.}
 
 \item{userYhat,}{the inputed regression vector if regtype='user'. Defaults to NULL.}
 
-\item{fit,}{the fitting method used. Options are 'glm' or 'bayesglm' which is a cheap adaptation
-to include some bayesian approaches. For 'bayesglm' we use a gaussian prior with mean 1e-4.}
+\item{alpha,}{the mixing parameter. Defaults to NULL, i.e. the function estimates alpha.}
 
-\item{sbar,}{the mean number of susceptibles. Only used if fittype='less'. Defaults to 0.05*mean(pop).}
-
-\item{fittype,}{the type of fit used. Options are 'all' which fits beta, sbar, and alpha,
-'fixalpha', which fixes alpha at 0.97 and estimates beta and sbar, and
-'less' which fits only beta and fixes alpha at 0.97.}
+\item{sbar,}{the mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.}
 
 \item{printon,}{whether to show diagnostic prints or not, defaults to FALSE.}
+
+\item{fit,}{the fitting method used. Options are 'glm' or 'bayesglm' which is a cheap adaptation
+to include some bayesian approaches. For 'bayesglm' we use a gaussian prior with mean 1e-4.}
 }
 \description{
 This function computes the set up to run the TSIR model, i.e. reconstructes susecptibles and

@@ -4,12 +4,12 @@
 \alias{runtsir}
 \title{runtsir function}
 \usage{
-runtsir(data, xreg = "cumcases", IP = 2, nsim = 100,
+runtsir(data, xreg = "cumcases", IP = 2, nsim = 10,
   regtype = "gaussian", sigmamax = 3, userYhat = numeric(),
-  alpha = 0.97, fittype = "all", fit = "glm", family = "gaussian",
+  alpha = NULL, sbar = NULL, family = "gaussian",
   method = "deterministic", epidemics = "cont", pred = "forward",
-  threshold = 1, sbar = 0.05, seasonality = "standard",
-  add.noise.sd = 0, mul.noise.sd = 0, printon = F)
+  threshold = 1, seasonality = "standard", add.noise.sd = 0,
+  mul.noise.sd = 0, printon = F, fit = NULL, fittype = NULL)
 }
 \arguments{
 \item{data,}{the data frame containing cases and interpolated births and populations.}
@@ -30,12 +30,9 @@ Smaller, stochastic outbreaks tend to need a lower sigma.}
 
 \item{userYhat,}{the inputed regression vector if regtype='user'. Defaults to NULL.}
 
-\item{fittype,}{the type of fit used. Options are 'all' which fits beta, sbar, and alpha,
-'fixalpha', which fixes alpha at 0.97 and estimates beta and sbar, and
-'less' which fits only beta and fixes alpha at 0.97.}
+\item{alpha,}{the mixing parameter. Defaults to NULL, i.e. the function estimates alpha.}
 
-\item{fit,}{the fitting method used. Options are 'glm' or 'bayesglm' which is a cheap adaptation
-to include some bayesian approaches. For 'bayesglm' we use a gaussian prior with mean 1e-4.}
+\item{sbar,}{the mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.}
 
 \item{family,}{the family in the GLM regression, options are poisson and gaussian both with
 log link. Default is Poisson.}
@@ -50,8 +47,6 @@ and 'break' which breaks the epidemics up if there are a lot of zeros. Defaults 
 
 \item{threshold,}{the cut off for a new epidemic if epidemics = 'break'. Defaults to 1.}
 
-\item{sbar,}{the mean number of susceptibles. Only used if fittype='less'. Defaults to 0.05*mean(pop).}
-
 \item{seasonality,}{the type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.}
 
 \item{add.noise.sd,}{the sd for additive noise, defaults to zero.}
@@ -62,5 +57,19 @@ and 'break' which breaks the epidemics up if there are a lot of zeros. Defaults 
 }
 \description{
 This function runs the TSIR model
+}
+\examples{
+## some example data
+##london <- twentymeas[["London]]
+res <- runtsir(london)
+plotres(res)
+
+## now if we want to fix alpha
+res <- runtsir(london,alpha=0.97)
+plotres(res)
+
+## we can fix sbar the same way, or both
+## fix sbar at 5\% of the population
+res <- runtsir(london,alpha=0.97,sbar=0.05)
 }
 

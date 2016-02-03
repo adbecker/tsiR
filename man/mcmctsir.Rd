@@ -6,10 +6,10 @@
 \usage{
 mcmctsir(data, xreg = "cumcases", IP = 2, nsim = 100,
   regtype = "gaussian", sigmamax = 3, userYhat = numeric(),
-  fittype = "all", alpha = 0.97, update.iter = 10000, n.iter = 30000,
-  n.chains = 3, n.adapt = 1000, burn.in = 100, method = "deterministic",
-  epidemics = "cont", pred = "forward", seasonality = "standard",
-  threshold = 1, sbar = 0.05, add.noise.sd = 0, mul.noise.sd = 0,
+  update.iter = 10000, n.iter = 30000, n.chains = 3, n.adapt = 1000,
+  burn.in = 100, method = "deterministic", epidemics = "cont",
+  pred = "forward", seasonality = "standard", threshold = 1,
+  sbar = NULL, alpha = NULL, add.noise.sd = 0, mul.noise.sd = 0,
   printon = F)
 }
 \arguments{
@@ -30,10 +30,6 @@ Defaults to 'gaussian' and if that fails then defaults to loess.}
 Smaller, stochastic outbreaks tend to need a lower sigma.}
 
 \item{userYhat,}{the inputed regression vector if regtype='user'. Defaults to NULL.}
-
-\item{fittype,}{the type of fit used. Options are 'all' which fits beta, sbar, and alpha,
-'fixalpha', which fixes alpha at 0.97 and estimates beta and sbar, and
-'less' which fits only beta and fixes alpha at 0.97.}
 
 \item{update.iter,}{number of MCMC iterations to use in the update aspect. Default is 10000.}
 
@@ -57,13 +53,19 @@ and 'break' which breaks the epidemics up if there are a lot of zeros. Defaults 
 
 \item{threshold,}{the cut off for a new epidemic if epidemics = 'break'. Defaults to 1.}
 
-\item{sbar,}{the mean number of susceptibles. Only used if fittype='less'. Defaults to 0.05*mean(pop).}
+\item{sbar,}{the mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.}
+
+\item{alpha,}{the mixing parameter. Defaults to NULL, i.e. the function estimates alpha.}
 
 \item{add.noise.sd,}{the sd for additive noise, defaults to zero.}
 
 \item{mul.noise.sd,}{the sd for multiplicative noise, defaults to zero.}
 
 \item{printon,}{whether to show diagnostic prints or not, defaults to FALSE.}
+
+\item{fittype,}{the type of fit used. Options are 'all' which fits beta, sbar, and alpha,
+'fixalpha', which fixes alpha at 0.97 and estimates beta and sbar, and
+'less' which fits only beta and fixes alpha at 0.97.}
 }
 \description{
 This function runs the TSIR model using MCMC estimation.
