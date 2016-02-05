@@ -93,9 +93,9 @@ plotres <- function(dat){
 
   meltdf <- melt(subset(dat$res,select=-c(mean,sd,error,cases)),id='time')
 
-  p8 <- ggplot(meltdf,aes_string(x='time',y='value'))+
-    geom_line(alpha=0.6,colour='orangered4')+ylab('cases')+xlab('time')+
-    geom_line(data=dat$res,aes_string(x='time',y='cases'),colour='dodgerblue',size=1)+
+  p8 <- ggplot(meltdf,aes_string(x='time',y='value',fill='variable'))+
+    geom_line(alpha=0.6,colour='orangered4')+xlab('time')+ylab('cases')+
+    geom_line(data=sim,aes_string(x='time',y='cases',fill=NA),colour='dodgerblue',size=1)+
     theme_bw()
 
 
