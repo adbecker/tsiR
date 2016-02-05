@@ -36,7 +36,7 @@ plotcomp <- function(sim,errtype='95'){
     geom_line(aes_string(y = 'mean'), colour = "orangered4",size=1) + geom_ribbon(eb,alpha=0.3)+
     theme_bw()
 
-  meltdf <- melt(subset(sim,select=-c(mean,sd,error)),id='time')
+  meltdf <- melt(subset(sim,select=-c(mean,sd,error,cases)),id='time')
 
   comp3 <- ggplot(meltdf,aes_string(x='time',y='value'))+
     geom_line(alpha=0.6,colour='orangered4')+xlab('time')+ylab('cases')+

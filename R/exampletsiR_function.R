@@ -65,7 +65,7 @@ exampletsiR <- function(){
   cat('\nWhat type of forward prediction? Options are "forward" and "step-ahead"')
   pred <- scan(what=character(),nmax=1,quiet = T)
   
-  cat('\nRunning the code...')
+  cat('\nRunning the code...\n')
   
   res <- runtsir(data=data,xreg=xreg,IP=IP,nsim=nsim,
                  regtype=regtype,userYhat=userYhat,alpha=alpha,
@@ -78,7 +78,7 @@ exampletsiR <- function(){
     cat("\nThe fit doesn't seem that great -- try different options?")
   }
   
-  cat('\nDo you want to plot? "yes" or "no"')
+  cat('\nDo you want to plot the results using the plotres function? "yes" or "no"')
   ploton <- scan(what=character(),nmax=1,quiet = T)
   
   if(ploton == 'yes'){

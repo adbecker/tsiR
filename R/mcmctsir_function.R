@@ -516,7 +516,7 @@ mcmctsir <- function(data, xreg = 'cumcases',
   res[res < 1] <- 0
 
   res <- as.data.frame(res)
-  res$mean <- apply(res, 1, function(row) mean(row[-1],na.rm=T))
+  res$mean <- rowMeans(res,na.rm=T)
   res$sd   <- apply(res, 1, function(row) sd(row[-1],na.rm=T))
   res$time <- data$time
   res$cases <- data$cases
