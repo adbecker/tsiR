@@ -12,6 +12,7 @@ require(kernlab)
 require(ggplot2)
 require(grid)
 require(reshape2)
+require(rjags)
 
 data <- twentymeas[['London']]
 plotdata(data)
