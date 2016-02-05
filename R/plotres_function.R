@@ -42,7 +42,7 @@ plotres <- function(dat){
   loglikdf <- as.data.frame(loglikdf)
   p9 <- ggplot(loglikdf,aes_string('sbar','loglik'))+geom_line()+geom_point()+
     theme_bw()+geom_vline(xintercept = dat$sbar,linetype = "longdash")+
-    ggtitle(bquote(bar(S) ==.(signif(dat$sbar,2))~','~.(signif(dat$sbar/mean(dat$pop),2))
+    ggtitle(bquote(bar(S) ==.(signif(dat$sbar,2))~','~.(signif(dat$sbar/mean(dat$pop)*100,2))
                    ~'%'))+
     xlab(bquote(bar(S)))
 
@@ -91,7 +91,10 @@ plotres <- function(dat){
     geom_line(aes_string(y = 'mean'), colour = "orangered4",size=1) + geom_ribbon(eb,alpha=0.3)+
     theme_bw()
 
-  meltdf <- melt(subset(dat$res,select=-c(mean,sd,error,cases)),id='time')
+  
+  drops <- c('mean','sd','error','cases')
+  
+  meltdf <- melt(dat$res[,!(names(dat$res) %in% drops)],id='time')
 
   p8 <- ggplot(meltdf,aes_string(x='time',y='value',fill='variable'))+
     geom_line(alpha=0.6,colour='orangered4')+xlab('time')+ylab('cases')+
