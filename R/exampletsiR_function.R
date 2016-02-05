@@ -40,7 +40,7 @@ exampletsiR <- function(){
     and "schoolterm" for on off of the school calender')
   seasonality <- scan(what=character(),nmax=1,quiet = T)
   
-  cat('\nWhat type of forward simulation distribution? Options are "negbin" and "pois" and "deterministic".')
+  cat('\nWhat type of forward simulation distribution? Options are "negbin" and "pois" and "deterministic"')
   method <- scan(what=character(),nmax=1,quiet = T)
   
   if(method == 'deterministic'){
@@ -75,7 +75,7 @@ exampletsiR <- function(){
   )
   
   if(res$rsquared < 0.3){
-    print(sprintf("The fit doesn't seem that great -- try different options?"))
+    cat("\nThe fit doesn't seem that great -- try different options?")
   }
   
   cat('\nDo you want to plot? "yes" or "no"')
