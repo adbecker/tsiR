@@ -67,7 +67,6 @@ exampletsiR <- function(){
   
   cat('\nRunning the code...')
   
-  
   res <- runtsir(data=data,xreg=xreg,IP=IP,nsim=nsim,
                  regtype=regtype,userYhat=userYhat,alpha=alpha,
                  sbar=sbar,family=family,method=method,epidemics=epidemics,
