@@ -6,6 +6,7 @@ citation('tsiR')
 ## Example 1.
 
 require(devtools)
+
 install_github('adbecker/tsiR')
 require(tsiR)
 require(kernlab)
