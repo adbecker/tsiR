@@ -1,9 +1,9 @@
-# tsiR
-tsiR: A package to run time-series Susceptible-Infected-Recovered models in R. Soon to be on CRAN!
+# **tsiR**
+## **tsiR**: A package to run *time-series Susceptible-Infected-Recovered* models in R. Soon to be on CRAN!
 
 citation('tsiR')
 
-Example 1.
+## Example 1.
 
 require(devtools)
 install_github('adbecker/tsiR')
@@ -21,7 +21,7 @@ res <- runtsir(data,method = 'negbin')
 
 plotres(res)
 
-Example 2.
+## Example 2.
 
 ex <- exampletsiR()
 
