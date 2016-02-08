@@ -1,6 +1,6 @@
-#' plotcases Function
-#' plots just the cases
-#' @param data is the dataframe with cases
+#' @title plotcases
+#' @description Plots just the cases data.
+#' @param data The data frame with cases.
 plotcases <- function(data){
 
   p <- ggplot(data=data, aes_string('time'))+

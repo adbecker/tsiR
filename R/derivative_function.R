@@ -1,9 +1,9 @@
-#' derivative Function
+#' @title derivative
 #'
-#' This function computes an 8 point derivative
-#' Differentiate Y with respect to X
-#' @param X what to differentiate with respect to
-#' @param Y the function to differentiate 
+#' @description This function computes an 8 point derivative.
+#'
+#' @param X The variable to differentiate with respect to.
+#' @param Y The function / vector to differentiate.
 derivative <- function(X,Y){
   weights <- c(1/280, -4/105, 1/5, -4/5, 0, 4/5, -1/5, 4/105, -1/280)
 

@@ -2,39 +2,37 @@
 % Please edit documentation in R/simulatetsir_function.R
 \name{simulatetsir}
 \alias{simulatetsir}
-\title{simulatetsir function
-This function just simulates the forward prediction}
+\title{simulatetsir}
 \usage{
 simulatetsir(data, nsim = 100, IP = 2, parms, method = "deterministic",
   epidemics = "cont", pred = "forward", threshold = 1, add.noise.sd = 0,
   mul.noise.sd = 0)
 }
 \arguments{
-\item{data}{the data frame containing cases and interpolated births and populations.}
+\item{data}{The data frame containing cases and interpolated births and populations.}
 
-\item{nsim}{the number of simulations to do. Defaults to 100.}
+\item{nsim}{The number of simulations to do. Defaults to 100.}
 
-\item{IP}{is the infectious period. Defaults to 2.}
+\item{IP}{The infectious period. Defaults to 2.}
 
-\item{parms}{either the parameters estimated by estpars or mcmcestpars, or a list containing
+\item{parms}{Either the parameters estimated by estpars or mcmcestpars, or a list containing
 beta, rho, Z, sbar, alpha, X, Y, Yhat, contact, alphalow, alphahigh, loglik, pop vectors.}
 
-\item{method}{the type of next step prediction used. Options are 'negbin' for negative binomial,
+\item{method}{The type of next step prediction used. Options are 'negbin' for negative binomial,
 'pois' for poisson distribution, and 'deterministic'. Defaults to 'deterministic'.}
 
-\item{epidemics}{the type of data splitting. Options are 'cont' which doesn't split the data up at all,
+\item{epidemics}{The type of data splitting. Options are 'cont' which doesn't split the data up at all,
 and 'break' which breaks the epidemics up if there are a lot of zeros. Defaults to 'cont'.}
 
-\item{pred}{the type of prediction used. Options are 'forward' and 'step-ahead'. Defaults to 'forward'.}
+\item{pred}{The type of prediction used. Options are 'forward' and 'step-ahead'. Defaults to 'forward'.}
 
-\item{threshold}{the cut off for a new epidemic if epidemics = 'break'. Defaults to 1.}
+\item{threshold}{The cut off for a new epidemic if epidemics = 'break'. Defaults to 1.}
 
-\item{add.noise.sd}{the sd for additive noise, defaults to zero.}
+\item{add.noise.sd}{The sd for additive noise, defaults to zero.}
 
-\item{mul.noise.sd}{the sd for multiplicative noise, defaults to zero.}
+\item{mul.noise.sd}{The sd for multiplicative noise, defaults to zero.}
 }
 \description{
-simulatetsir function
-This function just simulates the forward prediction
+This function just simulates the forward prediction given the data and a parms list generated from estpars or mcmcestpars.
 }
 

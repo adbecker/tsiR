@@ -2,22 +2,18 @@
 % Please edit documentation in R/residual.births_function.R
 \name{residual.births}
 \alias{residual.births}
-\title{residuals.births Function
-computes the residuals for when X is the cumulative births
-used internally}
+\title{residuals.births}
 \usage{
 residual.births(rho, Yhat, Y)
 }
 \arguments{
-\item{rho}{is the reporting rate to get units correct}
+\item{rho}{The reporting rate, used to get units correct.}
 
-\item{Yhat}{is the fitted regression}
+\item{Yhat}{The fitted regression line.}
 
-\item{Y}{is the cumulative cases}
+\item{Y}{The cumulative cases.}
 }
 \description{
-residuals.births Function
-computes the residuals for when X is the cumulative births
-used internally
+computes the residuals for when X is the cumulative births. Used internally.
 }
 

@@ -2,8 +2,7 @@
 % Please edit documentation in R/plotcomp_function.R
 \name{plotcomp}
 \alias{plotcomp}
-\title{plotcomp Function
-plots just the comparison of the forward simulation fit to the data}
+\title{plotcomp}
 \usage{
 plotcomp(sim, errtype = "95")
 }
@@ -13,7 +12,6 @@ plotcomp(sim, errtype = "95")
 \item{errtype}{is the type of error bands to show. Defaults to '95' for 95 percent CI, the other option is 'sd' to standard deviation.}
 }
 \description{
-plotcomp Function
-plots just the comparison of the forward simulation fit to the data
+Plots just the comparison of the forward simulation fit to the data.
 }
 

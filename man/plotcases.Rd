@@ -2,16 +2,14 @@
 % Please edit documentation in R/plotcases_function.R
 \name{plotcases}
 \alias{plotcases}
-\title{plotcases Function
-plots just the cases}
+\title{plotcases}
 \usage{
 plotcases(data)
 }
 \arguments{
-\item{data}{is the dataframe with cases}
+\item{data}{The data frame with cases.}
 }
 \description{
-plotcases Function
-plots just the cases
+Plots just the cases data.
 }
 

@@ -2,24 +2,22 @@
 % Please edit documentation in R/tsiRdata_function.R
 \name{tsiRdata}
 \alias{tsiRdata}
-\title{tsiRdata function
-this function takes in time cases births and pop vectors (of any lengths) and interpolates them using the given infectious period}
+\title{tsiRdata}
 \usage{
 tsiRdata(time, cases, births, pop, IP = 2)
 }
 \arguments{
-\item{time}{the time vector}
+\item{time}{The time vector.}
 
-\item{cases}{the cases vector}
+\item{cases}{The cases vector.}
 
-\item{births}{the births vector}
+\item{births}{The births vector.}
 
-\item{pop}{the population vector}
+\item{pop}{The population vector.}
 
-\item{IP}{the infectious period to discretize to. Defaults to 2}
+\item{IP}{The infectious period (in weeks) to discretize to. Defaults to 2.}
 }
 \description{
-tsiRdata function
-this function takes in time cases births and pop vectors (of any lengths) and interpolates them using the given infectious period
+A function to take in time cases births and pop vectors (of any lengths) and interpolate them using the given infectious period.
 }
 

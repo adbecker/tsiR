@@ -1,15 +1,22 @@
-#' maxthreshold Function
-#' used to optimize the threshold parameter to give the best fit to the data
-#' @param data is the time, cases, births, pop data frame
-#' @param nsim is the number of simulations to do
-#' @param IP is the infectious period
-#' @param method is the simulation method used, i.e. deterministic, negbin, pois
-#' @param parms is the estimated parameters from estpars or mcmcestpars
-#' @param thresholdmin is the minimum number of cases to be considered an outbreak
-#' @param thresholdmax is the max number of cases to be considered an outbreak
-#' @param printon is a T/F statement to print the progress
+#' @title maxthreshold
+#' @description A function used to optimize the threshold parameter to give the best fit to the data. Optimizes the fit based on R squared.
+#' @param data The time, cases, births, pop data frame.
+#' @param nsim The number of simulations to do.
+#' @param IP The infectious period, which should the time step of the data.
+#' @param method The forward simulation method used, i.e. deterministic, negbin, pois.
+#' @param parms The estimated parameters from estpars or mcmcestpars.
+#' @param thresholdmin The minimum number of cases to be considered an outbreak.
+#' @param thresholdmax The max number of cases to be considered an outbreak.
+#' @param printon A T/F statement to print the progress.
 #'
-#'
+#' @examples
+#' require(kernlab)
+#' Mold <- twentymeas[["Mold"]]
+#' plotdata(Mold)
+#'parms <- estpars(Mold)
+#'tau <- maxthreshold(Mold,parms=parms)
+#'res <- runtsir(Mold,epidemics='break',threshold=tau,method='negbin')
+#' plotres(res)
 
 maxthreshold <- function(data,nsim=2,IP=2,method='deterministic',
                          parms,thresholdmin=2,thresholdmax=20,printon=FALSE){

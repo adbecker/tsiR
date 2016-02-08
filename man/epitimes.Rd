@@ -2,16 +2,16 @@
 % Please edit documentation in R/epitimes_function.R
 \name{epitimes}
 \alias{epitimes}
-\title{epitimes Function}
+\title{epitimes}
 \usage{
 epitimes(data, threshold)
 }
 \arguments{
-\item{data}{dataframe with the cases vector.}
+\item{data}{The inputed data frame with the cases vector. This is the same data you put into runtsir.}
 
-\item{threshold}{the required number of cases to call an outbreak.}
+\item{threshold}{The required number of cases observed to declare it an outbreak.}
 }
 \description{
-epitimes Function
+The times at which we declare a new outbreak has started based on the threshold parameter.
 }
 

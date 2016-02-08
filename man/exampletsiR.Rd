@@ -2,11 +2,15 @@
 % Please edit documentation in R/exampletsiR_function.R
 \name{exampletsiR}
 \alias{exampletsiR}
-\title{example tsiR function}
+\title{exampletsiR}
 \usage{
 exampletsiR()
 }
 \description{
-example tsiR function
+Example tsiR function.
+}
+\examples{
+require(kernlab)
+ex <- exampletsiR
 }
 

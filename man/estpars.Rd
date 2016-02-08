@@ -2,43 +2,51 @@
 % Please edit documentation in R/estpars_function.R
 \name{estpars}
 \alias{estpars}
-\title{estpars function}
+\title{estpars}
 \usage{
 estpars(data, xreg = "cumcases", IP = 2, seasonality = "standard",
   regtype = "gaussian", sigmamax = 3, family = "gaussian",
   userYhat = numeric(), alpha = NULL, sbar = NULL, printon = F)
 }
 \arguments{
-\item{data}{the data frame containing cases and interpolated births and populations.}
+\item{data}{The data frame containing cases and interpolated births and populations.}
 
-\item{xreg}{the x-axis for the regression. Options are 'cumcases' and 'cumbirths'. Defaults to 'cumcases'.}
+\item{xreg}{The x-axis for the regression. Options are 'cumcases' and 'cumbirths'. Defaults to 'cumcases'.}
 
-\item{IP}{the infectious period in weeks. Defaults to 2 weeks.}
+\item{IP}{The infectious period in weeks. This should be the same as your timestep. Defaults to 2 weeks.}
 
-\item{seasonality,}{the type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.}
+\item{seasonality}{The type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.}
 
-\item{regtype}{the type of regression used in susceptible reconstruction.
+\item{regtype}{The type of regression used in susceptible reconstruction.
 Options are 'gaussian', 'lm' (linear model), 'spline' (smooth.spline with 2.5 degrees freedom),
 'lowess' (with f = 2/3, iter = 1), 'loess' (degree 1), and 'user' which is just a user inputed vector.
 Defaults to 'gaussian' and if that fails then defaults to loess.}
 
-\item{sigmamax}{the inverse kernal width for the gaussian regression. Default is 3.
+\item{sigmamax}{The inverse kernal width for the gaussian regression. Default is 3.
 Smaller, stochastic outbreaks tend to need a lower sigma.}
 
-\item{family}{the family in the GLM regression, options are poisson and gaussian both with
+\item{family}{The family in the GLM regression, options are poisson and gaussian both with
 log link. Default is Poisson.
 to include some bayesian approaches. For 'bayesglm' we use a gaussian prior with mean 1e-4.}
 
-\item{userYhat}{the inputed regression vector if regtype='user'. Defaults to NULL.}
+\item{userYhat}{The inputed regression vector if regtype='user'. Defaults to NULL.}
 
-\item{alpha}{the mixing parameter. Defaults to NULL, i.e. the function estimates alpha.}
+\item{alpha}{The mixing parameter. Defaults to NULL, i.e. the function estimates alpha.}
 
-\item{sbar}{the mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.}
+\item{sbar}{The mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.}
 
-\item{printon}{whether to show diagnostic prints or not, defaults to FALSE.}
+\item{printon}{Whether to show diagnostic prints or not, defaults to FALSE.}
 }
 \description{
-This function computes the set up to run the TSIR model, i.e. reconstructes susecptibles and
-estimates beta and alpha.
+This function computes the set up to run the TSIR model, i.e. reconstructs susecptibles and
+estimates beta and alpha. This can be plugged into simulatetsir.
+}
+\examples{
+require(kernlab)
+London <- twentymeas[["London"]]
+parms <- estpars(London)
+names(parms)
+sim <- simulatetsir(London,parms=parms)
+plotres(sim)
 }
 

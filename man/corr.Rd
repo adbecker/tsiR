@@ -2,14 +2,21 @@
 % Please edit documentation in R/corr_function.R
 \name{corr}
 \alias{corr}
-\title{corr function}
+\title{corr}
 \usage{
 corr(sim)
 }
 \arguments{
-\item{sim}{the dataframe produced by the 'runtsir' function}
+\item{sim}{The dataframe or list produced by the 'runtsir' function.}
 }
 \description{
-corr function
+Plot the correlation of the true data against the fitted resimulated data.
+}
+\examples{
+require(tsiR)
+require(kernlab)
+London <- twentymeas[["London"]]
+res <- runtsir(London)
+corr(res)
 }
 

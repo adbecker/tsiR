@@ -2,16 +2,14 @@
 % Please edit documentation in R/jagsfilter_function.R
 \name{jagsfilter}
 \alias{jagsfilter}
-\title{jagsfilter Function
-used internally to filter jags results to give just the stuff well use}
+\title{jagsfilter}
 \usage{
 jagsfilter(mcmcresults)
 }
 \arguments{
-\item{mcmcresults}{is the input from the jags model}
+\item{mcmcresults}{is the input from the jags model.}
 }
 \description{
-jagsfilter Function
-used internally to filter jags results to give just the stuff well use
+Used internally to filter jags results to give just the inference well use.
 }
 

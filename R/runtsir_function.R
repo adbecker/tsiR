@@ -1,33 +1,38 @@
-#' runtsir function
+#' @title runtsir
 #'
-#' This function runs the TSIR model
-#' @param data the data frame containing cases and interpolated births and populations.
-#' @param nsim the number of simulations to do. Defaults to 100.
-#' @param xreg the x-axis for the regression. Options are 'cumcases' and 'cumbirths'. Defaults to 'cumcases'.
-#' @param IP the infectious period in weeks. Defaults to 2 weeks.
-#' @param regtype the type of regression used in susceptible reconstruction.
+#' @description This function runs the TSIR model.
+#' @param data The data frame containing cases and interpolated births and populations.
+#' @param nsim The number of simulations to do. Defaults to 100.
+#' @param xreg The x-axis for the regression. Options are 'cumcases' and 'cumbirths'. Defaults to 'cumcases'.
+#' @param IP The infectious period in weeks. Defaults to 2 weeks.
+#' @param regtype The type of regression used in susceptible reconstruction.
 #' Options are 'gaussian', 'lm' (linear model), 'spline' (smooth.spline with 2.5 degrees freedom),
 #' 'lowess' (with f = 2/3, iter = 1), 'loess' (degree 1), and 'user' which is just a user inputed vector.
 #' Defaults to 'gaussian' and if that fails then defaults to loess.
-#' @param sigmamax the inverse kernal width for the gaussian regression. Default is 3.
+#' @param sigmamax The inverse kernal width for the gaussian regression. Default is 3.
 #' Smaller, stochastic outbreaks tend to need a lower sigma.
-#' @param userYhat the inputed regression vector if regtype='user'. Defaults to NULL.
-#' @param family the family in the GLM regression, options are poisson and gaussian both with
+#' @param userYhat The inputed regression vector if regtype='user'. Defaults to NULL.
+#' @param family The family in the GLM regression, options are poisson and gaussian both with
 #' log link. Default is Poisson.
-#' @param sbar the mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.
-#' @param alpha the mixing parameter. Defaults to NULL, i.e. the function estimates alpha.
-#' @param method the type of next step prediction used. Options are 'negbin' for negative binomial,
+#' @param sbar The mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.
+#' @param alpha The mixing parameter. Defaults to NULL, i.e. the function estimates alpha.
+#' @param method The type of next step prediction used. Options are 'negbin' for negative binomial,
 #' 'pois' for poisson distribution, and 'deterministic'. Defaults to 'deterministic'.
-#' @param epidemics the type of data splitting. Options are 'cont' which doesn't split the data up at all,
+#' @param epidemics The type of data splitting. Options are 'cont' which doesn't split the data up at all,
 #' and 'break' which breaks the epidemics up if there are a lot of zeros. Defaults to 'cont'.
-#' @param pred the type of prediction used. Options are 'forward' and 'step-ahead'. Defaults to 'forward'.
-#' @param seasonality the type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.
-#' @param threshold the cut off for a new epidemic if epidemics = 'break'. Defaults to 1.
-#' @param add.noise.sd the sd for additive noise, defaults to zero.
-#' @param mul.noise.sd the sd for multiplicative noise, defaults to zero.
-#' @param printon whether to show diagnostic prints or not, defaults to FALSE.
-#' @param fit now removed but gives a warning
-#' @param fittype now removed but gives a warning
+#' @param pred The type of prediction used. Options are 'forward' and 'step-ahead'. Defaults to 'forward'.
+#' @param seasonality The type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.
+#' @param threshold The cut off for a new epidemic if epidemics = 'break'. Defaults to 1.
+#' @param add.noise.sd The sd for additive noise, defaults to zero.
+#' @param mul.noise.sd The sd for multiplicative noise, defaults to zero.
+#' @param printon Whether to show diagnostic prints or not, defaults to FALSE.
+#' @param fit Now removed but gives a warning.
+#' @param fittype Now removed but gives a warning.
+#' @examples
+#' require(kernlab)
+#' London <- twentymeas[["London"]]
+#' res <- runtsir(London,method='pois',nsim=10, IP=2)
+#' plotres(res)
 
 runtsir <- function(data, xreg = 'cumcases',
                     IP = 2,nsim = 10,
@@ -452,7 +457,7 @@ runtsir <- function(data, xreg = 'cumcases',
   res[res < 1] <- 0
 
   res <- as.data.frame(res)
-  
+
   #res$mean <- apply(res, 1, function(row) mean(row[-1],na.rm=T))
   res$mean <- rowMeans(res,na.rm=T)
   res$sd   <- apply(res, 1, function(row) sd(row[-1],na.rm=T))
@@ -461,9 +466,9 @@ runtsir <- function(data, xreg = 'cumcases',
 
   obs <- res$cases
   pred <- res$mean
- 
+
   fit <- lm(pred ~ obs)
-  
+
   rsquared <- signif(summary(fit)$adj.r.squared, 2)
 
   return(list('X'=X,'Y'=Y,'Yhat' =Yhat,

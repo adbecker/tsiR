@@ -1,7 +1,7 @@
-#' plotbreaks function
-#'
-#' @param data dataframe with the cases vector.
-#' @param threshold the epidemic threshold.
+#' @title plotbreaks
+#' @description Plots the cases data with a line whenever the forward simulation is seeded using the real data.
+#' @param data Data frame with the cases vector.
+#' @param threshold The epidemic threshold, i.e. the number of cases required to spark a new outbreak in the model.
 plotbreaks <- function(data,threshold){
   t0s <- epitimes(data,threshold)
   ptsdat <- as.data.frame(cbind('t'=data$time[t0s],'cpts'=data$cases[t0s]))

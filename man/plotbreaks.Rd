@@ -2,16 +2,16 @@
 % Please edit documentation in R/plotbreaks_function.R
 \name{plotbreaks}
 \alias{plotbreaks}
-\title{plotbreaks function}
+\title{plotbreaks}
 \usage{
 plotbreaks(data, threshold)
 }
 \arguments{
-\item{data}{dataframe with the cases vector.}
+\item{data}{Data frame with the cases vector.}
 
-\item{threshold}{the epidemic threshold.}
+\item{threshold}{The epidemic threshold, i.e. the number of cases required to spark a new outbreak in the model.}
 }
 \description{
-plotbreaks function
+Plots the cases data with a line whenever the forward simulation is seeded using the real data.
 }
 

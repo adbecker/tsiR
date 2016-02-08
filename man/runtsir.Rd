@@ -2,7 +2,7 @@
 % Please edit documentation in R/runtsir_function.R
 \name{runtsir}
 \alias{runtsir}
-\title{runtsir function}
+\title{runtsir}
 \usage{
 runtsir(data, xreg = "cumcases", IP = 2, nsim = 10,
   regtype = "gaussian", sigmamax = 3, userYhat = numeric(),
@@ -12,54 +12,60 @@ runtsir(data, xreg = "cumcases", IP = 2, nsim = 10,
   mul.noise.sd = 0, printon = F, fit = NULL, fittype = NULL)
 }
 \arguments{
-\item{data}{the data frame containing cases and interpolated births and populations.}
+\item{data}{The data frame containing cases and interpolated births and populations.}
 
-\item{xreg}{the x-axis for the regression. Options are 'cumcases' and 'cumbirths'. Defaults to 'cumcases'.}
+\item{xreg}{The x-axis for the regression. Options are 'cumcases' and 'cumbirths'. Defaults to 'cumcases'.}
 
-\item{IP}{the infectious period in weeks. Defaults to 2 weeks.}
+\item{IP}{The infectious period in weeks. Defaults to 2 weeks.}
 
-\item{nsim}{the number of simulations to do. Defaults to 100.}
+\item{nsim}{The number of simulations to do. Defaults to 100.}
 
-\item{regtype}{the type of regression used in susceptible reconstruction.
+\item{regtype}{The type of regression used in susceptible reconstruction.
 Options are 'gaussian', 'lm' (linear model), 'spline' (smooth.spline with 2.5 degrees freedom),
 'lowess' (with f = 2/3, iter = 1), 'loess' (degree 1), and 'user' which is just a user inputed vector.
 Defaults to 'gaussian' and if that fails then defaults to loess.}
 
-\item{sigmamax}{the inverse kernal width for the gaussian regression. Default is 3.
+\item{sigmamax}{The inverse kernal width for the gaussian regression. Default is 3.
 Smaller, stochastic outbreaks tend to need a lower sigma.}
 
-\item{userYhat}{the inputed regression vector if regtype='user'. Defaults to NULL.}
+\item{userYhat}{The inputed regression vector if regtype='user'. Defaults to NULL.}
 
-\item{alpha}{the mixing parameter. Defaults to NULL, i.e. the function estimates alpha.}
+\item{alpha}{The mixing parameter. Defaults to NULL, i.e. the function estimates alpha.}
 
-\item{sbar}{the mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.}
+\item{sbar}{The mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.}
 
-\item{family}{the family in the GLM regression, options are poisson and gaussian both with
+\item{family}{The family in the GLM regression, options are poisson and gaussian both with
 log link. Default is Poisson.}
 
-\item{method}{the type of next step prediction used. Options are 'negbin' for negative binomial,
+\item{method}{The type of next step prediction used. Options are 'negbin' for negative binomial,
 'pois' for poisson distribution, and 'deterministic'. Defaults to 'deterministic'.}
 
-\item{epidemics}{the type of data splitting. Options are 'cont' which doesn't split the data up at all,
+\item{epidemics}{The type of data splitting. Options are 'cont' which doesn't split the data up at all,
 and 'break' which breaks the epidemics up if there are a lot of zeros. Defaults to 'cont'.}
 
-\item{pred}{the type of prediction used. Options are 'forward' and 'step-ahead'. Defaults to 'forward'.}
+\item{pred}{The type of prediction used. Options are 'forward' and 'step-ahead'. Defaults to 'forward'.}
 
-\item{threshold}{the cut off for a new epidemic if epidemics = 'break'. Defaults to 1.}
+\item{threshold}{The cut off for a new epidemic if epidemics = 'break'. Defaults to 1.}
 
-\item{seasonality}{the type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.}
+\item{seasonality}{The type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.}
 
-\item{add.noise.sd}{the sd for additive noise, defaults to zero.}
+\item{add.noise.sd}{The sd for additive noise, defaults to zero.}
 
-\item{mul.noise.sd}{the sd for multiplicative noise, defaults to zero.}
+\item{mul.noise.sd}{The sd for multiplicative noise, defaults to zero.}
 
-\item{printon}{whether to show diagnostic prints or not, defaults to FALSE.}
+\item{printon}{Whether to show diagnostic prints or not, defaults to FALSE.}
 
-\item{fit}{now removed but gives a warning}
+\item{fit}{Now removed but gives a warning.}
 
-\item{fittype}{now removed but gives a warning}
+\item{fittype}{Now removed but gives a warning.}
 }
 \description{
-This function runs the TSIR model
+This function runs the TSIR model.
+}
+\examples{
+require(kernlab)
+London <- twentymeas[["London"]]
+res <- runtsir(London,method='pois',nsim=10, IP=2)
+plotres(res)
 }
 

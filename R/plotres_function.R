@@ -1,7 +1,7 @@
-#' plotres function
+#' @title plotres
 #'
-#' function to plot diagnostics and results of the runtsir function.
-#' @param dat the list produced from the runtsir function or the mcmctsir function
+#' @description Plots diagnostics and results of the runtsir function.
+#' @param dat the list produced from the runtsir, mcmctsir, and simulatetsir function.
 #'
 plotres <- function(dat){
 
@@ -91,9 +91,9 @@ plotres <- function(dat){
     geom_line(aes_string(y = 'mean'), colour = "orangered4",size=1) + geom_ribbon(eb,alpha=0.3)+
     theme_bw()
 
-  
+
   drops <- c('mean','sd','error','cases')
-  
+
   meltdf <- melt(dat$res[,!(names(dat$res) %in% drops)],id='time')
 
   p8 <- ggplot(meltdf,aes_string(x='time',y='value',fill='variable'))+

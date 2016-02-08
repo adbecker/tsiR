@@ -1,27 +1,27 @@
-#' mcmcestpars function
+#' @title mcmcestpars
 #'
-#' This function computes the set up to run the TSIR model, i.e. reconstructes susecptibles and
-#' estimates beta and alpha using MCMC computations.
+#' @description This function computes the set up to run the TSIR model, i.e. reconstructes susecptibles and
+#' estimates beta and alpha using MCMC computations. Used the same way as estpars.
 #'
-#' @param data the data frame containing cases and interpolated births and populations.
-#' @param xreg the x-axis for the regression. Options are 'cumcases' and 'cumbirths'. Defaults to 'cumcases'.
-#' @param IP the infectious period in weeks. Defaults to 2 weeks.
-#' @param regtype the type of regression used in susceptible reconstruction.
+#' @param data The data frame containing cases and interpolated births and populations.
+#' @param xreg The x-axis for the regression. Options are 'cumcases' and 'cumbirths'. Defaults to 'cumcases'.
+#' @param IP The infectious period in weeks. Defaults to 2 weeks.
+#' @param regtype The type of regression used in susceptible reconstruction.
 #' Options are 'gaussian', 'lm' (linear model), 'spline' (smooth.spline with 2.5 degrees freedom),
 #' 'lowess' (with f = 2/3, iter = 1), 'loess' (degree 1), and 'user' which is just a user inputed vector.
 #' Defaults to 'gaussian' and if that fails then defaults to loess.
-#' @param sigmamax the inverse kernal width for the gaussian regression. Default is 3.
+#' @param sigmamax The inverse kernal width for the gaussian regression. Default is 3.
 #' Smaller, stochastic outbreaks tend to need a lower sigma.
-#' @param userYhat the inputed regression vector if regtype='user'. Defaults to NULL.
-#' @param n.chains number of MCMC chains to use. Default is 3.
-#' @param update.iter number of MCMC iterations to use in the update aspect. Default is 10000.
-#' @param n.iter number of MCMC iterations to use. Default is 30000.
-#' @param n.adapt adaptive number for MCMC. Default is 1000.
-#' @param burn.in burn in number. Default is 100.
-#' @param seasonality the type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.
-#' @param sbar the mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.
-#' @param alpha the mixing parameter. Defaults to NULL, i.e. the function estimates alpha.
-#' @param printon whether to show diagnostic prints or not, defaults to FALSE.
+#' @param userYhat The inputed regression vector if regtype='user'. Defaults to NULL.
+#' @param n.chains Number of MCMC chains to use. Default is 3.
+#' @param update.iter Number of MCMC iterations to use in the update aspect. Default is 10000.
+#' @param n.iter Number of MCMC iterations to use. Default is 30000.
+#' @param n.adapt Adaptive number for MCMC. Default is 1000.
+#' @param burn.in Burn in number. Default is 100.
+#' @param seasonality The type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.
+#' @param sbar The mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.
+#' @param alpha The mixing parameter. Defaults to NULL, i.e. the function estimates alpha.
+#' @param printon Whether to show diagnostic prints or not, defaults to FALSE.
 
 mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
                         regtype = 'gaussian',sigmamax = 3,

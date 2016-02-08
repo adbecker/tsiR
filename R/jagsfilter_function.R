@@ -1,6 +1,6 @@
-#' jagsfilter Function
-#' used internally to filter jags results to give just the stuff well use
-#' @param mcmcresults is the input from the jags model
+#' @title jagsfilter
+#' @description Used internally to filter jags results to give just the inference well use.
+#' @param mcmcresults is the input from the jags model.
 
 
 jagsfilter <- function(mcmcresults){

@@ -2,17 +2,16 @@
 % Please edit documentation in R/derivative_function.R
 \name{derivative}
 \alias{derivative}
-\title{derivative Function}
+\title{derivative}
 \usage{
 derivative(X, Y)
 }
 \arguments{
-\item{X}{what to differentiate with respect to}
+\item{X}{The variable to differentiate with respect to.}
 
-\item{Y}{the function to differentiate}
+\item{Y}{The function / vector to differentiate.}
 }
 \description{
-This function computes an 8 point derivative
-Differentiate Y with respect to X
+This function computes an 8 point derivative.
 }
 

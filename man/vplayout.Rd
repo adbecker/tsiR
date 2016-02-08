@@ -2,8 +2,7 @@
 % Please edit documentation in R/vplayout_function.R
 \name{vplayout}
 \alias{vplayout}
-\title{vplayout function
-the function just breaks up the plot area into a grid. Called internally.}
+\title{vplayout}
 \usage{
 vplayout(x, y)
 }
@@ -13,7 +12,6 @@ vplayout(x, y)
 \item{y}{is the y lcoation of the ploy}
 }
 \description{
-vplayout function
 the function just breaks up the plot area into a grid. Called internally.
 }
 

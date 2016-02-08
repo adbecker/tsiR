@@ -2,14 +2,14 @@
 % Please edit documentation in R/plotres_function.R
 \name{plotres}
 \alias{plotres}
-\title{plotres function}
+\title{plotres}
 \usage{
 plotres(dat)
 }
 \arguments{
-\item{dat}{the list produced from the runtsir function or the mcmctsir function}
+\item{dat}{the list produced from the runtsir, mcmctsir, and simulatetsir function.}
 }
 \description{
-function to plot diagnostics and results of the runtsir function.
+Plots diagnostics and results of the runtsir function.
 }
 

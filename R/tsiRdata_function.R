@@ -1,10 +1,10 @@
-#' tsiRdata function
-#' this function takes in time cases births and pop vectors (of any lengths) and interpolates them using the given infectious period
-#' @param time the time vector
-#' @param cases the cases vector
-#' @param births the births vector
-#' @param pop the population vector
-#' @param IP the infectious period to discretize to. Defaults to 2
+#' @title tsiRdata
+#' @description A function to take in time cases births and pop vectors (of any lengths) and interpolate them using the given infectious period.
+#' @param time The time vector.
+#' @param cases The cases vector.
+#' @param births The births vector.
+#' @param pop The population vector.
+#' @param IP The infectious period (in weeks) to discretize to. Defaults to 2.
 
 tsiRdata <- function(time,cases,births,pop,IP=2){
 

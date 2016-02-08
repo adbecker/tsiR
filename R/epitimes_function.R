@@ -1,7 +1,9 @@
-#' epitimes Function
+#' @title epitimes
 #'
-#' @param data dataframe with the cases vector.
-#' @param threshold the required number of cases to call an outbreak.
+#' @description The times at which we declare a new outbreak has started based on the threshold parameter.
+#'
+#' @param data The inputed data frame with the cases vector. This is the same data you put into runtsir.
+#' @param threshold The required number of cases observed to declare it an outbreak.
 
 epitimes <- function(data,threshold){
 

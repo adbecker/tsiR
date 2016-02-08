@@ -2,16 +2,14 @@
 % Please edit documentation in R/plotdata_function.R
 \name{plotdata}
 \alias{plotdata}
-\title{plotdata Function
-plots the cases data as well as birth and population dynamics}
+\title{plotdata}
 \usage{
 plotdata(data)
 }
 \arguments{
-\item{data}{is the dataframe}
+\item{data}{The dataframe with time, cases, births, and pop.}
 }
 \description{
-plotdata Function
-plots the cases data as well as birth and population dynamics
+Plots the cases data as well as birth and population dynamics.
 }
 

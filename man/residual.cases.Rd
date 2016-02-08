@@ -2,20 +2,16 @@
 % Please edit documentation in R/residual.cases_function.R
 \name{residual.cases}
 \alias{residual.cases}
-\title{residuals.cases Function
-computes the residuals for when X is the cumulative cases
-used internally}
+\title{residuals.cases}
 \usage{
 residual.cases(Yhat, Y)
 }
 \arguments{
-\item{Yhat}{is the fitted regression}
+\item{Yhat}{The fitted regression line.}
 
-\item{Y}{is the cumulative births}
+\item{Y}{The cumulative births.}
 }
 \description{
-residuals.cases Function
-computes the residuals for when X is the cumulative cases
-used internally
+Computes the residuals for when X is the cumulative cases. Used internally.
 }
 

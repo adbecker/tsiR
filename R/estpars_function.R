@@ -1,25 +1,30 @@
-#' estpars function
-#'
-#' This function computes the set up to run the TSIR model, i.e. reconstructes susecptibles and
-#' estimates beta and alpha.
-#' @param data the data frame containing cases and interpolated births and populations.
-#' @param xreg the x-axis for the regression. Options are 'cumcases' and 'cumbirths'. Defaults to 'cumcases'.
-#' @param IP the infectious period in weeks. Defaults to 2 weeks.
-#' @param regtype the type of regression used in susceptible reconstruction.
+#' @title estpars
+#' @description This function computes the set up to run the TSIR model, i.e. reconstructs susecptibles and
+#' estimates beta and alpha. This can be plugged into simulatetsir.
+#' @param data The data frame containing cases and interpolated births and populations.
+#' @param xreg The x-axis for the regression. Options are 'cumcases' and 'cumbirths'. Defaults to 'cumcases'.
+#' @param IP The infectious period in weeks. This should be the same as your timestep. Defaults to 2 weeks.
+#' @param regtype The type of regression used in susceptible reconstruction.
 #' Options are 'gaussian', 'lm' (linear model), 'spline' (smooth.spline with 2.5 degrees freedom),
 #' 'lowess' (with f = 2/3, iter = 1), 'loess' (degree 1), and 'user' which is just a user inputed vector.
 #' Defaults to 'gaussian' and if that fails then defaults to loess.
-#' @param sigmamax the inverse kernal width for the gaussian regression. Default is 3.
+#' @param sigmamax The inverse kernal width for the gaussian regression. Default is 3.
 #' Smaller, stochastic outbreaks tend to need a lower sigma.
-#' @param userYhat the inputed regression vector if regtype='user'. Defaults to NULL.
-#' @param family the family in the GLM regression, options are poisson and gaussian both with
+#' @param userYhat The inputed regression vector if regtype='user'. Defaults to NULL.
+#' @param family The family in the GLM regression, options are poisson and gaussian both with
 #' log link. Default is Poisson.
 #' to include some bayesian approaches. For 'bayesglm' we use a gaussian prior with mean 1e-4.
-#' @param seasonality, the type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.
-#' @param sbar the mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.
-#' @param alpha the mixing parameter. Defaults to NULL, i.e. the function estimates alpha.
-#' @param printon whether to show diagnostic prints or not, defaults to FALSE.
-
+#' @param seasonality The type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.
+#' @param sbar The mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.
+#' @param alpha The mixing parameter. Defaults to NULL, i.e. the function estimates alpha.
+#' @param printon Whether to show diagnostic prints or not, defaults to FALSE.
+#' @examples
+#' require(kernlab)
+#' London <- twentymeas[["London"]]
+#' parms <- estpars(London)
+#' names(parms)
+#' sim <- simulatetsir(London,parms=parms)
+#' plotres(sim)
 estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
                     regtype = 'gaussian',sigmamax = 3,family='gaussian',
                     userYhat = numeric(),alpha=NULL,sbar=NULL,

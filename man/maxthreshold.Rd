@@ -2,31 +2,38 @@
 % Please edit documentation in R/maxthreshold_function.R
 \name{maxthreshold}
 \alias{maxthreshold}
-\title{maxthreshold Function
-used to optimize the threshold parameter to give the best fit to the data}
+\title{maxthreshold}
 \usage{
 maxthreshold(data, nsim = 2, IP = 2, method = "deterministic", parms,
   thresholdmin = 2, thresholdmax = 20, printon = FALSE)
 }
 \arguments{
-\item{data}{is the time, cases, births, pop data frame}
+\item{data}{The time, cases, births, pop data frame.}
 
-\item{nsim}{is the number of simulations to do}
+\item{nsim}{The number of simulations to do.}
 
-\item{IP}{is the infectious period}
+\item{IP}{The infectious period, which should the time step of the data.}
 
-\item{method}{is the simulation method used, i.e. deterministic, negbin, pois}
+\item{method}{The forward simulation method used, i.e. deterministic, negbin, pois.}
 
-\item{parms}{is the estimated parameters from estpars or mcmcestpars}
+\item{parms}{The estimated parameters from estpars or mcmcestpars.}
 
-\item{thresholdmin}{is the minimum number of cases to be considered an outbreak}
+\item{thresholdmin}{The minimum number of cases to be considered an outbreak.}
 
-\item{thresholdmax}{is the max number of cases to be considered an outbreak}
+\item{thresholdmax}{The max number of cases to be considered an outbreak.}
 
-\item{printon}{is a T/F statement to print the progress}
+\item{printon}{A T/F statement to print the progress.}
 }
 \description{
-maxthreshold Function
-used to optimize the threshold parameter to give the best fit to the data
+A function used to optimize the threshold parameter to give the best fit to the data. Optimizes the fit based on R squared.
+}
+\examples{
+require(kernlab)
+Mold <- twentymeas[["Mold"]]
+plotdata(Mold)
+parms <- estpars(Mold)
+tau <- maxthreshold(Mold,parms=parms)
+res <- runtsir(Mold,epidemics='break',threshold=tau,method='negbin')
+plotres(res)
 }
 

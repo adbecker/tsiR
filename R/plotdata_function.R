@@ -1,6 +1,6 @@
-#' plotdata Function
-#' plots the cases data as well as birth and population dynamics
-#' @param data is the dataframe 
+#' @title plotdata
+#' @description Plots the cases data as well as birth and population dynamics.
+#' @param data The dataframe with time, cases, births, and pop.
 
 plotdata <- function(data){
 

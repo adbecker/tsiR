@@ -1,10 +1,11 @@
-\name{Measles incidence data from 20 cities}
+
+\name{twentymeas}
 \alias{twentymeas}
 \docType{data}
-\title{
-22 year times series for 20 cities, already interpolated}
+\title{Measles incidence data from 20 cities
+}
 \description{
-twentymeas is a list containing 20 dataframes with cases, births, populations.
+twentymeas is a list containing 20 dataframes with cases, births, populations. Each dataframe is a 22 year time series at biweekly (i.e. IP=2) intervals.
 }
 \usage{data("twentymeas")}
 
@@ -14,5 +15,7 @@ From Bryan Grenfell}
 
 \examples{
 data(twentymeas)
-london <- twentymeas[["London"]]}
+names(twentymeas)
+london <- twentymeas[["London"]]
+plotdata(london)}
 \keyword{datasets}
