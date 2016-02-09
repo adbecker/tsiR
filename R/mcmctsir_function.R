@@ -42,6 +42,53 @@ mcmctsir <- function(data, xreg = 'cumcases',
                      add.noise.sd = 0, mul.noise.sd = 0,
                      printon=F){
 
+  
+  if( (nsim %% 1 ==0) == F){
+    nsim <- round(nsim) 
+  }
+  
+  datacheck <- c('time','cases','pop','births')
+  if(sum(datacheck %in% names(data)) < length(datacheck)){  
+    stop('data frame must contain "time", "cases", "pop", and "births" columns')
+  } 
+  
+  xregcheck <- c('cumcases','cumbirths')
+  if(xreg %in% xregcheck == F){
+    stop('xreg must be either "cumcases" or "cumbirths"')
+  } 
+  
+  regtypecheck <- c('gaussian','lm','spline','lowess','loess','user')
+  if(regtype %in% regtypecheck == F){
+    stop("regtype must be one of 'gaussian','lm','spline','lowess','loess','user'")
+  } 
+  
+  if(length(sbar) == 1){
+    if(sbar > 1 || sbar < 0){
+      stop("sbar must be a percentage of the population, i.e. between zero and one.")
+    }
+  }
+  
+  seasonalitycheck <- c('standard','seasonality')
+  if(seasonality %in% seasonalitycheck == F){
+    stop("epidemics must be either 'standard' or 'school-term'")
+  } 
+  
+  methodcheck <- c('deterministic','negbin','pois')
+  if(method %in% methodcheck == F){
+    stop("method must be one of 'deterministic','negbin','pois'")
+  }
+  
+  epidemicscheck <- c('cont','break')
+  if(epidemics %in% epidemicscheck == F){
+    stop("epidemics must be either 'cont' or 'break'")
+  } 
+  
+  predcheck <- c('forward','step-ahead')
+  if(pred %in% predcheck == F){
+    stop("pred must be either 'forward' or 'step-ahead'")
+  } 
+  
+  
   nzeros <- length(which(data$cases==0))
   ltot <- length(data$cases)
   if(nzeros > 0.3 * ltot && epidemics == 'cont'){

@@ -14,7 +14,7 @@ exampletsiR <- function(){
   cat('\nHow many simulations do you want to do?')
   nsim <- scan(what=numeric(),nmax=1,quiet = T)
 
-  cat('\nAssign a value to alpha (just hit enter if you want to estimate)')
+  cat('\nAssign a value to alpha (should be slightly under 1) (just hit enter if you want to estimate)')
   alpha <- scan(what=numeric(),nmax=1,quiet = T)
 
   cat('\nAssign a value to sbar (between 0 and 1) (just hit enter if you want to estimate)')

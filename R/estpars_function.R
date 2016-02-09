@@ -30,6 +30,40 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
                     userYhat = numeric(),alpha=NULL,sbar=NULL,
                     printon=F){
 
+  
+  datacheck <- c('time','cases','pop','births')
+  if(sum(datacheck %in% names(data)) < length(datacheck)){  
+    stop('data frame must contain "time", "cases", "pop", and "births" columns')
+  } 
+  
+  xregcheck <- c('cumcases','cumbirths')
+  if(xreg %in% xregcheck == F){
+    stop('xreg must be either "cumcases" or "cumbirths"')
+  } 
+  
+  regtypecheck <- c('gaussian','lm','spline','lowess','loess','user')
+  if(regtype %in% regtypecheck == F){
+    stop("regtype must be one of 'gaussian','lm','spline','lowess','loess','user'")
+  } 
+  
+  if(length(sbar) == 1){
+    if(sbar > 1 || sbar < 0){
+      stop("sbar must be a percentage of the population, i.e. between zero and one.")
+    }
+  }
+  
+  familycheck <- c('gaussian','poisson')
+  if(family %in% familycheck == F){
+    stop("family must be either 'gaussian' or 'poisson'")
+  } 
+  
+  
+  seasonalitycheck <- c('standard','seasonality')
+  if(seasonality %in% seasonalitycheck == F){
+    stop("epidemics must be either 'standard' or 'school-term'")
+  } 
+  
+  
   input.alpha <- alpha
   input.sbar <- sbar
 
