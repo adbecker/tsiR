@@ -58,7 +58,7 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
   
   seasonalitycheck <- c('standard','seasonality')
   if(seasonality %in% seasonalitycheck == F){
-    stop("epidemics must be either 'standard' or 'school-term'")
+    stop("epidemics must be either 'standard' or 'schoolterm'")
   } 
   
   if(n.iter < 5000){
