@@ -76,9 +76,9 @@ runtsir <- function(data, xreg = 'cumcases',
   } 
   
   
-  seasonalitycheck <- c('standard','seasonality')
+  seasonalitycheck <- c('standard','schoolterm')
   if(seasonality %in% seasonalitycheck == F){
-    stop("epidemics must be either 'standard' or 'schoolterm'")
+    stop("seasonality must be either 'standard' or 'schoolterm'")
   } 
   
   methodcheck <- c('deterministic','negbin','pois')
