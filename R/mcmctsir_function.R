@@ -265,7 +265,7 @@ mcmctsir <- function(data, xreg = 'cumcases',
 
     numseas <- length(unique(period))
     mymodel <- textConnection('model{
-                              alpha ~ dunif(0.5,0.99)
+                              alpha ~ dunif(0.5,1.5)
                               for(season in 1:numseas){
                               beta[season] ~ dunif(-13,-3)
                               }
@@ -297,7 +297,7 @@ mcmctsir <- function(data, xreg = 'cumcases',
 
     theModel <- jags.model(mymodel,data=jags_data_list,n.chains=n.chains)
     update(theModel,update.iter)
-    inits = list("alpha" = 0.97)
+    inits = list("alpha" = 1)
     mcmcsamples <- coda.samples(theModel,c("alpha","beta",'sigma','sbar'),
                                 inits=inits,n.iter=n.iter, n.adapt=n.adapt,burn.in=burn.in)
 

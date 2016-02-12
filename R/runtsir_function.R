@@ -444,6 +444,16 @@ runtsir <- function(data, xreg = 'cumcases',
     
   }
   
+  confinterval <- suppressMessages(confint(glmfit))
+  continterval <- confinterval[1:length(unique(period)),]
+  betalow <- exp(confinterval[,1])
+  betahigh <- exp(confinterval[,2])
+  
+  contact <- as.data.frame(cbind('time'=seq(1,length(beta[period]),1),
+                                 betalow[period],beta[period],betahigh[period]),row.names=F)
+  names(contact) <- c('time','betalow','beta','betahigh')
+  contact <- head(contact,52/IP)
+
   
   print(c('alpha'=unname(signif(alpha,2)),
           'mean beta'=unname(signif(mean(beta),3)),
@@ -523,7 +533,7 @@ runtsir <- function(data, xreg = 'cumcases',
   
   rsquared <- signif(summary(fit)$adj.r.squared, 2)
   
-  return(list('X'=X,'Y'=Y,'Yhat' =Yhat,
+  return(list('X'=X,'Y'=Y,'Yhat' =Yhat, 'contact'=contact,
               'beta'=head(beta[period],52/IP),'rho'=adj.rho,'pop'=pop,
               'Z'=Z,'sbar'=sbar,'alpha'=alpha,
               'res'=res,'loglik'=loglik,'Smean'=Smean,
