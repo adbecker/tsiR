@@ -34,6 +34,10 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
                         printon=F){
 
   
+  rjagscheck <- 'rjags' %in% installed.packages()[,"Package"]
+  if(rjagscheck == FALSE){
+    stop('Package "rjags" is not installed, please install prior to using MCMC portions of code')
+  }
   
   datacheck <- c('time','cases','pop','births')
   if(sum(datacheck %in% names(data)) < length(datacheck)){  

@@ -47,6 +47,12 @@ mcmctsir <- function(data, xreg = 'cumcases',
     nsim <- round(nsim) 
   }
   
+  
+  rjagscheck <- 'rjags' %in% installed.packages()[,"Package"]
+  if(rjagscheck == FALSE){
+    stop('Package "rjags" is not installed, please install prior to using MCMC portions of code')
+  }
+  
   datacheck <- c('time','cases','pop','births')
   if(sum(datacheck %in% names(data)) < length(datacheck)){  
     stop('data frame must contain "time", "cases", "pop", and "births" columns')
