@@ -49,7 +49,7 @@ and 'break' which breaks the epidemics up if there are a lot of zeros. Defaults 
 
 \item{pred}{The type of prediction used. Options are 'forward' and 'step-ahead'. Defaults to 'forward'.}
 
-\item{seasonality}{The type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.}
+\item{seasonality}{The type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact or none for a single contact parameter. Defaults to standard.}
 
 \item{threshold}{The cut off for a new epidemic if epidemics = 'break'. Defaults to 1.}
 

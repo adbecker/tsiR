@@ -21,7 +21,7 @@
 #' @param epidemics The type of data splitting. Options are 'cont' which doesn't split the data up at all,
 #' and 'break' which breaks the epidemics up if there are a lot of zeros. Defaults to 'cont'.
 #' @param pred The type of prediction used. Options are 'forward' and 'step-ahead'. Defaults to 'forward'.
-#' @param seasonality The type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.
+#' @param seasonality The type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact, or none for a single contact parameter. Defaults to standard.
 #' @param threshold The cut off for a new epidemic if epidemics = 'break'. Defaults to 1.
 #' @param add.noise.sd The sd for additive noise, defaults to zero.
 #' @param mul.noise.sd The sd for multiplicative noise, defaults to zero.
@@ -76,9 +76,9 @@ runtsir <- function(data, xreg = 'cumcases',
   } 
   
   
-  seasonalitycheck <- c('standard','schoolterm')
+  seasonalitycheck <- c('standard','schoolterm','none')
   if(seasonality %in% seasonalitycheck == F){
-    stop("seasonality must be either 'standard' or 'schoolterm'")
+    stop("seasonality must be either 'standard' or 'schoolterm' or 'none'")
   } 
   
   methodcheck <- c('deterministic','negbin','pois')
@@ -255,6 +255,13 @@ runtsir <- function(data, xreg = 'cumcases',
     
     iterm <- round(approx(term,n=52/IP)$y)
     period <- rep(iterm, round(nrow(data)+1))[1:(nrow(data)-1)]
+    
+  }
+  
+  if(seasonality == 'none'){
+    
+    period <- rep(1,nrow(data)-1)
+    period[nrow(data)-1] <- 2  
     
   }
   
@@ -442,6 +449,13 @@ runtsir <- function(data, xreg = 'cumcases',
     
     beta <- exp(coef(glmfit))
     
+  }
+  
+  
+  if(seasonality == 'none'){
+    beta[2] <- beta[1]
+    beta <- mean(beta)
+    period <- rep(1,nrow(data)-1)
   }
   
   confinterval <- suppressMessages(confint(glmfit))

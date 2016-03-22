@@ -47,7 +47,7 @@ and 'break' which breaks the epidemics up if there are a lot of zeros. Defaults 
 
 \item{threshold}{The cut off for a new epidemic if epidemics = 'break'. Defaults to 1.}
 
-\item{seasonality}{The type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.}
+\item{seasonality}{The type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact, or none for a single contact parameter. Defaults to standard.}
 
 \item{add.noise.sd}{The sd for additive noise, defaults to zero.}
 

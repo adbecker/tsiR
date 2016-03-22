@@ -15,7 +15,7 @@ estpars(data, xreg = "cumcases", IP = 2, seasonality = "standard",
 
 \item{IP}{The infectious period in weeks. This should be the same as your timestep. Defaults to 2 weeks.}
 
-\item{seasonality}{The type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.}
+\item{seasonality}{The type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact or none for a single contact parameter. Defaults to standard.}
 
 \item{regtype}{The type of regression used in susceptible reconstruction.
 Options are 'gaussian', 'lm' (linear model), 'spline' (smooth.spline with 2.5 degrees freedom),

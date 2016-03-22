@@ -26,7 +26,7 @@
 #' @param pred The type of prediction used. Options are 'forward' and 'step-ahead'. Defaults to 'forward'.
 #' @param threshold The cut off for a new epidemic if epidemics = 'break'. Defaults to 1.
 #' @param add.noise.sd The sd for additive noise, defaults to zero.
-#' @param seasonality The type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.
+#' @param seasonality The type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact or none for a single contact parameter. Defaults to standard.
 #' @param mul.noise.sd The sd for multiplicative noise, defaults to zero.
 #' @param printon Whether to show diagnostic prints or not, defaults to FALSE.
 mcmctsir <- function(data, xreg = 'cumcases',
@@ -74,9 +74,9 @@ mcmctsir <- function(data, xreg = 'cumcases',
     }
   }
   
-  seasonalitycheck <- c('standard','schoolterm')
+  seasonalitycheck <- c('standard','schoolterm','none')
   if(seasonality %in% seasonalitycheck == F){
-    stop("seasonality must be either 'standard' or 'schoolterm'")
+    stop("seasonality must be either 'standard' or 'schoolterm' or 'none'")
   } 
   
   methodcheck <- c('deterministic','negbin','pois')
@@ -245,7 +245,14 @@ mcmctsir <- function(data, xreg = 'cumcases',
     period <- rep(iterm, round(nrow(data)+1))[1:(nrow(data)-1)]
 
   }
-
+  
+  if(seasonality == 'none'){
+    
+    period <- rep(1,nrow(data)-1)
+    period[nrow(data)-1] <- 2  
+    
+  }
+  
   Inew <- tail(Iadjusted,-1)+1
   lIminus <- log(head(Iadjusted,-1)+1)
   Zminus <- head(Z,-1)
@@ -500,6 +507,13 @@ mcmctsir <- function(data, xreg = 'cumcases',
 
   }
 
+  
+  if(seasonality == 'none'){
+    beta[2] <- beta[1]
+    beta <- mean(beta)
+    period <- rep(1,nrow(data)-1)
+  }
+  
   contact <- as.data.frame(cbind('time'=seq(1,length(beta[period]),1),
                                  betalow[period],beta[period],betahigh[period]),row.names=F)
   names(contact) <- c('time','betalow','beta','betahigh')

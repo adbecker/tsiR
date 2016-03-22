@@ -14,7 +14,7 @@
 #' @param family The family in the GLM regression, options are poisson and gaussian both with
 #' log link. Default is Poisson.
 #' to include some bayesian approaches. For 'bayesglm' we use a gaussian prior with mean 1e-4.
-#' @param seasonality The type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact. Defaults to standard.
+#' @param seasonality The type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact or none for a single contact parameter. Defaults to standard.
 #' @param sbar The mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.
 #' @param alpha The mixing parameter. Defaults to NULL, i.e. the function estimates alpha.
 #' @param printon Whether to show diagnostic prints or not, defaults to FALSE.
@@ -58,9 +58,9 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
   } 
   
   
-  seasonalitycheck <- c('standard','schoolterm')
+  seasonalitycheck <- c('standard','schoolterm','none')
   if(seasonality %in% seasonalitycheck == F){
-    stop("seasonality must be either 'standard' or 'schoolterm'")
+    stop("seasonality must be either 'standard' or 'schoolterm' or 'none'")
   } 
   
   
@@ -198,6 +198,13 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
     iterm <- round(approx(term,n=52/IP)$y)
     period <- rep(iterm, round(nrow(data)+1))[1:(nrow(data)-1)]
 
+  }
+  
+  if(seasonality == 'none'){
+    
+    period <- rep(1,nrow(data)-1)
+    period[nrow(data)-1] <- 2  
+    
   }
 
   Inew <- tail(Iadjusted,-1)+1
@@ -386,6 +393,12 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
 
   }
 
+  if(seasonality == 'none'){
+    beta[2] <- beta[1]
+    beta <- mean(beta)
+    period <- rep(1,nrow(data)-1)
+  }
+  
 
   return(list('X'=X,'Y'=Y,'Yhat'=Yhat,'Smean'=Smean,
               'beta'=head(beta[period],52/IP),'rho'=adj.rho,'Z'=Z,
