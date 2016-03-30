@@ -1,6 +1,10 @@
 ## tsiR 
 ## an R package for fitting TSIR models 
 
+## Introduction 
+
+Currently fits and runs the TSIR model using a number of different fitting options, both Bayesian and frequentist. Soon will be updated with TSIR(S) functions.
+
 ### Version
 0.0.1.0
 
