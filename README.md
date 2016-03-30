@@ -33,8 +33,7 @@ Data can be plotted using *plotdata* or *plotcases*.
 
 
 | Function | Purpose |
-----------------------
-
+|----------|-----------|
 |*estpars* |  Using simple regression: reconstructs susceptibles and estimates parameters|
 |*exampletsiR* |  Using the London data: walks one through the fitting options of *runtsir*|
 |*maxthreshold* |  Using simple regression: optimizes the threshold parameter for sparse data|
