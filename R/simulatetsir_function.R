@@ -72,8 +72,8 @@ simulatetsir <- function(data, nsim = 100, IP=2,
         I <- I
       }
 
-      lambda <- unname(beta[period[t-1]] * S[t-1] * (I[t-1])^alpha)
-
+      lambda <- min(S[t-1],unname(beta[period[t-1]] * S[t-1] * (I[t-1])^alpha))
+      
       if(lambda < 1 || is.nan(lambda) == T){lambda <- 0}
 
       if(method == 'deterministic'){

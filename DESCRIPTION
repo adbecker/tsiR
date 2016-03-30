@@ -1,12 +1,12 @@
 Package: tsiR
 Type: Package
-Title: An implementation of the TSIR model
-Version: 0.0.0.9000
-Date: 2016-03-09
+Title: An implementation of the TSIR(S) model
+Version: 0.0.1.000
+Date: 2016-03-30
 Authors@R: c(person("Alexander D.","Becker",
 		role=c("aut","cre"),email="adbecker@princeton.edu"),
 	  person("Sinead E.","Morris",role=c("ctb")))
-Description: An implementation of the TSIR model using a number of different fitting options
+Description: An implementation of the TSIR(S) model using a number of different fitting options
     for disease time series data.
 Depends: R (>= 3.1.0)
 License: GPL-3
