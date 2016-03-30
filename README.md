@@ -1,5 +1,5 @@
 ## tsiR 
-## an R package for running TSIR models
+## an R package for fitting TSIR models
 
 ### Version
 0.0.1.0
@@ -27,8 +27,32 @@ We include 20 data sets form the UK each with 20 years of measles data (biweekly
 
 We require that the data must be a data.frame with column names 'time','cases', 'births', and 'pop'. You can load these four vectors into the function *tsiRdata* (``` example <- tsiRdata(time = , cases = , births = , pop = , IP = )```) where *IP=* designates the generation time to interpolate the data on.
 
-
 Data can be plotted using *plotdata* or *plotcases*.
+
+### Main Functions
+
+
+| Function | Purpose |
+----------------------
+
+|*estpars* |  Using simple regression: reconstructs susceptibles and estimates parameters|
+|*exampletsiR* |  Using the London data: walks one through the fitting options of *runtsir*|
+|*maxthreshold* |  Using simple regression: optimizes the threshold parameter for sparse data|
+|*mcmcestpars* |  Using MCMC: reconstructions susceptibles and estimates parameters|
+|*mcmctsir* |  Using MCMC: reconstructions susceptibles, estimates parameters, and runs the simulation|
+|*plotcases* |  Plots just the cases data|
+|*plotcomp* |  Plots the data versus the simulations|
+|*plotdata* |  Plots the (interpolated) cases, births, and population time series|
+|*plotres* |  Plots the fitted regressions, reporting, susceptible reconstruction, estimated parameters, and the fit diagonstics|
+|*runtsir* |  Using simple regression: reconstructions suceptibles, estimates parameters, and runs the simulation|
+|*simulatetsir* |  Runs the simulation taking in the output from *estpars* or *mcmcestpars*|
+|*tsiRdata* |  Interpolates cases, births, and pop vectors to the generation time of the disease|
+|*twentymeas* |  Complete biweekly (IP=2) data sets from twenty UK cities|
+
+
+\end{table}
+
+
 
 ### Example 1
 
