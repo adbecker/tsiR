@@ -124,7 +124,7 @@ Remember all of these examples used ```IP = 2```, if your data is aggregated by 
 
 ### Issues
 
-Please email me at adbecker at princeton dot edu with any issues. 
+Please email me at adbecker at princeton dot edu with any issues. If you find the package helpful or use it please cite us ```citation('tsiR')```.
 
 
 
