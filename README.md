@@ -1,5 +1,5 @@
 ## tsiR 
-## an R package for fitting TSIR models
+## an R package for fitting TSIR models (will put on CRAN soon)
 
 ### Version
 0.0.1.0
