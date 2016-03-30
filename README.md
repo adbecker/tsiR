@@ -31,6 +31,7 @@ Data can be plotted using *plotdata* or *plotcases*.
 
 ### Main Functions
 
+A quick table of the main functions can be found below. Individual options can be found via ?function_name in R.
 
 | Function | Purpose |
 |----------|-----------|
@@ -48,9 +49,7 @@ Data can be plotted using *plotdata* or *plotcases*.
 |*tsiRdata* |  Interpolates cases, births, and pop vectors to the generation time of the disease|
 |*twentymeas* |  Complete biweekly (IP=2) data sets from twenty UK cities|
 
-
-\end{table}
-
+In the fitting functions, number of options such as fixing alpha (```alpha = 0.97```, for example) and Sbar (```sbar = 0.025```, for example) are provided. Additionally, contact can be seasonal or driven by the school term calendar (```seasonality = "standard", "schoolterm" or "none"```.
 
 
 ### Example 1
