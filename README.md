@@ -53,7 +53,7 @@ A quick table of the main functions can be found below. Individual options can b
 |*tsiRdata* |  Interpolates cases, births, and pop vectors to the generation time of the disease|
 |*twentymeas* |  Complete biweekly (IP=2) data sets from twenty UK cities|
 
-In the fitting functions, number of options such as fixing alpha (```alpha = 0.97```, for example) and Sbar (```sbar = 0.025```, for example) are provided. Additionally, contact can be seasonal or driven by the school term calendar (```seasonality = "standard", "schoolterm" or "none"```. These functions work for data with any fixed generation time, although in the examples we will use biweekly data.
+In the fitting functions, number of options such as fixing alpha (```alpha = 0.97```, for example) and Sbar (```sbar = 0.025```, for example) are provided. Additionally, contact can be seasonal or driven by the school term calendar (```seasonality = "standard", "schoolterm" or "none")``` for the null model. These functions work for data with any fixed generation time, although in the examples we will use biweekly data.
 
 A couple examples (but not using all functions or options) follow.
 
