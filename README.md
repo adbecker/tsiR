@@ -11,7 +11,7 @@ You can currently install **tsiR** via devtools which will install all dependenc
 require(devtools)
 install_github('adbecker/tsiR')
 ```
-Load the package and dependencies **kernlab**, **ggplot2**, **reshape2**, **grid**.
+Load the package and dependencies **kernlab**, **ggplot2**, **reshape2**, **grid**. The first dependency is for the Gaussian Process regression, while the others are just for plotting. 
 
 ```sh
 require(tsiR)
@@ -115,8 +115,9 @@ MoldRes <- simulatetsir(MoldMeas,parms=parms,epidemics='break',threshold=tau,
 plotres(MoldRes)
 ```
 
+### Issues
 
-
+Please email me at adbecker at princeton dot edu with any issues. 
 
 
 
