@@ -25,9 +25,13 @@ require(grid)
 
 We include 20 data sets form the UK each with 20 years of measles data (biweekly data, i.e. IP = 2 in the *runtsir*, *estpars*, *simulatetsir*, *mcmctsir*, *mcmcestpars* functions). 
 
-We require that the data must be a data.frame with column names 'time','cases', 'births', and 'pop'. Data can be plotted using *plotdata* or *plotcases*.
+We require that the data must be a data.frame with column names 'time','cases', 'births', and 'pop'. You can load these four vectors into the function *tsiRdata* (```sh example <- tsiRdata(time = , cases = , births = , pop = , IP = )```) where *IP=* designates the generation time to interpolate the data on.
+
+
+Data can be plotted using *plotdata* or *plotcases*.
 
 ### Example 1
+
 First load and plot the data:
 ```sh
 names(twentymeas)
