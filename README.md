@@ -1,5 +1,5 @@
-# **tsiR**
-## **tsiR**: A package to run *time-series Susceptible-Infected-Recovered* models in R. Soon to be on CRAN!
+## **tsiR**
+### **tsiR**: A package to run *time-series Susceptible-Infected-Recovered* models in R. Soon to be on CRAN!
 
 citation('tsiR')
 
