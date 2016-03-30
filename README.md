@@ -40,7 +40,7 @@ head(LondonMeas)
 plotdata(LondonMeas)
 ```
 
-The default settings for *runtsir* (and all functions) can be accessed through *runtsir* in the R console. Based on measles, everything is written in modulo two weeks, however this can be changed by setting *IP=* to the number of weeks between each time step. The minimal necessary input for a biweekly data set is thus simply *data = *. Here we run a simple example using the default options: cumulative cases on the x axis, a Gaussian regression (default) between cumulative cases and births, estimating both $$\bar{S}$$ and $$\alpha$$, estimating a 26 (52/IP) point contact parameter, and we run the forward simulation completely forward. We specify the option to draw the next time step from a negative binomial distribution as well as specifying a Poisson link function in the GLM. Additionally, we specify to do 100 simulations.
+The default settings for *runtsir* (and all functions) can be accessed through *runtsir* in the R console. Based on measles, everything is written in modulo two weeks, however this can be changed by setting *IP=* to the number of weeks between each time step. The minimal necessary input for a biweekly data set is thus simply *data = *. Here we run a simple example using the default options: cumulative cases on the x axis, a Gaussian regression (default) between cumulative cases and births, estimating both $\bar{S}$ and $\alpha$, estimating a 26 (52/IP) point contact parameter, and we run the forward simulation completely forward. We specify the option to draw the next time step from a negative binomial distribution as well as specifying a Poisson link function in the GLM. Additionally, we specify to do 100 simulations.
 
 ```sh
 basictsir <- runtsir(LondonMeas,method='negbin',
@@ -52,7 +52,7 @@ We plot the full diagnostic using the *plotres* function.
 ```sh
 plotres(basictsir)
 ```
-Walking through the eight plots: the first gives the regression model $$\hat{Y}$$ between cumulative births and cases, the second gives the change in reporting rate over time, the third gives the residuals and then the fitted susceptible dynamics, the fourth is the profiled susceptibility, the fifth is the repeating seasonal contact parameter with 95% confidence intervals, the sixth is the predicted-observed regression, and the final two are the forward predictions (red) and the data (blue). The top forward prediction shows each of the *nsim* individually, while the bottom shows the mean with 95\% confidence intervals.
+Walking through the eight plots: the first gives the regression model $\hat{Y}$ between cumulative births and cases, the second gives the change in reporting rate over time, the third gives the residuals and then the fitted susceptible dynamics, the fourth is the profiled susceptibility, the fifth is the repeating seasonal contact parameter with 95% confidence intervals, the sixth is the predicted-observed regression, and the final two are the forward predictions (red) and the data (blue). The top forward prediction shows each of the *nsim* individually, while the bottom shows the mean with 95% confidence intervals.
 
 ### Example 2
 
@@ -65,7 +65,7 @@ plot(parms$mcmcsamples)
 ```
 
 
-We can now enter these parameters into the *simulatetsir* function. Here we will use a Poisson distribution to draw the next generation and do twenty simulations. Note that this model gives similar results, and 95\% credible intervals are constructed for the paramter estimates themselves.
+We can now enter these parameters into the *simulatetsir* function. Here we will use a Poisson distribution to draw the next generation and do twenty simulations. Note that this model gives similar results, and 95% credible intervals are constructed for the paramter estimates themselves.
 
 ```sh
 sim <- simulatetsir(data=LondonMeas,parms=parms,method='pois',nsim=20)
@@ -83,7 +83,7 @@ plotdata(MoldMeas)
 
 Note that while there are some small case counts, there are essentially only outbreaks every year or two. These epidemics cannot be predicted fully forward, but rather must be done epidemic ahead Caudron et al 2015. In order to do this, a threshold parameter must be set which indicts when a new epidemic has been sparked. This can be accomplished using the *maxthreshold* function. Epidemic ahead predictions can then be accomplished using the `break' command in the *runtsir* function.
 
-First, parameter estimates must be acquired using either *estpars* or *mcmcestpars*. While not necessary, here we fix $$\alpha$$ to 0.97.
+First, parameter estimates must be acquired using either *estpars* or *mcmcestpars*. While not necessary, here we fix $\alpha$ to 0.97. $\bar{S}$ can be fixed the same way.
 
 ```sh
 parms <- estpars(MoldMeas,alpha=0.97)
