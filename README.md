@@ -1,12 +1,12 @@
 ## tsiR 
-## an R package for fitting TSIR models (will put on CRAN soon)
+## an R package for fitting TSIR models 
 
 ### Version
 0.0.1.0
 
 ### Installation
 
-You can currently install **tsiR** via devtools which will install all dependencies, except rjags which must be install manually. 
+You can currently install **tsiR** via devtools (will soon be put on CRAN) which will install all dependencies, except rjags which must be install manually. 
 ```sh
 require(devtools)
 install_github('adbecker/tsiR')
@@ -51,6 +51,7 @@ A quick table of the main functions can be found below. Individual options can b
 
 In the fitting functions, number of options such as fixing alpha (```alpha = 0.97```, for example) and Sbar (```sbar = 0.025```, for example) are provided. Additionally, contact can be seasonal or driven by the school term calendar (```seasonality = "standard", "schoolterm" or "none"```.
 
+A couple examples (but not using all functions or options) follow.
 
 ### Example 1
 
@@ -78,14 +79,13 @@ Walking through the eight plots: the first gives the regression model ```Yhat```
 
 ### Example 2
 
-We can run this same model in a Bayesian framework with schooltime forcing. This takes about 30-45 minutes to run.
+We can run this same model in a Bayesian framework with schooltime forcing. We can specify pretty much all the same functions as the *estpars* / *runtsir* function, but also number of iterations, chains, burnins, adapts, etc. This takes about 30-45 minutes to run.
 
 ```sh
 require(rjags)
 parms <- mcmcestpars(data=LondonMeas,seasonality='schoolterm',update.iter = 1e4,n.iter=1e5,n.chains=3)
 plot(parms$mcmcsamples)
 ```
-
 
 We can now enter these parameters into the *simulatetsir* function. Here we will use a Poisson distribution to draw the next generation and do twenty simulations. Note that this model gives similar results, and 95% credible intervals are constructed for the paramter estimates themselves.
 
@@ -114,6 +114,9 @@ MoldRes <- simulatetsir(MoldMeas,parms=parms,epidemics='break',threshold=tau,
                             nsim=,method='negbin')
 plotres(MoldRes)
 ```
+### Final note
+
+Remember all of these examples used ```IP = 2```, if your data is aggregated by one week, three weeks, etc, you have to specify this consistently or globally.
 
 ### Issues
 
