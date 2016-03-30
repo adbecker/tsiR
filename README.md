@@ -23,9 +23,9 @@ require(grid)
 
 ### Data 
 
-We include 20 data sets form the UK each with 20 years of measles data (biweekly data, i.e. IP = 2 in the *runtsir*, *estpars*, *simulatetsir*, *mcmctsir*, *mcmcestpars* functions). 
+We include 20 data sets form the UK each with 20 years of measles data (biweekly data, i.e. ```IP = 2``` in the *runtsir*, *estpars*, *simulatetsir*, *mcmctsir*, *mcmcestpars* functions). 
 
-We require that the data must be a data.frame with column names 'time','cases', 'births', and 'pop'. You can load these four vectors into the function *tsiRdata* (``` example <- tsiRdata(time = , cases = , births = , pop = , IP = )```) where *IP=* designates the generation time to interpolate the data on.
+We require that the data must be a data.frame with column names 'time','cases', 'births', and 'pop'. You can load these four vectors into the function *tsiRdata* (``` example <- tsiRdata(time = , cases = , births = , pop = , IP = )```) where ```IP=``` designates the generation time to interpolate the data on.
 
 Data can be plotted using *plotdata* or *plotcases*.
 
@@ -49,7 +49,7 @@ A quick table of the main functions can be found below. Individual options can b
 |*tsiRdata* |  Interpolates cases, births, and pop vectors to the generation time of the disease|
 |*twentymeas* |  Complete biweekly (IP=2) data sets from twenty UK cities|
 
-In the fitting functions, number of options such as fixing alpha (```alpha = 0.97```, for example) and Sbar (```sbar = 0.025```, for example) are provided. Additionally, contact can be seasonal or driven by the school term calendar (```seasonality = "standard", "schoolterm" or "none"```.
+In the fitting functions, number of options such as fixing alpha (```alpha = 0.97```, for example) and Sbar (```sbar = 0.025```, for example) are provided. Additionally, contact can be seasonal or driven by the school term calendar (```seasonality = "standard", "schoolterm" or "none"```. These functions work for data with any fixed generation time, although in the examples we will use biweekly data.
 
 A couple examples (but not using all functions or options) follow.
 
@@ -63,7 +63,7 @@ head(LondonMeas)
 plotdata(LondonMeas)
 ```
 
-The default settings for *runtsir* (and all functions) can be accessed through *runtsir* in the R console. Based on measles, everything is written in modulo two weeks, however this can be changed by setting *IP=* to the number of weeks between each time step. The minimal necessary input for a biweekly data set is thus simply ```data = ```. Here we run a simple example using the default options: cumulative cases on the x axis, a Gaussian regression (default) between cumulative cases and births, estimating both ```sbar``` and ```alpha```, estimating a 26 (52/IP) point contact parameter, and we run the forward simulation completely forward. We specify the option to draw the next time step from a negative binomial distribution as well as specifying a Poisson link function in the GLM. Additionally, we specify to do 100 simulations.
+The default settings for *runtsir* (and all functions) can be accessed through *runtsir* in the R console. Based on measles, everything is written in modulo two weeks, however this can be changed by setting ```IP=``` to the number of weeks between each time step. The minimal necessary input for a biweekly data set is thus simply ```data = ```. Here we run a simple example using the default options: cumulative cases on the x axis, a Gaussian regression (default) between cumulative cases and births, estimating both ```sbar``` and ```alpha```, estimating a 26 (52/IP) point contact parameter, and we run the forward simulation completely forward. We specify the option to draw the next time step from a negative binomial distribution as well as specifying a Poisson link function in the GLM. Additionally, we specify to do 100 simulations.
 
 ```sh
 basictsir <- runtsir(data=LondonMeas,method='negbin',
