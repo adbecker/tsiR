@@ -74,7 +74,7 @@ basictsir <- runtsir(data=LondonMeas,method='negbin',
                      family='poisson',nsim=100)
 ```
 
-We plot the full diagnostic using the plotres``` function. 
+We plot the full diagnostic using the ```plotres``` function. 
 
 ```sh
 plotres(basictsir)
