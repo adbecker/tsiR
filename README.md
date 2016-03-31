@@ -10,7 +10,7 @@ Currently fits and runs the TSIR model using a number of different fitting optio
 
 ### Installation
 
-You can currently install **tsiR** via devtools (will soon be put on CRAN) which will install all dependencies, except rjags which must be install manually. 
+You can currently install **tsiR** via devtools (will soon be put on CRAN) which will install all dependencies, except rjags which must be installed manually (https://cran.r-project.org/web/packages/rjags/index.html). 
 ```sh
 require(devtools)
 install_github('adbecker/tsiR')
@@ -53,9 +53,9 @@ A quick table of the main functions can be found below. Individual options can b
 |```tsiRdata``` |  Interpolates cases, births, and pop vectors to the generation time of the disease|
 |```twentymeas``` |  Complete biweekly (IP=2) data sets from twenty UK cities|
 
-In the fitting functions, number of options such as fixing alpha (```alpha = 0.97```, for example) and Sbar (```sbar = 0.025```, for example) are provided. Additionally, contact can be seasonal or driven by the school term calendar (```seasonality = "standard", "schoolterm" or "none")``` for the null model. These functions work for data with any fixed generation time, although in the examples we will use biweekly data.
+In the fitting functions, a number of options such as fixing alpha (```alpha = 0.97```, for example) and Sbar (```sbar = 0.025```, for example) are provided. Additionally, contact can be seasonal or driven by the school term calendar (```seasonality = "standard", "schoolterm" or "none")``` for the null model. These functions work for data with any fixed generation time, although in the examples we will use biweekly data.
 
-A couple examples (but not using all functions or options) follow.
+Several examples (but not using all functions or options) follow.
 
 ### Example 1
 
@@ -67,7 +67,7 @@ head(LondonMeas)
 plotdata(LondonMeas)
 ```
 
-The default settings for ```runtsir``` (and all functions) can be accessed through ```runtsir``` in the R console. Based on measles, everything is written in modulo two weeks, however this can be changed by setting ```IP=``` to the number of weeks between each time step. The minimal necessary input for a biweekly data set is thus simply ```data = ```. Here we run a simple example using the default options: cumulative cases on the x axis, a Gaussian regression (default) between cumulative cases and births, estimating both ```sbar``` and ```alpha```, estimating a 26 (52/IP) point contact parameter, and we run the forward simulation completely forward. We specify the option to draw the next time step from a negative binomial distribution as well as specifying a Poisson link function in the GLM. Additionally, we specify to do 100 simulations. Other regression types can be specified using ```regtype=``` where the options are ```lm, lowess, loess, spline``` for a linear regression, a lowess, a loess, and a spline regression with 2.5 degrees freedom.
+The default settings for ```runtsir``` (and all functions) can be accessed through ```?runtsir``` in the R console. Based on measles, everything is written in modulo two weeks, however this can be changed by setting ```IP=``` to the number of weeks between each time step. The minimal necessary input for a biweekly data set is thus simply ```data = ```. Here we run a simple example using the default options: cumulative cases on the x axis, a Gaussian regression (default) between cumulative cases and births, estimating both ```sbar``` and ```alpha```, estimating a 26 (52/IP) point contact parameter, and we run the forward simulation completely forward. We specify the option to draw the next time step from a negative binomial distribution as well as specifying a Poisson link function in the GLM. Additionally, we specify to do 100 simulations. Other regression types can be specified using ```regtype=``` where the options are ```lm, lowess, loess, spline``` for a linear regression, a lowess, a loess, and a spline regression with 2.5 degrees freedom.
 
 ```sh
 basictsir <- runtsir(data=LondonMeas,IP=2,method='negbin',
@@ -91,7 +91,7 @@ parms <- mcmcestpars(data=LondonMeas,IP=2,seasonality='schoolterm',update.iter =
 plot(parms$mcmcsamples)
 ```
 
-We can now enter these parameters into the ```simulatetsir``` function. Here we will use a Poisson distribution to draw the next generation and do twenty simulations. Note that this model gives similar results, and 95% credible intervals are constructed for the paramter estimates themselves.
+We can now enter these parameters into the ```simulatetsir``` function. Here we will use a Poisson distribution to draw the next generation and do twenty simulations. Note that this model gives similar results, and 95% credible intervals are constructed for the parameter estimates themselves.
 
 ```sh
 sim <- simulatetsir(data=LondonMeas,parms=parms,method='pois',nsim=20)
@@ -107,7 +107,7 @@ MoldMeas <- twentymeas[["Mold"]]
 plotdata(MoldMeas)
 ```
 
-Note that while there are some small case counts, there are essentially only outbreaks every year or two. These epidemics cannot be predicted fully forward, but rather must be done epidemic ahead (Caudron et al 2015). In order to do this, a threshold parameter must be set which indicts when a new epidemic has been sparked. This can be accomplished using the ```maxthreshold``` function, which maximizes the Rsq fit. Epidemic ahead predictions can then be accomplished using the ```break``` command in the ```runtsir``` function. Alternatively, the threshold paramter can be set to any integer without being maximized.
+Note that while there are some small case counts, there are essentially only outbreaks every year or two. These epidemics cannot be predicted fully forward, but rather must be done epidemic-ahead (Caudron et al 2015). In order to do this, a threshold parameter must be set which indicts when a new epidemic has been sparked. This can be accomplished using the ```maxthreshold``` function, which maximizes the Rsq fit. Epidemic-ahead predictions can then be accomplished using the ```break``` command in the ```runtsir``` function. Alternatively, the threshold paramter can be set to any integer without being maximized.
 
 First, parameter estimates must be acquired using either ```estpars``` or ```mcmcestpars```. While not necessary, here we fix ```alpha = 0.97```. The average number of susceptibles can be fixed the same way, i.e. ```sbar = ```.
 
