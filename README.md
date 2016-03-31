@@ -70,7 +70,7 @@ plotdata(LondonMeas)
 The default settings for ```runtsir``` (and all functions) can be accessed through ```runtsir``` in the R console. Based on measles, everything is written in modulo two weeks, however this can be changed by setting ```IP=``` to the number of weeks between each time step. The minimal necessary input for a biweekly data set is thus simply ```data = ```. Here we run a simple example using the default options: cumulative cases on the x axis, a Gaussian regression (default) between cumulative cases and births, estimating both ```sbar``` and ```alpha```, estimating a 26 (52/IP) point contact parameter, and we run the forward simulation completely forward. We specify the option to draw the next time step from a negative binomial distribution as well as specifying a Poisson link function in the GLM. Additionally, we specify to do 100 simulations. Other regression types can be specified using ```regtype=``` where the options are ```lm, lowess, loess, spline``` for a linear regression, a lowess, a loess, and a spline regression with 2.5 degrees freedom.
 
 ```sh
-basictsir <- runtsir(data=LondonMeas,method='negbin',
+basictsir <- runtsir(data=LondonMeas,IP=2,method='negbin',
                      family='poisson',nsim=100)
 ```
 
@@ -87,7 +87,7 @@ We can run this same model in a Bayesian framework with schooltime forcing. We c
 
 ```sh
 require(rjags)
-parms <- mcmcestpars(data=LondonMeas,seasonality='schoolterm',update.iter = 1e4,n.iter=1e5,n.chains=3)
+parms <- mcmcestpars(data=LondonMeas,IP=2,seasonality='schoolterm',update.iter = 1e4,n.iter=1e5,n.chains=3)
 plot(parms$mcmcsamples)
 ```
 
@@ -107,7 +107,7 @@ MoldMeas <- twentymeas[["Mold"]]
 plotdata(MoldMeas)
 ```
 
-Note that while there are some small case counts, there are essentially only outbreaks every year or two. These epidemics cannot be predicted fully forward, but rather must be done epidemic ahead Caudron et al 2015. In order to do this, a threshold parameter must be set which indicts when a new epidemic has been sparked. This can be accomplished using the ```maxthreshold``` function. Epidemic ahead predictions can then be accomplished using the `break' command in the ```runtsir``` function.
+Note that while there are some small case counts, there are essentially only outbreaks every year or two. These epidemics cannot be predicted fully forward, but rather must be done epidemic ahead (Caudron et al 2015). In order to do this, a threshold parameter must be set which indicts when a new epidemic has been sparked. This can be accomplished using the ```maxthreshold``` function, which maximizes the Rsq fit. Epidemic ahead predictions can then be accomplished using the ```break``` command in the ```runtsir``` function. Alternatively, the threshold paramter can be set to any integer without being maximized.
 
 First, parameter estimates must be acquired using either ```estpars``` or ```mcmcestpars```. While not necessary, here we fix ```alpha = 0.97```. The average number of susceptibles can be fixed the same way, i.e. ```sbar = ```.
 
