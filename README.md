@@ -112,10 +112,10 @@ Note that while there are some small case counts, there are essentially only out
 First, parameter estimates must be acquired using either ```estpars``` or ```mcmcestpars```. While not necessary, here we fix ```alpha = 0.97```. The average number of susceptibles can be fixed the same way, i.e. ```sbar = ```.
 
 ```sh
-parms <- estpars(MoldMeas,alpha=0.97)
-tau <- maxthreshold(MoldMeas,parms=parms)
-MoldRes <- simulatetsir(MoldMeas,parms=parms,epidemics='break',threshold=tau,
-                            nsim=,method='negbin')
+parms <- estpars(data=MoldMeas,alpha=0.97,IP=2)
+tau <- maxthreshold(data=MoldMeas,parms=parms,IP=2)
+MoldRes <- simulatetsir(data=MoldMeas,parms=parms,epidemics='break',threshold=tau,
+                            nsim=10,method='negbin')
 plotres(MoldRes)
 ```
 ### Final note
