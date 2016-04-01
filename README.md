@@ -3,7 +3,7 @@
 
 ## Introduction 
 
-Currently fits and runs the TSIR model using a number of different fitting options, both Bayesian and frequentist. Soon will be updated with TSIR(S) functions.
+This R package fits and runs the TSIR model using a number of different options, both Bayesian and frequentist. The package will be updated with TSIRS functions.
 
 ### Version
 0.0.1.0
