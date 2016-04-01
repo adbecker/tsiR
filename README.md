@@ -122,7 +122,7 @@ plotres(MoldRes)
 ```
 ### Final note
 
-Remember all of these examples used ```IP = 2```, if the data is aggregated by one week, three weeks, etc, you have to specify this consistently or globally.
+Note that all of these examples used biweekly data, ```IP = 2```. If the data is aggregated by a different number of weeks, you must specificy this globally and consistently.
 
 ### Issues
 
