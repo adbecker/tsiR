@@ -29,7 +29,7 @@ require(grid)
 
 We include 20 data sets form the UK each with 20 years of measles data (biweekly data, i.e. infectious period of two weeks (```IP = 2```) in the ```runtsir```, ```estpars```, ```simulatetsir```, ```mcmctsir```, ```mcmcestpars``` functions). 
 
-We require that the data must be a ```data.frame``` with column names 'time','cases', 'births', and 'pop'. You can load these four vectors into the function ```tsiRdata``` (``` example <- tsiRdata(time = , cases = , births = , pop = , IP = )```) where ```IP=``` designates the generation time to interpolate the data on. Data can be plotted using ```plotdata``` or ```plotcases```. If using any of the plot functions, the time column of the data.frame must be recognized by ggplot2.
+We require that the data must be a ```data.frame``` with column names 'time','cases', 'births', and 'pop'. You can load these four vectors into the function ```tsiRdata``` (``` example <- tsiRdata(time = , cases = , births = , pop = , IP = )```) where ```IP=``` designates the generation time to interpolate the data on. Data can be plotted using ```plotdata``` or ```plotcases```. If using any of the plot functions, the time column of the data.frame must be recognized by **ggplot2**.
 
 ### Main Functions
 
@@ -126,7 +126,7 @@ Remember all of these examples used ```IP = 2```, if the data is aggregated by o
 
 ### Issues
 
-Please email me at adbecker at princeton dot edu with any issues. If you find the package helpful or use it please cite us. The bibtex file can be called by ```citation('tsiR')``` in the R console.
+Please email me at adbecker at princeton dot edu with any issues or suggestions. If you find the package useful, please cite us. The bibtex file can be called by ```citation('tsiR')``` in the R console.
 
 
 
