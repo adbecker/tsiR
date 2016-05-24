@@ -61,7 +61,7 @@ plotres <- function(dat){
       
     }
     
-    p4 <- corr(dat)
+    p4 <- logcorr(dat)
     
     n <- nrow(dat$res)
     error <- qt(0.975,df=n-1)*dat$res$sd/sqrt(n)
@@ -181,7 +181,7 @@ plotres <- function(dat){
     
     p4 <- p4 + xlab(sprintf('time mod %g',length(dat$beta)))
     
-    p5 <- corr(dat)
+    p5 <- logcorr(dat)
     
     n <- nrow(dat$res)
     error <- qt(0.975,df=n-1)*dat$res$sd/sqrt(n)
