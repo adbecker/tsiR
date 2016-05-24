@@ -61,7 +61,7 @@ plotres <- function(dat){
       
     }
     
-    p4 <- logcorr(dat)
+    p4 <- logcorr(dat)+geom_abline(slope = 1,colour='dodgerblue')
     
     n <- nrow(dat$res)
     error <- qt(0.975,df=n-1)*dat$res$sd/sqrt(n)
@@ -181,7 +181,7 @@ plotres <- function(dat){
     
     p4 <- p4 + xlab(sprintf('time mod %g',length(dat$beta)))
     
-    p5 <- logcorr(dat)
+    p5 <- logcorr(dat)+geom_abline(slope = 1,colour='dodgerblue')
     
     n <- nrow(dat$res)
     error <- qt(0.975,df=n-1)*dat$res$sd/sqrt(n)
