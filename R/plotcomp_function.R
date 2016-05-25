@@ -1,6 +1,6 @@
 #' @title plotcomp
 #' @description Plots just the comparison of the forward simulation fit to the data.
-#' @param sim is list produced by runtsir or mcmctsir
+#' @param dat is list produced by runtsir or mcmctsir
 #' @param errtype is the type of error bands to show. Defaults to '95' for 95 percent CI, the other option is 'sd' to standard deviation.
 #' @param max.plot the number of individual stochastic simulations to plot. Defaults to 50. 
 
@@ -39,14 +39,14 @@ plotcomp <- function(sim,errtype='95',max.plot=50){
 
   drops <- c('mean','sd','error','cases','time')
   
-  sim.only <- dat$res[,!(names(dat$res) %in% drops)]
+  sim.only <- sim$res[,!(names(sim$res) %in% drops)]
   
-  if(dat$nsim > max.plot){
+  if(sim$nsim > max.plot){
     sampledat<- sample(sim.only,max.plot) 
-    sampledat$time <- dat$res$time
+    sampledat$time <- sim$res$time
   }else{
     sampledat <- sim.only
-    sampledat$time <- dat$res$time
+    sampledat$time <- sim$res$time
   }
   
   meltdf <- melt(sampledat,id='time')
