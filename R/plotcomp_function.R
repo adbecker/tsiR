@@ -7,6 +7,8 @@
 
 plotcomp <- function(sim,errtype='95',max.plot=50){
 
+  nsim <- sim$nsim
+  
   if(class(sim) == "list"){
     sim <- sim$res
   }
@@ -39,14 +41,14 @@ plotcomp <- function(sim,errtype='95',max.plot=50){
 
   drops <- c('mean','sd','error','cases','time')
   
-  sim.only <- sim$res[,!(names(sim$res) %in% drops)]
+  sim.only <- sim[,!(names(sim) %in% drops)]
   
-  if(sim$nsim > max.plot){
+  if(nsim > max.plot){
     sampledat<- sample(sim.only,max.plot) 
     sampledat$time <- sim$res$time
   }else{
     sampledat <- sim.only
-    sampledat$time <- sim$res$time
+    sampledat$time <- sim$time
   }
   
   meltdf <- melt(sampledat,id='time')
