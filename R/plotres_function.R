@@ -2,8 +2,8 @@
 #'
 #' @description Plots diagnostics and results of the runtsir function.
 #' @param dat the list produced from the runtsir, mcmctsir, and simulatetsir function.
-#' @param max.plot the number of individual stochastic simulations to plot. Defaults to 50. 
-plotres <- function(dat,max.plot = 50){
+#' @param max.plot the number of individual stochastic simulations to plot. Defaults to 10. 
+plotres <- function(dat,max.plot = 10){
   
   ##note I have to use aes_string and then characters instead of aes to get around the R CMD check
   
@@ -63,7 +63,12 @@ plotres <- function(dat,max.plot = 50){
     
     p4 <- logcorr(dat)+geom_abline(slope = 1,colour='dodgerblue')
     
-    n <- nrow(dat$res)
+    
+    drops <- c('mean','sd','error','cases','time')
+    
+    sim.only <- dat$res[,!(names(dat$res) %in% drops)]
+    
+    n <- ncol(sim.only)
     error <- qt(0.975,df=n-1)*dat$res$sd/sqrt(n)
     dat$res$error <- error
     
@@ -81,11 +86,6 @@ plotres <- function(dat,max.plot = 50){
       geom_line(aes_string(y = 'cases'), colour = "dodgerblue",size=1) + xlab('time')+ylab('cases')+
       geom_line(aes_string(y = 'mean'), colour = "orangered4",size=1) + geom_ribbon(eb,alpha=0.3)+
       theme_bw()
-    
-    
-    drops <- c('mean','sd','error','cases','time')
-    
-    sim.only <- dat$res[,!(names(dat$res) %in% drops)]
     
     if(dat$nsim > max.plot){
       sampledat<- sample(sim.only,max.plot) 
@@ -193,10 +193,13 @@ plotres <- function(dat,max.plot = 50){
     
     p5 <- logcorr(dat)+geom_abline(slope = 1,colour='dodgerblue')
     
-    n <- nrow(dat$res)
+    drops <- c('mean','sd','error','cases','time')
+    
+    sim.only <- dat$res[,!(names(dat$res) %in% drops)]
+    
+    n <- ncol(sim.only)
     error <- qt(0.975,df=n-1)*dat$res$sd/sqrt(n)
     dat$res$error <- error
-    
     eb <- aes(ymax = mean +  error, ymin = mean -  error)
     
     p6 <- ggplot(data=dat$res, aes_string('time')) + theme(legend.position = "none") +
@@ -211,10 +214,6 @@ plotres <- function(dat,max.plot = 50){
       geom_line(aes_string(y = 'cases'), colour = "dodgerblue",size=1) + xlab('time')+ylab('cases')+
       geom_line(aes_string(y = 'mean'), colour = "orangered4",size=1) + geom_ribbon(eb,alpha=0.3)+
       theme_bw()
-    
-    drops <- c('mean','sd','error','cases','time')
-    
-    sim.only <- dat$res[,!(names(dat$res) %in% drops)]
     
     if(dat$nsim > max.plot){
       sampledat<- sample(sim.only,max.plot) 

@@ -1,11 +1,11 @@
 #' @title plotcomp
 #' @description Plots just the comparison of the forward simulation fit to the data.
-#' @param dat is list produced by runtsir or mcmctsir
+#' @param sim is list produced by runtsir or mcmctsir
 #' @param errtype is the type of error bands to show. Defaults to '95' for 95 percent CI, the other option is 'sd' to standard deviation.
-#' @param max.plot the number of individual stochastic simulations to plot. Defaults to 50. 
+#' @param max.plot the number of individual stochastic simulations to plot. Defaults to 10. 
 
 
-plotcomp <- function(sim,errtype='95',max.plot=50){
+plotcomp <- function(sim,errtype='95',max.plot=10){
 
   nsim <- sim$nsim
   
@@ -15,7 +15,13 @@ plotcomp <- function(sim,errtype='95',max.plot=50){
   if(class(sim) == "data.frame"){
     sim <- sim
   }
-  n <- nrow(sim)
+  
+  
+  drops <- c('mean','sd','error','cases','time')
+  
+  sim.only <- sim[,!(names(sim) %in% drops)]
+  
+  n <- ncol(sim.only)
   error <- qt(0.975,df=n-1)*sim$sd/sqrt(n)
   sim$error <- error
 
@@ -39,13 +45,10 @@ plotcomp <- function(sim,errtype='95',max.plot=50){
     geom_line(aes_string(y = 'mean'), colour = "orangered4",size=1) + geom_ribbon(eb,alpha=0.3)+
     theme_bw()
 
-  drops <- c('mean','sd','error','cases','time')
-  
-  sim.only <- sim[,!(names(sim) %in% drops)]
-  
+ 
   if(nsim > max.plot){
     sampledat<- sample(sim.only,max.plot) 
-    sampledat$time <- sim$res$time
+    sampledat$time <- sim$time
   }else{
     sampledat <- sim.only
     sampledat$time <- sim$time
