@@ -36,8 +36,13 @@ plotcomp <- function(sim,errtype='95'){
     geom_line(aes_string(y = 'mean'), colour = "orangered4",size=1) + geom_ribbon(eb,alpha=0.3)+
     theme_bw()
 
-  drops <- c('mean','sd','error','cases')
-
+  drops <- c('mean','sd','error','cases','time')
+  
+  sim.only <- dat$res[,!(names(dat$res) %in% drops)]
+  
+  sampledat<- sample(sim.only,50) 
+  sampledat$time <- dat$res$time
+  
   meltdf <- melt(sim[,!(names(sim) %in% drops)],id='time')
 
   comp3 <- ggplot(meltdf,aes_string(x='time',y='value',fill='variable'))+

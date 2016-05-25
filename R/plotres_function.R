@@ -83,7 +83,12 @@ plotres <- function(dat){
       theme_bw()
     
     
-    drops <- c('mean','sd','error','cases')
+    drops <- c('mean','sd','error','cases','time')
+    
+    sim.only <- dat$res[,!(names(dat$res) %in% drops)]
+    
+    sampledat<- sample(sim.only,50) 
+    sampledat$time <- dat$res$time
     
     meltdf <- melt(dat$res[,!(names(dat$res) %in% drops)],id='time')
     
@@ -203,9 +208,14 @@ plotres <- function(dat){
       theme_bw()
     
     
-    drops <- c('mean','sd','error','cases')
+    drops <- c('mean','sd','error','cases','time')
     
-    meltdf <- melt(dat$res[,!(names(dat$res) %in% drops)],id='time')
+    sim.only <- dat$res[,!(names(dat$res) %in% drops)]
+    
+    sampledat<- sample(sim.only,50) 
+    sampledat$time <- dat$res$time
+    
+    meltdf <- melt(sampledat,id='time')
     
     p8 <- ggplot(meltdf,aes_string(x='time',y='value',fill='variable'))+
       geom_line(alpha=0.6,colour='orangered4')+xlab('time')+ylab('cases')+
