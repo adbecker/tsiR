@@ -2,8 +2,8 @@
 #'
 #' @description Plots diagnostics and results of the runtsir function.
 #' @param dat the list produced from the runtsir, mcmctsir, and simulatetsir function.
-#'
-plotres <- function(dat){
+#' @param max.plot the number of individual stochastic simulations to plot. Defaults to 50. 
+plotres <- function(dat,max.plot = 50){
   
   ##note I have to use aes_string and then characters instead of aes to get around the R CMD check
   
@@ -87,10 +87,15 @@ plotres <- function(dat){
     
     sim.only <- dat$res[,!(names(dat$res) %in% drops)]
     
-    sampledat<- sample(sim.only,50) 
-    sampledat$time <- dat$res$time
+    if(dat$nsim > max.plot){
+      sampledat<- sample(sim.only,max.plot) 
+      sampledat$time <- dat$res$time
+    }else{
+      sampledat <- sim.only
+      sampledat$time <- dat$res$time
+    }
     
-    meltdf <- melt(dat$res[,!(names(dat$res) %in% drops)],id='time')
+    meltdf <- melt(sampledat,id='time')
     
     p8 <- ggplot(meltdf,aes_string(x='time',y='value',fill='variable'))+
       geom_line(alpha=0.6,colour='orangered4')+xlab('time')+ylab('cases')+
@@ -207,13 +212,17 @@ plotres <- function(dat){
       geom_line(aes_string(y = 'mean'), colour = "orangered4",size=1) + geom_ribbon(eb,alpha=0.3)+
       theme_bw()
     
-    
     drops <- c('mean','sd','error','cases','time')
     
     sim.only <- dat$res[,!(names(dat$res) %in% drops)]
     
-    sampledat<- sample(sim.only,50) 
-    sampledat$time <- dat$res$time
+    if(dat$nsim > max.plot){
+      sampledat<- sample(sim.only,max.plot) 
+      sampledat$time <- dat$res$time
+    }else{
+      sampledat <- sim.only
+      sampledat$time <- dat$res$time
+    }
     
     meltdf <- melt(sampledat,id='time')
     
