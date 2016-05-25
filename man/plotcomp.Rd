@@ -4,12 +4,14 @@
 \alias{plotcomp}
 \title{plotcomp}
 \usage{
-plotcomp(sim, errtype = "95")
+plotcomp(sim, errtype = "95", max.plot = 50)
 }
 \arguments{
 \item{sim}{is list produced by runtsir or mcmctsir}
 
 \item{errtype}{is the type of error bands to show. Defaults to '95' for 95 percent CI, the other option is 'sd' to standard deviation.}
+
+\item{max.plot}{the number of individual stochastic simulations to plot. Defaults to 50.}
 }
 \description{
 Plots just the comparison of the forward simulation fit to the data.

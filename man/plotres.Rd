@@ -4,10 +4,12 @@
 \alias{plotres}
 \title{plotres}
 \usage{
-plotres(dat)
+plotres(dat, max.plot = 50)
 }
 \arguments{
 \item{dat}{the list produced from the runtsir, mcmctsir, and simulatetsir function.}
+
+\item{max.plot}{the number of individual stochastic simulations to plot. Defaults to 50.}
 }
 \description{
 Plots diagnostics and results of the runtsir function.
