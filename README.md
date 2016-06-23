@@ -1,3 +1,5 @@
+https://travis-ci.org/adbecker/tsiR.svg?branch=master
+
 ## tsiR 
 ## an R package for fitting TSIR models 
 
