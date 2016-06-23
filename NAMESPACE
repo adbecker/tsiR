@@ -3,3 +3,8 @@ import(ggplot2)
 importFrom(grid,grid.newpage,pushViewport,viewport,grid.layout)
 import(reshape2)
 importFrom(kernlab,gausspr)
+importFrom("stats", "approx", "approxfun", "coef", "confint",
+             "gaussian", "glm", "lm", "loess", "lowess", "model.matrix",
+             "poisson", "predict", "qt", "quantile", "rnbinom", "rnorm",
+             "rpois", "sd", "smooth.spline", "update")
+importFrom("utils", "head", "installed.packages", "tail")
