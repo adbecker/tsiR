@@ -14,7 +14,6 @@ twentymeas is a list containing 20 dataframes with cases, births, populations. E
 From Bryan Grenfell}
 
 \examples{
-data(twentymeas)
 names(twentymeas)
 london <- twentymeas[["London"]]
 plotdata(london)}
