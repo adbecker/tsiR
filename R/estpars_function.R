@@ -30,40 +30,50 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
                     userYhat = numeric(),alpha=NULL,sbar=NULL,
                     printon=F){
 
-  
+
   datacheck <- c('time','cases','pop','births')
-  if(sum(datacheck %in% names(data)) < length(datacheck)){  
+  if(sum(datacheck %in% names(data)) < length(datacheck)){
     stop('data frame must contain "time", "cases", "pop", and "births" columns')
-  } 
-  
+  }
+
+  na.casescheck <- sum(is.na(data$cases))
+ if(na.casescheck > 0){
+   stop('there cannot be any NAs in the cases vector -- please correct')
+ }
+
+ na.birthscheck <- sum(is.na(data$births))
+ if(na.casescheck > 0){
+   stop('there cannot be any NAs in the births vector -- please correct')
+ }
+
   xregcheck <- c('cumcases','cumbirths')
   if(xreg %in% xregcheck == F){
     stop('xreg must be either "cumcases" or "cumbirths"')
-  } 
-  
+  }
+
   regtypecheck <- c('gaussian','lm','spline','lowess','loess','user')
   if(regtype %in% regtypecheck == F){
     stop("regtype must be one of 'gaussian','lm','spline','lowess','loess','user'")
-  } 
-  
+  }
+
   if(length(sbar) == 1){
     if(sbar > 1 || sbar < 0){
       stop("sbar must be a percentage of the population, i.e. between zero and one.")
     }
   }
-  
+
   familycheck <- c('gaussian','poisson')
   if(family %in% familycheck == F){
     stop("family must be either 'gaussian' or 'poisson'")
-  } 
-  
-  
+  }
+
+
   seasonalitycheck <- c('standard','schoolterm','none')
   if(seasonality %in% seasonalitycheck == F){
     stop("seasonality must be either 'standard' or 'schoolterm' or 'none'")
-  } 
-  
-  
+  }
+
+
   input.alpha <- alpha
   input.sbar <- sbar
 
@@ -199,12 +209,12 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
     period <- rep(iterm, round(nrow(data)+1))[1:(nrow(data)-1)]
 
   }
-  
+
   if(seasonality == 'none'){
-    
+
     period <- rep(1,nrow(data)-1)
-    period[nrow(data)-1] <- 2  
-    
+    period[nrow(data)-1] <- 2
+
   }
 
   Inew <- tail(Iadjusted,-1)+1
@@ -398,7 +408,7 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
     beta <- mean(beta)
     period <- rep(1,nrow(data)-1)
   }
-  
+
 
   return(list('X'=X,'Y'=Y,'Yhat'=Yhat,'Smean'=Smean,
               'beta'=head(beta[period],52/IP),'rho'=adj.rho,'Z'=Z,

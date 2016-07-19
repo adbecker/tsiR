@@ -1,6 +1,6 @@
 #' @title mcmctsir
 #'
-#' @description This function runs the TSIR model using a MCMC estimation. The susceptibles are still reconstructed in the same way as the regular tsir model, however beta, alpha, and sbar (or whatever combination you enter) are estimated using rjargs. 
+#' @description This function runs the TSIR model using a MCMC estimation. The susceptibles are still reconstructed in the same way as the regular tsir model, however beta, alpha, and sbar (or whatever combination you enter) are estimated using rjargs.
 #' @param data The data frame containing cases and interpolated births and populations.
 #' @param nsim The number of simulations to do. Defaults to 100.
 #' @param xreg The x-axis for the regression. Options are 'cumcases' and 'cumbirths'. Defaults to 'cumcases'.
@@ -42,59 +42,69 @@ mcmctsir <- function(data, xreg = 'cumcases',
                      add.noise.sd = 0, mul.noise.sd = 0,
                      printon=F){
 
-  
+
   if( (nsim %% 1 ==0) == F){
-    nsim <- round(nsim) 
+    nsim <- round(nsim)
   }
-  
-  
+
+
   rjagscheck <- 'rjags' %in% installed.packages()[,"Package"]
   if(rjagscheck == FALSE){
     stop('Package "rjags" is not installed, please install prior to using MCMC portions of code')
   }
-  
+
   datacheck <- c('time','cases','pop','births')
-  if(sum(datacheck %in% names(data)) < length(datacheck)){  
+  if(sum(datacheck %in% names(data)) < length(datacheck)){
     stop('data frame must contain "time", "cases", "pop", and "births" columns')
-  } 
-  
+  }
+
+  na.casescheck <- sum(is.na(data$cases))
+   if(na.casescheck > 0){
+     stop('there cannot be any NAs in the cases vector -- please correct')
+   }
+
+   na.birthscheck <- sum(is.na(data$births))
+   if(na.casescheck > 0){
+     stop('there cannot be any NAs in the births vector -- please correct')
+   }
+
   xregcheck <- c('cumcases','cumbirths')
   if(xreg %in% xregcheck == F){
     stop('xreg must be either "cumcases" or "cumbirths"')
-  } 
-  
+  }
+
   regtypecheck <- c('gaussian','lm','spline','lowess','loess','user')
   if(regtype %in% regtypecheck == F){
     stop("regtype must be one of 'gaussian','lm','spline','lowess','loess','user'")
-  } 
-  
+  }
+
   if(length(sbar) == 1){
     if(sbar > 1 || sbar < 0){
       stop("sbar must be a percentage of the population, i.e. between zero and one.")
     }
   }
-  
+
   seasonalitycheck <- c('standard','schoolterm','none')
   if(seasonality %in% seasonalitycheck == F){
     stop("seasonality must be either 'standard' or 'schoolterm' or 'none'")
-  } 
-  
+  }
+
   methodcheck <- c('deterministic','negbin','pois')
   if(method %in% methodcheck == F){
     stop("method must be one of 'deterministic','negbin','pois'")
   }
-  
+
   epidemicscheck <- c('cont','break')
   if(epidemics %in% epidemicscheck == F){
     stop("epidemics must be either 'cont' or 'break'")
-  } 
-  
+  }
+
   predcheck <- c('forward','step-ahead')
   if(pred %in% predcheck == F){
     stop("pred must be either 'forward' or 'step-ahead'")
-  } 
-  
-  
+  }
+
+
   nzeros <- length(which(data$cases==0))
   ltot <- length(data$cases)
   if(nzeros > 0.3 * ltot && epidemics == 'cont'){
@@ -245,14 +255,14 @@ mcmctsir <- function(data, xreg = 'cumcases',
     period <- rep(iterm, round(nrow(data)+1))[1:(nrow(data)-1)]
 
   }
-  
+
   if(seasonality == 'none'){
-    
+
     period <- rep(1,nrow(data)-1)
-    period[nrow(data)-1] <- 2  
-    
+    period[nrow(data)-1] <- 2
+
   }
-  
+
   Inew <- tail(Iadjusted,-1)+1
   lIminus <- log(head(Iadjusted,-1)+1)
   Zminus <- head(Z,-1)
@@ -507,13 +517,13 @@ mcmctsir <- function(data, xreg = 'cumcases',
 
   }
 
-  
+
   if(seasonality == 'none'){
     beta[2] <- beta[1]
     beta <- mean(beta)
     period <- rep(1,nrow(data)-1)
   }
-  
+
   contact <- as.data.frame(cbind('time'=seq(1,length(beta[period]),1),
                                  betalow[period],beta[period],betahigh[period]),row.names=F)
   names(contact) <- c('time','betalow','beta','betahigh')
