@@ -11,8 +11,9 @@
 #' @param sigmamax The inverse kernal width for the gaussian regression. Default is 3.
 #' Smaller, stochastic outbreaks tend to need a lower sigma.
 #' @param userYhat The inputed regression vector if regtype='user'. Defaults to NULL.
-#' @param family The family in the GLM regression, options are poisson and gaussian both with
-#' log link. Default is Poisson.
+#' @param family The family in the GLM regression. One can use any of the GLM ones, but the options are essentially
+#' 'poisson' (with link='log'), 'gaussian' (with link='log' or 'identity'), or 'quasipoisson' (with link='log'). Default is Gaussian.
+#' @param link The link function used with the glm family. Options are link='log' or 'identity'. Default is 'log'.
 #' to include some bayesian approaches. For 'bayesglm' we use a gaussian prior with mean 1e-4.
 #' @param seasonality The type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact or none for a single contact parameter. Defaults to standard.
 #' @param sbar The mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.
@@ -26,7 +27,7 @@
 #' sim <- simulatetsir(London,parms=parms)
 #' plotres(sim)
 estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
-                    regtype = 'gaussian',sigmamax = 3,family='gaussian',
+                    regtype = 'gaussian',sigmamax = 3,family='gaussian',link='log',
                     userYhat = numeric(),alpha=NULL,sbar=NULL,
                     printon=F){
 
@@ -62,9 +63,9 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
     }
   }
 
-  familycheck <- c('gaussian','poisson')
-  if(family %in% familycheck == F){
-    stop("family must be either 'gaussian' or 'poisson'")
+  linkcheck <- c('log','identity')
+  if(link %in% linkcheck == F){
+    stop("link must be either 'log' or 'idendity'")
   }
 
 
@@ -141,7 +142,7 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
       }
       if(xreg == 'cumbirths'){
         rho <- derivative(X,Yhat)
-        Z <- residual.births(rho,Yhat,Y)
+        Z <- residual.births(1/rho,Yhat,Y)
         if(length(which(rho>=1))==0 && length(which(rho<0)) == 0){
           break()
         }
@@ -164,7 +165,7 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
   }
 
   if(xreg == 'cumbirths'){
-    Z <- residual.births(rho,Yhat,Y)
+    Z <- residual.births(1/rho,Yhat,Y)
   }
 
   if(xreg == 'cumcases'){
@@ -228,180 +229,88 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
 
   loglik <- rep(NA, length(Smean))
 
-  if(length(input.alpha) == 0 && length(input.sbar) == 0){
-
-    if(family == 'gaussian'){
-
-      for(i in 1:length(Smean)){
-        lSminus <- log(Smean[i] + Zminus)
-
-        glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
-                      family=gaussian(link='log'))
-
-        loglik[i] <- glmfit$deviance
-
-      }
-
-      sbar <- Smean[which.min(loglik)]
-
-      lSminus <- log(sbar + Zminus)
-
-      glmfit <- glm(Inew ~ -1 +as.factor(period)+ (lIminus) + offset(lSminus),
-                    family=gaussian(link='log'))
-
-
-    }
-
-
-    if(family == 'poisson'){
-
-      Inew <- round(Inew)
-
-      for(i in 1:length(Smean)){
-        lSminus <- log(Smean[i] + Zminus)
-
-        glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
-                      family=poisson(link='log'))
-
-        loglik[i] <- glmfit$deviance
-
-      }
-
-      sbar <- Smean[which.min(loglik)]
-
-      lSminus<- log(sbar + Zminus)
-
-      glmfit <- glm(Inew ~ -1 +as.factor(period)+ (lIminus) + offset(lSminus),
-                    family=poisson(link='log'))
-
-
-    }
-
-
-    beta <- exp(head(coef(glmfit),-1))
-    alpha <- tail(coef(glmfit),1)
-  }
-
-
-  if(length(input.alpha) == 1 && length(input.sbar) == 0){
-
-    if(family == 'gaussian'){
-
-      for(i in 1:length(Smean)){
-        lSminus <- log(Smean[i] + Zminus)
-
-
-        glmfit <- glm(Inew ~ -1 +as.factor(period) + offset(alpha*lIminus) + offset(lSminus),
-                      family=gaussian(link='log'))
-
-
-
-
-        loglik[i] <- glmfit$deviance
-
-      }
-
-      sbar <- Smean[which.min(loglik)]
-
-      lSminus <- log(sbar + Zminus)
-
-
-      glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
-                    family=gaussian(link='log'))
-
-    }
-
-
-    if(family == 'poisson'){
-
-      Inew <- round(Inew)
-
-
-      for(i in 1:length(Smean)){
-        lSminus <- log(Smean[i] + Zminus)
-
-
-        glmfit <- glm(Inew ~ -1 +as.factor(period) + offset(alpha*lIminus) + offset(lSminus),
-                      family=poisson(link='log'))
-
-
-        loglik[i] <- glmfit$deviance
-
-      }
-
-      sbar <- Smean[which.min(loglik)]
-
-      lSminus <- log(sbar + Zminus)
-
-
-      glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
-                    family=poisson(link='log'))
-
-
-    }
-
-    beta <- exp(coef(glmfit))
-  }
-
-
-  if(length(input.alpha) == 0 && length(input.sbar) == 1){
-
-    sbar <- sbar * mean(pop)
-    lSminus <- log(sbar + Zminus)
-
-    if(family == 'gaussian'){
-
-
-      glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
-                    family=gaussian(link='log'))
-
-    }
-
-
-    if(family == 'poisson'){
-
-      Inew <- round(Inew)
-
-      glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
-                    family=poisson(link='log'))
-
-
-    }
-
-
-
-    beta <- exp(head(coef(glmfit),-1))
-    alpha <- tail(coef(glmfit),1)
-  }
-
-
-  if(length(input.alpha) == 1 && length(input.sbar) == 1){
-
-    sbar <- sbar * mean(pop)
-    lSminus <- log(sbar + Zminus)
-
-    if(family == 'gaussian'){
-
-
-      glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
-                    family=gaussian(link='log'))
-
-
-    }
-
-    if(family == 'poisson'){
-
-      Inew <- round(Inew)
-
-      glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
-                    family=poisson(link='log'))
-
-
-    }
-
-    beta <- exp(coef(glmfit))
-
-  }
+ if(link == 'identity'){
+   Inew <- log(Inew)
+ }
+ Inew <- round(Inew)
+ 
+ if(length(input.alpha) == 0 && length(input.sbar) == 0){
+   
+   for(i in 1:length(Smean)){
+     lSminus <- log(Smean[i] + Zminus)
+     
+     glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
+                   family=eval(parse(text=family))(link=link))
+     
+     loglik[i] <- glmfit$deviance
+     
+   }
+   
+   sbar <- Smean[which.min(loglik)]
+   
+   lSminus <- log(sbar + Zminus)
+   
+   glmfit <- glm(Inew ~ -1 +as.factor(period)+ (lIminus) + offset(lSminus),
+                 family=eval(parse(text=family))(link=link))
+   
+   
+   beta <- exp(head(coef(glmfit),-1))
+   alpha <- tail(coef(glmfit),1)
+ }
+ 
+ 
+ if(length(input.alpha) == 1 && length(input.sbar) == 0){
+   
+   
+   for(i in 1:length(Smean)){
+     lSminus <- log(Smean[i] + Zminus)
+     
+     glmfit <- glm(Inew ~ -1 +as.factor(period) + offset(alpha*lIminus) + offset(lSminus),
+                   family=eval(parse(text=family))(link=link))
+     
+     
+     loglik[i] <- glmfit$deviance
+     
+   }
+   
+   sbar <- Smean[which.min(loglik)]
+   
+   lSminus <- log(sbar + Zminus)
+   
+   glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
+                 family=eval(parse(text=family))(link=link))
+   
+   
+   beta <- exp(coef(glmfit))
+ }
+ 
+ 
+ if(length(input.alpha) == 0 && length(input.sbar) == 1){
+   
+   sbar <- sbar * mean(pop)
+   lSminus <- log(sbar + Zminus)
+   
+   
+   glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
+                 family=eval(parse(text=family))(link=link))
+   
+   
+   beta <- exp(head(coef(glmfit),-1))
+   alpha <- tail(coef(glmfit),1)
+ }
+ 
+ 
+ if(length(input.alpha) == 1 && length(input.sbar) == 1){
+   
+   sbar <- sbar * mean(pop)
+   lSminus <- log(sbar + Zminus)
+   
+   glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
+                 family=eval(parse(text=family))(link=link))
+   
+   beta <- exp(coef(glmfit))
+   
+ }
 
   if(seasonality == 'none'){
     beta[2] <- beta[1]
