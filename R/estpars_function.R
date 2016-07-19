@@ -142,7 +142,7 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
       }
       if(xreg == 'cumbirths'){
         rho <- derivative(X,Yhat)
-        Z <- residual.births(1/rho,Yhat,Y)
+        Z <- residual.births(rho,Yhat,Y)
         if(length(which(rho>=1))==0 && length(which(rho<0)) == 0){
           break()
         }
@@ -165,7 +165,7 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
   }
 
   if(xreg == 'cumbirths'){
-    Z <- residual.births(1/rho,Yhat,Y)
+    Z <- residual.births(rho,Yhat,Y)
   }
 
   if(xreg == 'cumcases'){
