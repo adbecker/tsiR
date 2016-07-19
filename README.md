@@ -68,11 +68,15 @@ head(LondonMeas)
 plotdata(LondonMeas)
 ```
 
-The default settings for ```runtsir``` (and all functions) can be accessed through ```?runtsir``` in the R console. Based on measles, everything is written in modulo two weeks, however this can be changed by setting ```IP=``` to the number of weeks between each time step. The minimal necessary input for a biweekly data set is thus simply ```data = ```. Here we run a simple example using the default options: cumulative cases on the x axis, a Gaussian regression (default) between cumulative cases and births, estimating both ```sbar``` and ```alpha```, estimating a 26 (52/IP) point contact parameter, and we run the forward simulation completely forward. We specify the option to draw the next time step from a negative binomial distribution as well as specifying a Poisson link function in the GLM. Additionally, we specify to do 100 simulations. Other regression types can be specified using ```regtype=``` where the options are ```lm, lowess, loess, spline``` for a linear regression, a lowess, a loess, and a spline regression with 2.5 degrees freedom.
+The default settings for ```runtsir``` (and all functions) can be accessed through ```?runtsir``` in the R console. Based on measles, everything is written in modulo two weeks, however this can be changed by setting ```IP=``` to the number of weeks between each time step. The minimal necessary input for a biweekly data set is thus simply ```data = ```. Here we run a simple example using the default options: cumulative cases on the x axis, a Gaussian regression (default) between cumulative cases and births, estimating both ```sbar``` and ```alpha```, estimating a 26 (52/IP) point contact parameter, and we run the forward simulation completely forward. We specify the option to draw the next time step from a negative binomial distribution and we specificy a poisson family with a log link function in the GLM. Any family and link can be inputted, however, the options are essentially ```quasipoisson, poisson, gaussian``` where ```poisson/ quassipoisson``` take ```link=log``` and ```family=gaussian``` takes either a ```log``` or ```identity``` link.
+
+Options for the GLM family 
+
+Additionally, we specify to do 100 simulations. Other regression types can be specified using ```regtype=``` where the options are ```lm, lowess, loess, spline``` for a linear regression, a lowess, a loess, and a spline regression with 2.5 degrees freedom.
 
 ```sh
 basictsir <- runtsir(data=LondonMeas,IP=2,method='negbin',regtype='gaussian',
-                     family='poisson',nsim=100)
+                     family='poisson',link='log',nsim=100)
 ```
 
 We plot the full diagnostic using the ```plotres``` function. 
