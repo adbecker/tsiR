@@ -391,8 +391,7 @@ runtsir <- function(data, xreg = 'cumcases',
   print(c('alpha'=unname(signif(alpha,2)),
           'mean beta'=unname(signif(mean(beta),3)),
           'mean rho' =unname(signif(mean(1/adj.rho),3)),
-          'mean sus' =unname(signif(sbar,3)),
-          'est R0'=unname(round(mean(beta)*mean(pop)))))
+          'mean sus' =unname(signif(sbar,3))))
 
 
   nsim <- nsim
