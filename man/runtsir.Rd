@@ -6,7 +6,7 @@
 \usage{
 runtsir(data, xreg = "cumcases", IP = 2, nsim = 10,
   regtype = "gaussian", sigmamax = 3, userYhat = numeric(),
-  alpha = NULL, sbar = NULL, family = "gaussian",
+  alpha = NULL, sbar = NULL, family = "gaussian", link = "log",
   method = "deterministic", epidemics = "cont", pred = "forward",
   threshold = 1, seasonality = "standard", add.noise.sd = 0,
   mul.noise.sd = 0, printon = F, fit = NULL, fittype = NULL)
@@ -34,8 +34,10 @@ Smaller, stochastic outbreaks tend to need a lower sigma.}
 
 \item{sbar}{The mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.}
 
-\item{family}{The family in the GLM regression, options are poisson and gaussian both with
-log link. Default is Poisson.}
+\item{family}{The family in the GLM regression. One can use any of the GLM ones, but the options are essentially
+'poisson' (with link='log'), 'gaussian' (with link='log' or 'identity'), or 'quasipoisson' (with link='log'). Default is Gaussian.}
+
+\item{link}{The link function used with the glm family. Options are link='log' or 'identity'. Default is 'log'.}
 
 \item{method}{The type of next step prediction used. Options are 'negbin' for negative binomial,
 'pois' for poisson distribution, and 'deterministic'. Defaults to 'deterministic'.}
