@@ -387,21 +387,79 @@ runtsir <- function(data, xreg = 'cumcases',
   names(contact) <- c('time','betalow','beta','betahigh')
   contact <- head(contact,52/IP)
 
-
-  print(c('alpha'=unname(signif(alpha,2)),
-          'mean beta'=unname(signif(mean(beta),3)),
-          'mean rho' =unname(signif(mean(1/adj.rho),3)),
-          'mean sus' =unname(signif(sbar,3))))
-
-
-  nsim <- nsim
-  res <- matrix(0,length(data$cases),nsim)
-  for(ct in 1:nsim){
-
-    S <- rep(0,length(data$cases))
-    I <- rep(0,length(data$cases))
-    S[1] <- sbar+Z[1]
-    I[1] <- datacopy$cases[1] * adj.rho[1]
+ ## est initial conditions using determinsitic skeleton
+ 
+ nsample <- 30
+ 
+ inits.grid <- expand.grid(
+   S0 = seq(0.01*mean(pop), 0.1*mean(pop), length=nsample), 
+   I0 = seq(0.01*1e-3*mean(pop), 1*1e-3*mean(pop), length=nsample)
+ )
+ 
+ inits.res <- rep(NA,nsample*nsample)
+ 
+ S <- rep(0,length(data$cases))
+ I <- rep(0,length(data$cases))
+ 
+ for(it in 1:nrow(inits.grid)){
+   S0 <- inits.grid[it,1]
+   I0 <- inits.grid[it,2]
+   
+   S[1] <- S0
+   I[1] <- I0
+   
+   for (t in 2:(nrow(data))){  
+     
+     lambda <- min(S[t-1],unname(beta[period[t-1]] * S[t-1] * (I[t-1])^alpha))
+     
+     #if(lambda < 1 || is.nan(lambda) == T){lambda <- 0}
+     if(is.nan(lambda) == T){lambda <- 0}
+     
+     I[t] <- lambda 
+     
+     if(epidemics == 'cont'){
+       I[t] <- I[t]
+     }
+     if(epidemics == 'break'){
+       t0s <- epitimes(data,threshold)
+       if(t %in% t0s){
+         I[t] <- adj.rho[t]*data$cases[t]
+       }
+     }
+     S[t] <- max(S[t-1] + data$births[t-1] - I[t],0)
+   }
+   
+   inits.res[it] <- sum((I - data$cases*adj.rho)^2)
+   
+ }
+ 
+ inits <- inits.grid[which.min(inits.res),]
+ 
+ inits.grid$S0 <- inits.grid$S0/mean(pop)
+ inits.grid$I0 <- inits.grid$I0/mean(pop)
+ inits.grid$log10LS <- log10(inits.res)
+ 
+ 
+ print(c('alpha'=unname(signif(alpha,2)),
+         'mean beta'=unname(signif(mean(beta),3)),
+         'mean rho' =unname(signif(mean(1/adj.rho),3)),
+         'mean sus' =unname(signif(sbar,3)),
+         'prop. init. sus.' =unname(signif(inits[[1]]/mean(pop),3)),
+         'prop. init. inf.' =unname(signif(inits[[2]]/mean(pop),3))    
+ ))
+ 
+ 
+ nsim <- nsim
+ res <- matrix(0,length(data$cases),nsim)
+ for(ct in 1:nsim){
+   
+   S <- rep(0,length(data$cases))
+   I <- rep(0,length(data$cases))
+   #S[1] <- sbar+Z[1]
+   #I[1] <- datacopy$cases[1] * adj.rho[1]
+   
+   S[1] <- inits[[1]]
+   I[1] <- inits[[2]]
 
     for (t in 2:(nrow(data))){
 
@@ -414,8 +472,9 @@ runtsir <- function(data, xreg = 'cumcases',
 
       lambda <- min(S[t-1],unname(beta[period[t-1]] * S[t-1] * (I[t-1])^alpha))
 
-      if(lambda < 1 || is.nan(lambda) == T){lambda <- 0}
-
+      #if(lambda < 1 || is.nan(lambda) == T){lambda <- 0}
+      if(is.nan(lambda) == T){lambda <- 0}
+      
       if(method == 'deterministic'){
         I[t] <- lambda * rnorm( n = 1, mean = 1, sd=mul.noise.sd)
         if(I[t] < 0 && lambda >= 0 ){
@@ -423,7 +482,7 @@ runtsir <- function(data, xreg = 'cumcases',
         }
       }
       if(method == 'negbin'){
-        I[t] <- rnbinom(n=1,mu=lambda,size=I[t-1])
+        I[t] <- rnbinom(n=1,mu=lambda,size=I[t-1]+1e-10)
       }
       if(method == 'pois'){
         I[t] <- rpois(n=1,lambda=lambda)
@@ -438,8 +497,9 @@ runtsir <- function(data, xreg = 'cumcases',
           I[t] <- adj.rho[t]*data$cases[t]
         }
       }
-      S[t] <- Z[t]+sbar + rnorm(n = 1, mean = 0, sd=add.noise.sd)
-      if(S[t] < 0 && (Z[t] + sbar) >0){
+      S[t] <- max(S[t-1] + data$births[t-1] - I[t] + rnorm(n=1,mean=0,sd=add.noise.sd),0)
+     
+      if(S[t] < 0 && (S[t-1] + data$births[t-1] - I[t]) >0 ){
         warning('susceptible overflow  -- reduce additive noise sd')
       }
     }
@@ -469,7 +529,8 @@ runtsir <- function(data, xreg = 'cumcases',
               'beta'=head(beta[period],52/IP),'rho'=adj.rho,'pop'=pop,
               'Z'=Z,'sbar'=sbar,'alpha'=alpha,
               'res'=res,'loglik'=loglik,'Smean'=Smean,
-              'nsim'=nsim,'rsquared'=rsquared))
+              'nsim'=nsim,'rsquared'=rsquared,
+              'inits.grid'=inits.grid,'inits'=inits))
 
 
 }

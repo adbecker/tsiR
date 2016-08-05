@@ -317,7 +317,7 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
     beta <- mean(beta)
     period <- rep(1,nrow(data)-1)
   }
-
+ 
 
   return(list('X'=X,'Y'=Y,'Yhat'=Yhat,'Smean'=Smean,
               'beta'=head(beta[period],52/IP),'rho'=adj.rho,'Z'=Z,

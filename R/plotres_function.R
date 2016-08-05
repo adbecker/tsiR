@@ -191,7 +191,16 @@ plotres <- function(dat,max.plot = 10){
     
     p4 <- p4 + xlab(sprintf('time mod %g',length(dat$beta)))
     
-    p5 <- logcorr(dat)+geom_abline(slope = 1,colour='dodgerblue')
+    #p5 <- logcorr(dat)+geom_abline(slope = 1,colour='dodgerblue')
+    
+    inits.grid <- dat$inits.grid
+    
+    p5 <-  ggplot(inits.grid, aes_string(x='S0',y='I0', z='log10LS')) + 
+      geom_tile(aes_string(fill= 'log10LS')) + scale_fill_gradient(low="white", high="black") + theme_bw()+
+      geom_contour(col='black')+
+      geom_point(aes(x=dat$inits$S0/mean(dat$pop),y=dat$inits$I0/mean(dat$pop)),col='red')+
+      xlab('prop. init. sus.')+
+      ylab('prop. init. inf.')
     
     drops <- c('mean','sd','error','cases','time')
     

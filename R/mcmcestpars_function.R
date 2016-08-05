@@ -491,7 +491,7 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
                                  betalow[period],beta[period],betahigh[period]),row.names=F)
   names(contact) <- c('time','betalow','beta','betahigh')
   contact <- head(contact,52/IP)
-
+ 
 
   return(list('X'=X,'Y'=Y,'Yhat'=Yhat,
               'mcmcsamples'=mcmcsamples,
