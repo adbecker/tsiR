@@ -5,8 +5,9 @@
 \title{estpars}
 \usage{
 estpars(data, xreg = "cumcases", IP = 2, seasonality = "standard",
-  regtype = "gaussian", sigmamax = 3, family = "gaussian", link = "log",
-  userYhat = numeric(), alpha = NULL, sbar = NULL, printon = F)
+  regtype = "gaussian", sigmamax = 3, family = "gaussian",
+  link = "identity", userYhat = numeric(), alpha = NULL, sbar = NULL,
+  printon = F)
 }
 \arguments{
 \item{data}{The data frame containing cases and interpolated births and populations.}
@@ -26,9 +27,9 @@ Defaults to 'gaussian' and if that fails then defaults to loess.}
 Smaller, stochastic outbreaks tend to need a lower sigma.}
 
 \item{family}{The family in the GLM regression. One can use any of the GLM ones, but the options are essentially
-'poisson' (with link='log'), 'gaussian' (with link='log' or 'identity'), or 'quasipoisson' (with link='log'). Default is Gaussian.}
+'poisson' (with link='log'), 'gaussian' (with link='log' or 'identity'), or 'quasipoisson' (with link='log'). Default is 'gaussian'.}
 
-\item{link}{The link function used with the glm family. Options are link='log' or 'identity'. Default is 'log'.
+\item{link}{The link function used with the glm family. Options are link='log' or 'identity'. Default is 'identity'.
 to include some bayesian approaches. For 'bayesglm' we use a gaussian prior with mean 1e-4.}
 
 \item{userYhat}{The inputed regression vector if regtype='user'. Defaults to NULL.}
