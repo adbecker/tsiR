@@ -5,7 +5,7 @@
 
 ## Introduction 
 
-This R package fits and runs the TSIR model using a number of different options, both Bayesian and frequentist. The package will be updated with TSIRS functions.
+This R package fits and runs the TSIR model using a number of different options, both Bayesian and frequentist. 
 
 ### Version
 0.0.1.0
@@ -68,21 +68,21 @@ head(LondonMeas)
 plotdata(LondonMeas)
 ```
 
-The default settings for ```runtsir``` (and all functions) can be accessed through ```?runtsir``` in the R console. Based on measles, everything is written in modulo two weeks, however this can be changed by setting ```IP=``` to the number of weeks between each time step. The minimal necessary input for a biweekly data set is thus simply ```data = ```. Here we run a simple example using the default options: cumulative cases on the x axis, a Gaussian regression (default) between cumulative cases and births, estimating both ```sbar``` and ```alpha```, estimating a 26 (52/IP) point contact parameter, and we run the forward simulation completely forward. We specify the option to draw the next time step from a negative binomial distribution and we specificy a poisson family with a log link function in the GLM. Any family and link can be inputted, however, the options are essentially ```quasipoisson, poisson, gaussian``` where ```poisson/ quassipoisson``` take ```link=log``` and ```family=gaussian``` takes either a ```log``` or ```identity``` link.
+The default settings for ```runtsir``` (and all functions) can be accessed through ```?runtsir``` in the R console. Based on measles, everything is written in modulo two weeks, however this can be changed by setting ```IP=``` to the number of weeks between each time step. The minimal necessary input for a biweekly data set is thus simply ```data = ```. Here we run a simple example using the default options: cumulative cases on the x axis, a Gaussian regression (default) between cumulative cases and births, estimating both ```sbar``` and ```alpha```, estimating a 26 (52/IP) point contact parameter, and we run the forward simulation completely forward. We specify the option to draw the next time step from a negative binomial distribution and we specificy a Gaussian family (default) with an identity link (default) function in the GLM. Any family and link can be inputted, however, the options are essentially ```quasipoisson, poisson, gaussian``` where ```poisson/ quassipoisson``` take ```link=log``` and ```family=gaussian``` takes either a ```log``` or ```identity``` link.
 
 Options for the GLM family 
 
 Additionally, we specify to do 100 simulations. Other regression types can be specified using ```regtype=``` where the options are ```lm, lowess, loess, spline``` for a linear regression, a lowess, a loess, and a spline regression with 2.5 degrees freedom.
 
 ```sh
-basictsir <- runtsir(data=LondonMeas,IP=2,method='negbin',regtype='gaussian',
-                     family='poisson',link='log',nsim=100)
+LondonRes <- runtsir(data=LondonMeas,IP=2,method='negbin',regtype='gaussian',
+                     family='gaussian',link='identity',nsim=100)
 ```
 
 We plot the full diagnostic using the ```plotres``` function. 
 
 ```sh
-plotres(basictsir)
+plotres(LondonRes)
 ```
 Walking through the eight plots: the first gives the regression model ```Yhat``` between cumulative births and cases, the second gives the reporting rate over time (for ```regtype = 'lm'``` this is a constant), the third gives the residuals and then the reconstructed susceptible dynamics, the fourth is the profiled average susceptibility, the fifth is the repeating seasonal contact parameter with 95% confidence / credible intervals, the sixth is the predicted-observed regression, and the final two are the forward predictions (red) and the data (blue). The top forward prediction shows each of the ```nsim``` individually, while the bottom shows the mean with 95% confidence intervals.
 
