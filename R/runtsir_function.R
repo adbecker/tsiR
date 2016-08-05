@@ -13,8 +13,8 @@
 #' Smaller, stochastic outbreaks tend to need a lower sigma.
 #' @param userYhat The inputed regression vector if regtype='user'. Defaults to NULL.
 #' @param family The family in the GLM regression. One can use any of the GLM ones, but the options are essentially
-#' 'poisson' (with link='log'), 'gaussian' (with link='log' or 'identity'), or 'quasipoisson' (with link='log'). Default is Gaussian.
-#' @param link The link function used with the glm family. Options are link='log' or 'identity'. Default is 'log'.
+#' 'poisson' (with link='log'), 'gaussian' (with link='log' or 'identity'), or 'quasipoisson' (with link='log'). Default is 'gaussian'.
+#' @param link The link function used with the glm family. Options are link='log' or 'identity'. Default is 'identity'.
 #' @param sbar The mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.
 #' @param alpha The mixing parameter. Defaults to NULL, i.e. the function estimates alpha.
 #' @param method The type of next step prediction used. Options are 'negbin' for negative binomial,
@@ -39,7 +39,7 @@ runtsir <- function(data, xreg = 'cumcases',
                     IP = 2,nsim = 10,
                     regtype = 'gaussian',sigmamax = 3,
                     userYhat = numeric(),alpha=NULL,sbar=NULL,
-                    family='gaussian',link='log',
+                    family='gaussian',link='identity',
                     method='deterministic',
                     epidemics='cont', pred ='forward',
                     threshold=1,seasonality='standard',

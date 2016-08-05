@@ -12,8 +12,8 @@
 #' Smaller, stochastic outbreaks tend to need a lower sigma.
 #' @param userYhat The inputed regression vector if regtype='user'. Defaults to NULL.
 #' @param family The family in the GLM regression. One can use any of the GLM ones, but the options are essentially
-#' 'poisson' (with link='log'), 'gaussian' (with link='log' or 'identity'), or 'quasipoisson' (with link='log'). Default is Gaussian.
-#' @param link The link function used with the glm family. Options are link='log' or 'identity'. Default is 'log'.
+#' 'poisson' (with link='log'), 'gaussian' (with link='log' or 'identity'), or 'quasipoisson' (with link='log'). Default is 'gaussian'.
+#' @param link The link function used with the glm family. Options are link='log' or 'identity'. Default is 'identity'.
 #' to include some bayesian approaches. For 'bayesglm' we use a gaussian prior with mean 1e-4.
 #' @param seasonality The type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact or none for a single contact parameter. Defaults to standard.
 #' @param sbar The mean number of susceptibles. Defaults to NULL, i.e. the function estimates sbar.
@@ -27,7 +27,7 @@
 #' sim <- simulatetsir(London,parms=parms)
 #' plotres(sim)
 estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
-                    regtype = 'gaussian',sigmamax = 3,family='gaussian',link='log',
+                    regtype = 'gaussian',sigmamax = 3,family='gaussian',link='identity',
                     userYhat = numeric(),alpha=NULL,sbar=NULL,
                     printon=F){
 
