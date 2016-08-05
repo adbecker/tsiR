@@ -134,7 +134,7 @@ simulatetsir <- function(data, nsim = 100, IP=2,
         }
       }
       if(method == 'negbin'){
-        I[t] <- rnbinom(n=1,mu=lambda,size=I[t-1])
+        I[t] <- rnbinom(n=1,mu=lambda,size=I[t-1] + 1e-10)
       }
       if(method == 'pois'){
         I[t] <- rpois(n=1,lambda=lambda)
