@@ -174,7 +174,7 @@ simulatetsir <- function(data, nsim = 100, IP=2,
     'Z'=Z,'sbar'=sbar,'alpha'=alpha,'pop'=pop,
     'alphalow'=alphalow,'alphahigh'=alphahigh,
     'res'=res,'loglik'=loglik,
-    'nsim'=nsim,
+    'nsim'=nsim,'contact'=contact,
     'inits.grid'=inits.grid,'inits'=inits))
 
 }
