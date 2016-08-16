@@ -318,8 +318,17 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
     period <- rep(1,nrow(data)-1)
   }
  
+ confinterval <- suppressMessages(confint(glmfit))
+ continterval <- confinterval[1:length(unique(period)),]
+ betalow <- exp(confinterval[,1])
+ betahigh <- exp(confinterval[,2])
+ 
+ contact <- as.data.frame(cbind('time'=seq(1,length(beta[period]),1),
+                                betalow[period],beta[period],betahigh[period]),row.names=F)
+ names(contact) <- c('time','betalow','beta','betahigh')
+ contact <- head(contact,52/IP)
 
-  return(list('X'=X,'Y'=Y,'Yhat'=Yhat,'Smean'=Smean,
+  return(list('X'=X,'Y'=Y,'Yhat'=Yhat,'Smean'=Smean,'contact'=contact,
               'beta'=head(beta[period],52/IP),'rho'=adj.rho,'Z'=Z,
               'sbar'=sbar,'alpha'=alpha,'loglik'=loglik))
 
