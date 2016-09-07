@@ -32,8 +32,8 @@ require(kernlab)
 Mold <- twentymeas[["Mold"]]
 plotdata(Mold)
 parms <- estpars(Mold)
-tau <- maxthreshold(Mold,parms=parms)
-res <- runtsir(Mold,epidemics='break',threshold=tau,method='negbin',thresholdmin=8,thresholdmax=13)
+tau <- maxthreshold(Mold,parms=parms,thresholdmin=8,thresholdmax=13)
+res <- runtsir(Mold,epidemics='break',threshold=tau,method='negbin')
 plotres(res)
 }
 
