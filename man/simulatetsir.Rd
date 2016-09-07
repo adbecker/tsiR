@@ -5,8 +5,8 @@
 \title{simulatetsir}
 \usage{
 simulatetsir(data, nsim = 100, IP = 2, parms, method = "deterministic",
-  epidemics = "cont", pred = "forward", threshold = 1, add.noise.sd = 0,
-  mul.noise.sd = 0)
+  epidemics = "cont", pred = "forward", threshold = 1, inits.fit = T,
+  add.noise.sd = 0, mul.noise.sd = 0)
 }
 \arguments{
 \item{data}{The data frame containing cases and interpolated births and populations.}
@@ -27,6 +27,8 @@ and 'break' which breaks the epidemics up if there are a lot of zeros. Defaults 
 \item{pred}{The type of prediction used. Options are 'forward' and 'step-ahead'. Defaults to 'forward'.}
 
 \item{threshold}{The cut off for a new epidemic if epidemics = 'break'. Defaults to 1.}
+
+\item{inits.fit}{Whether or not to fit initial conditions as well. Defaults to TRUE. This parameter is more necessary in more chaotic locations.}
 
 \item{add.noise.sd}{The sd for additive noise, defaults to zero.}
 

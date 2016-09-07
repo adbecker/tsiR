@@ -29,6 +29,8 @@
 #' @param seasonality The type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact or none for a single contact parameter. Defaults to standard.
 #' @param mul.noise.sd The sd for multiplicative noise, defaults to zero.
 #' @param printon Whether to show diagnostic prints or not, defaults to FALSE.
+#' @param inits.fit Whether or not to fit initial conditions as well. Defaults to TRUE. This parameter is more necessary in more chaotic locations.
+
 mcmctsir <- function(data, xreg = 'cumcases',
                      IP = 2,nsim = 100,
                      regtype = 'gaussian',sigmamax = 3,
@@ -38,6 +40,7 @@ mcmctsir <- function(data, xreg = 'cumcases',
                      n.adapt=1000,burn.in=100,
                      method='deterministic',epidemics='cont', pred ='forward',
                      seasonality='standard',
+                     inits.fit=T,
                      threshold=1,sbar=NULL,alpha=NULL,
                      add.noise.sd = 0, mul.noise.sd = 0,
                      printon=F){
@@ -529,63 +532,79 @@ mcmctsir <- function(data, xreg = 'cumcases',
   names(contact) <- c('time','betalow','beta','betahigh')
   contact <- head(contact,52/IP)
 
-  nsample <- 20
-  
-  inits.grid <- expand.grid(
-    S0 = seq(0.01*mean(pop), 0.2*mean(pop), length=nsample), 
-    I0 = seq(0.01*1e-3*mean(pop), 1*1e-3*mean(pop), length=nsample)
-  )
-  
-  inits.res <- rep(NA,nsample*nsample)
+  ## est initial conditions using determinsitic skeleton
   
   S <- rep(0,length(data$cases))
   I <- rep(0,length(data$cases))
   
-  for(it in 1:nrow(inits.grid)){
-    S0 <- inits.grid[it,1]
-    I0 <- inits.grid[it,2]
+  nsample <- 30
+  
+  inits.grid <- expand.grid(
+    S0 = seq(0.01*mean(pop), 0.1*mean(pop), length=nsample), 
+    I0 = seq(0.01*1e-3*mean(pop), 1*1e-3*mean(pop), length=nsample)
+  )
+  
+  if(inits.fit == TRUE){
     
-    S[1] <- S0
-    I[1] <- I0
+    inits.res <- rep(NA,nsample*nsample)
     
-    for (t in 2:(nrow(data))){  
+    for(it in 1:nrow(inits.grid)){
+      S0 <- inits.grid[it,1]
+      I0 <- inits.grid[it,2]
       
-      lambda <- min(S[t-1],unname(beta[period[t-1]] * S[t-1] * (I[t-1])^alpha))
+      S[1] <- S0
+      I[1] <- I0
       
-      if(is.nan(lambda) == T){lambda <- 0}
-      
-      I[t] <- lambda 
-      
-      if(epidemics == 'cont'){
-        I[t] <- I[t]
-      }
-      if(epidemics == 'break'){
-        t0s <- epitimes(data,threshold)
-        if(t %in% t0s){
-          I[t] <- adj.rho[t]*data$cases[t]
+      for (t in 2:(nrow(data))){  
+        
+        lambda <- min(S[t-1],unname(beta[period[t-1]] * S[t-1] * (I[t-1])^alpha))
+        
+        #if(lambda < 1 || is.nan(lambda) == T){lambda <- 0}
+        if(is.nan(lambda) == T){lambda <- 0}
+        
+        I[t] <- lambda 
+        
+        if(epidemics == 'cont'){
+          I[t] <- I[t]
         }
+        if(epidemics == 'break'){
+          t0s <- epitimes(data,threshold)
+          if(t %in% t0s){
+            I[t] <- adj.rho[t]*data$cases[t]
+          }
+        }
+        S[t] <- max(S[t-1] + data$births[t-1] - I[t],0)
       }
-      S[t] <- S[t-1] + data$births[t-1] - I[t]
+      
+      inits.res[it] <- sum((I - data$cases*adj.rho)^2)
+      
     }
     
-    inits.res[it] <- sum((I - data$cases*adj.rho)^2)
+    inits <- inits.grid[which.min(inits.res),]
+    
+    inits.grid$S0 <- inits.grid$S0/mean(pop)
+    inits.grid$I0 <- inits.grid$I0/mean(pop)
+    inits.grid$log10LS <- log10(inits.res)
+    
+    S_start <- inits[[1]]
+    I_start <- inits[[2]]
+    
+  }else{
+    
+    S_start <- sbar + Z[1]
+    I_start <- adj.rho[1]*datacopy$cases[1]
     
   }
   
-  inits <- inits.grid[which.min(inits.res),]
-  
-  inits.grid$S0 <- inits.grid$S0/mean(pop)
-  inits.grid$I0 <- inits.grid$I0/mean(pop)
-  inits.grid$log10LS <- log10(inits.res)
-  
+  IC <- c(S_start,I_start)
   
   print(c('alpha'=unname(signif(alpha,2)),
           'mean beta'=unname(signif(mean(beta),3)),
           'mean rho' =unname(signif(mean(1/adj.rho),3)),
           'mean sus' =unname(signif(sbar,3)),
-          'prop. init. sus.' =unname(signif(inits[[1]]/mean(pop),3)),
-          'prop. init. inf.' =unname(signif(inits[[2]]/mean(pop),3))    
-          ))
+          'prop. init. sus.' =unname(signif(S_start/mean(pop),3)),
+          'prop. init. inf.' =unname(signif(I_start/mean(pop),3))    
+  ))
   
   
   nsim <- nsim
@@ -594,23 +613,21 @@ mcmctsir <- function(data, xreg = 'cumcases',
     
     S <- rep(0,length(data$cases))
     I <- rep(0,length(data$cases))
-    #S[1] <- sbar+Z[1]
-    #I[1] <- datacopy$cases[1] * adj.rho[1]
     
-    S[1] <- inits[[1]]
-    I[1] <- inits[[2]]
+    S[1] <- S_start
+    I[1] <- I_start
     
     for (t in 2:(nrow(data))){
-
+      
       if(pred == 'step-ahead'){
         I <- (adj.rho*data$cases)^alpha
       }
       if(pred == 'forward'){
         I <- I
       }
-
+      
       lambda <- min(S[t-1],unname(beta[period[t-1]] * S[t-1] * (I[t-1])^alpha))
-
+      
       #if(lambda < 1 || is.nan(lambda) == T){lambda <- 0}
       if(is.nan(lambda) == T){lambda <- 0}
       
@@ -621,7 +638,7 @@ mcmctsir <- function(data, xreg = 'cumcases',
         }
       }
       if(method == 'negbin'){
-        I[t] <- rnbinom(n=1,mu=lambda,size=I[t-1])
+        I[t] <- rnbinom(n=1,mu=lambda,size=I[t-1]+1e-10)
       }
       if(method == 'pois'){
         I[t] <- rpois(n=1,lambda=lambda)
@@ -630,35 +647,38 @@ mcmctsir <- function(data, xreg = 'cumcases',
         I[t] <- I[t]
       }
       if(epidemics == 'break'){
-
+        
         t0s <- epitimes(data,threshold)
         if(t %in% t0s){
           I[t] <- adj.rho[t]*data$cases[t]
         }
       }
       S[t] <- max(S[t-1] + data$births[t-1] - I[t] + rnorm(n=1,mean=0,sd=add.noise.sd),0)
-      #S[t] <- Z[t]+sbar + rnorm(n = 1, mean = 0, sd=add.noise.sd)
-      if(S[t] < 0 && (S[t-1] + data$births[t-1] - I[t]) >0){
+      
+      if(S[t] < 0 && (S[t-1] + data$births[t-1] - I[t]) >0 ){
         warning('susceptible overflow  -- reduce additive noise sd')
       }
     }
     res[,ct] <- I / adj.rho
-
+    
   }
-
+  
   res[is.nan(res)] <- 0
   res[res < 1] <- 0
-
+  
   res <- as.data.frame(res)
+  
+  #res$mean <- apply(res, 1, function(row) mean(row[-1],na.rm=T))
   res$mean <- rowMeans(res,na.rm=T)
   res$sd   <- apply(res, 1, function(row) sd(row[-1],na.rm=T))
   res$time <- data$time
   res$cases <- data$cases
-
+  
   obs <- res$cases
   pred <- res$mean
-
+  
   fit <- lm(pred ~ obs)
+  
   rsquared <- signif(summary(fit)$adj.r.squared, 2)
 
   return(list('X'=X,'Y'=Y,'Yhat' =Yhat,'mcmcsamples'=mcmcsamples,
@@ -666,7 +686,9 @@ mcmctsir <- function(data, xreg = 'cumcases',
               'Z'=Z,'sbar'=sbar,'sbarlow'=sbarlow,'sbarhigh=sbarhigh',
               'alpha'=alpha,'alphalow'=alphalow,'alphahigh'=alphahigh,
               'res'=res,'loglik'=loglik,'Smean'=Smean,
-              'nsim'=nsim,'rsquared'=rsquared))
+              'nsim'=nsim,'rsquared'=rsquared,
+              'inits.fit'=inits.fit,
+              'inits.grid'=inits.grid,'inits'=IC))
 
 
 }

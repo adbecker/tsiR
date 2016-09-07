@@ -7,9 +7,10 @@
 runtsir(data, xreg = "cumcases", IP = 2, nsim = 10,
   regtype = "gaussian", sigmamax = 3, userYhat = numeric(),
   alpha = NULL, sbar = NULL, family = "gaussian", link = "identity",
-  method = "deterministic", epidemics = "cont", pred = "forward",
-  threshold = 1, seasonality = "standard", add.noise.sd = 0,
-  mul.noise.sd = 0, printon = F, fit = NULL, fittype = NULL)
+  method = "deterministic", inits.fit = T, epidemics = "cont",
+  pred = "forward", threshold = 1, seasonality = "standard",
+  add.noise.sd = 0, mul.noise.sd = 0, printon = F, fit = NULL,
+  fittype = NULL)
 }
 \arguments{
 \item{data}{The data frame containing cases and interpolated births and populations.}
@@ -41,6 +42,8 @@ Smaller, stochastic outbreaks tend to need a lower sigma.}
 
 \item{method}{The type of next step prediction used. Options are 'negbin' for negative binomial,
 'pois' for poisson distribution, and 'deterministic'. Defaults to 'deterministic'.}
+
+\item{inits.fit}{Whether or not to fit initial conditions as well. Defaults to TRUE. This parameter is more necessary in more chaotic locations.}
 
 \item{epidemics}{The type of data splitting. Options are 'cont' which doesn't split the data up at all,
 and 'break' which breaks the epidemics up if there are a lot of zeros. Defaults to 'cont'.}

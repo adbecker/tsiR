@@ -8,9 +8,9 @@ mcmctsir(data, xreg = "cumcases", IP = 2, nsim = 100,
   regtype = "gaussian", sigmamax = 3, userYhat = numeric(),
   update.iter = 10000, n.iter = 30000, n.chains = 3, n.adapt = 1000,
   burn.in = 100, method = "deterministic", epidemics = "cont",
-  pred = "forward", seasonality = "standard", threshold = 1,
-  sbar = NULL, alpha = NULL, add.noise.sd = 0, mul.noise.sd = 0,
-  printon = F)
+  pred = "forward", seasonality = "standard", inits.fit = T,
+  threshold = 1, sbar = NULL, alpha = NULL, add.noise.sd = 0,
+  mul.noise.sd = 0, printon = F)
 }
 \arguments{
 \item{data}{The data frame containing cases and interpolated births and populations.}
@@ -50,6 +50,8 @@ and 'break' which breaks the epidemics up if there are a lot of zeros. Defaults 
 \item{pred}{The type of prediction used. Options are 'forward' and 'step-ahead'. Defaults to 'forward'.}
 
 \item{seasonality}{The type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact or none for a single contact parameter. Defaults to standard.}
+
+\item{inits.fit}{Whether or not to fit initial conditions as well. Defaults to TRUE. This parameter is more necessary in more chaotic locations.}
 
 \item{threshold}{The cut off for a new epidemic if epidemics = 'break'. Defaults to 1.}
 
