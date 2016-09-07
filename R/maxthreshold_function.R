@@ -8,17 +8,18 @@
 #' @param thresholdmin The minimum number of cases to be considered an outbreak.
 #' @param thresholdmax The max number of cases to be considered an outbreak.
 #' @param printon A T/F statement to print the progress.
+#' @param inits.fit Whether or not to fit initial conditions as well. Defaults to FALSE here. This parameter is more necessary in more chaotic locations.
 #'
 #' @examples
 #' require(kernlab)
 #' Mold <- twentymeas[["Mold"]]
 #' plotdata(Mold)
-#'parms <- estpars(Mold)
-#'tau <- maxthreshold(Mold,parms=parms,thresholdmin=8,thresholdmax=13)
-#'res <- runtsir(Mold,epidemics='break',threshold=tau,method='negbin')
+#'parms <- estpars(data=Mold,alpha=0.97)
+#'tau <- maxthreshold(data=Mold,parms=parms,thresholdmin=8,thresholdmax=13,inits.fit=F)
+#'res <- simulatetsir(data=Mold,parms=parms,epidemics='break',threshold=tau,method='negbin',inits.fit=F)
 #' plotres(res)
 
-maxthreshold <- function(data,nsim=2,IP=2,method='deterministic',
+maxthreshold <- function(data,nsim=2,IP=2,method='deterministic',inits.fit=F,
                          parms,thresholdmin=2,thresholdmax=20,printon=FALSE){
 
   threshvec <- seq(thresholdmin,thresholdmax,1)
@@ -31,6 +32,7 @@ maxthreshold <- function(data,nsim=2,IP=2,method='deterministic',
     res <- simulatetsir(data, nsim = nsim, IP=IP,
                         parms=parms,
                         method=method,
+                        inits.fit=inits.fit,
                         epidemics='break', pred ='forward',
                         threshold=threshvec[it],
                         add.noise.sd = 0, mul.noise.sd = 0)

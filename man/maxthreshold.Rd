@@ -4,8 +4,9 @@
 \alias{maxthreshold}
 \title{maxthreshold}
 \usage{
-maxthreshold(data, nsim = 2, IP = 2, method = "deterministic", parms,
-  thresholdmin = 2, thresholdmax = 20, printon = FALSE)
+maxthreshold(data, nsim = 2, IP = 2, method = "deterministic",
+  inits.fit = F, parms, thresholdmin = 2, thresholdmax = 20,
+  printon = FALSE)
 }
 \arguments{
 \item{data}{The time, cases, births, pop data frame.}
@@ -15,6 +16,8 @@ maxthreshold(data, nsim = 2, IP = 2, method = "deterministic", parms,
 \item{IP}{The infectious period, which should the time step of the data.}
 
 \item{method}{The forward simulation method used, i.e. deterministic, negbin, pois.}
+
+\item{inits.fit}{Whether or not to fit initial conditions as well. Defaults to FALSE here. This parameter is more necessary in more chaotic locations.}
 
 \item{parms}{The estimated parameters from estpars or mcmcestpars.}
 
