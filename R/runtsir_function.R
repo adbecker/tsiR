@@ -384,6 +384,8 @@ runtsir <- function(data, xreg = 'cumcases',
   betalow <- exp(confinterval[,1])
   betahigh <- exp(confinterval[,2])
   
+  glmAIC <- AIC(glmfit)
+  
   contact <- as.data.frame(cbind('time'=seq(1,length(beta[period]),1),
                                  betalow[period],beta[period],betahigh[period]),row.names=F)
   names(contact) <- c('time','betalow','beta','betahigh')
@@ -539,6 +541,7 @@ runtsir <- function(data, xreg = 'cumcases',
   rsquared <- signif(summary(fit)$adj.r.squared, 2)
   
   return(list('X'=X,'Y'=Y,'Yhat' =Yhat, 'contact'=contact,
+              'glmfit'=glmfit, 'AIC'=glmAIC,
               'beta'=head(beta[period],52/IP),'rho'=adj.rho,'pop'=pop,
               'Z'=Z,'sbar'=sbar,'alpha'=alpha,
               'res'=res,'loglik'=loglik,'Smean'=Smean,
