@@ -86,7 +86,7 @@ runtsir <- function(data, xreg = 'cumcases',
   
   linkcheck <- c('log','identity')
   if(link %in% linkcheck == F){
-    stop("link must be either 'log' or 'idendity'")
+    stop("link must be either 'log' or 'identity'")
   }
   
   
@@ -479,7 +479,7 @@ runtsir <- function(data, xreg = 'cumcases',
     for (t in 2:(nrow(data))){
       
       if(pred == 'step-ahead'){
-        I <- (adj.rho*data$cases)^alpha
+        I[t] <- adj.rho[t]*data$cases[t]
       }
       if(pred == 'forward'){
         I <- I

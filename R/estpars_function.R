@@ -65,7 +65,7 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
 
   linkcheck <- c('log','identity')
   if(link %in% linkcheck == F){
-    stop("link must be either 'log' or 'idendity'")
+    stop("link must be either 'log' or 'identity'")
   }
 
 
