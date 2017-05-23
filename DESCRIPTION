@@ -1,7 +1,7 @@
 Package: tsiR
 Type: Package
 Title: An Implementation of the TSIR Model
-Version: 0.1.0
+Version: 0.2.0
 Date: 2017-02-16
 Authors@R: c(person("Alexander D.","Becker",
 		role=c("aut","cre"),email="adbecker@princeton.edu"),
