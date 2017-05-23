@@ -20,12 +20,15 @@
 #' @param alpha The mixing parameter. Defaults to NULL, i.e. the function estimates alpha.
 #' @param printon Whether to show diagnostic prints or not, defaults to FALSE.
 #' @examples
+#' \dontrun{
 #' require(kernlab)
 #' London <- twentymeas[["London"]]
 #' parms <- estpars(London)
 #' names(parms)
-#' sim <- simulatetsir(London,parms=parms)
-#' plotres(sim)
+#' sim <- simulatetsir(London,parms=parms,inits.fit=FALSE)
+#'plotres(sim)
+#'}
+
 estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
                     regtype = 'gaussian',sigmamax = 3,family='gaussian',link='identity',
                     userYhat = numeric(),alpha=NULL,sbar=NULL,
@@ -128,7 +131,7 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
 
       if(sigvec[it] <= min(sigvec)){
         ## use the loess then
-        print('guassian regressian failed -- switching to loess regression')
+        print('gaussian regressian failed -- switching to loess regression')
         Yhat <- predict(loess(y~x,se=T,family='gaussian',degree=1,model=T),X)
       }
 

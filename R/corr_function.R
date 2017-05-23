@@ -3,12 +3,7 @@
 #' @description Plot the correlation of the true data against the fitted resimulated data.
 #'
 #' @param sim The dataframe or list produced by the 'runtsir' function.
-#' @examples
-#' require(tsiR)
-#' require(kernlab)
-#' London <- twentymeas[["London"]]
-#' res <- runtsir(London)
-#' corr(res)
+
 
 corr <- function(sim){
 

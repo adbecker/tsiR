@@ -29,20 +29,22 @@
 #' @param printon Whether to show diagnostic prints or not, defaults to FALSE.
 #' @param fit Now removed but gives a warning.
 #' @param fittype Now removed but gives a warning.
-#' @param inits.fit Whether or not to fit initial conditions as well. Defaults to TRUE. This parameter is more necessary in more chaotic locations.
+#' @param inits.fit Whether or not to fit initial conditions using simple least squares as well. Defaults to FALSE. This parameter is more necessary in more chaotic locations.
 #' @examples
 #' require(kernlab)
 #' London <- twentymeas[["London"]]
-#' res <- runtsir(London,method='pois',nsim=10, IP=2)
-#' plotres(res)
-
+#' \dontrun{
+#' plotdata(London)
+#' res <- runtsir(data=London,method='pois',nsim=10, IP=2,inits.fit=FALSE)
+#'plotres(res)
+#'}
 runtsir <- function(data, xreg = 'cumcases',
                     IP = 2,nsim = 10,
                     regtype = 'gaussian',sigmamax = 3,
                     userYhat = numeric(),alpha=NULL,sbar=NULL,
                     family='gaussian',link='identity',
                     method='deterministic',
-                    inits.fit=T,
+                    inits.fit=FALSE,
                     epidemics='cont', pred ='forward',
                     threshold=1,seasonality='standard',
                     add.noise.sd = 0, mul.noise.sd = 0,
@@ -189,7 +191,7 @@ runtsir <- function(data, xreg = 'cumcases',
       
       if(sigvec[it] <= min(sigvec)){
         ## use the loess then
-        print('guassian regressian failed -- switching to loess regression')
+        print('gaussian regressian failed -- switching to loess regression')
         Yhat <- predict(loess(y~x,se=T,family='gaussian',degree=1,model=T),X)
       }
       
@@ -427,7 +429,7 @@ runtsir <- function(data, xreg = 'cumcases',
           I[t] <- I[t]
         }
         if(epidemics == 'break'){
-          t0s <- epitimes(data,threshold)
+          t0s <- epitimes(data,threshold)$start
           if(t %in% t0s){
             I[t] <- adj.rho[t]*data$cases[t]
           }
@@ -507,7 +509,7 @@ runtsir <- function(data, xreg = 'cumcases',
       }
       if(epidemics == 'break'){
         
-        t0s <- epitimes(data,threshold)
+        t0s <- epitimes(data,threshold)$start
         if(t %in% t0s){
           I[t] <- adj.rho[t]*data$cases[t]
         }

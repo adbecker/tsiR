@@ -29,7 +29,7 @@
 #' @param seasonality The type of contact to use. Options are standard for 52/IP point contact or schoolterm for just a two point on off contact or none for a single contact parameter. Defaults to standard.
 #' @param mul.noise.sd The sd for multiplicative noise, defaults to zero.
 #' @param printon Whether to show diagnostic prints or not, defaults to FALSE.
-#' @param inits.fit Whether or not to fit initial conditions as well. Defaults to TRUE. This parameter is more necessary in more chaotic locations.
+#' @param inits.fit Whether or not to fit initial conditions using simple least squares as well. Defaults to FALSE. This parameter is more necessary in more chaotic locations.
 
 mcmctsir <- function(data, xreg = 'cumcases',
                      IP = 2,nsim = 100,
@@ -40,7 +40,7 @@ mcmctsir <- function(data, xreg = 'cumcases',
                      n.adapt=1000,burn.in=100,
                      method='deterministic',epidemics='cont', pred ='forward',
                      seasonality='standard',
-                     inits.fit=T,
+                     inits.fit=FALSE,
                      threshold=1,sbar=NULL,alpha=NULL,
                      add.noise.sd = 0, mul.noise.sd = 0,
                      printon=F){
@@ -175,7 +175,7 @@ mcmctsir <- function(data, xreg = 'cumcases',
 
       if(sigvec[it] <= min(sigvec)){
         ## use the loess then
-        print('guassian regressian failed -- switching to loess regression')
+        print('gaussian regressian failed -- switching to loess regression')
         Yhat <- predict(loess(y~x,se=T,family='gaussian',degree=1,model=T),X)
       }
 
@@ -568,7 +568,7 @@ mcmctsir <- function(data, xreg = 'cumcases',
           I[t] <- I[t]
         }
         if(epidemics == 'break'){
-          t0s <- epitimes(data,threshold)
+          t0s <- epitimes(data,threshold)$start
           if(t %in% t0s){
             I[t] <- adj.rho[t]*data$cases[t]
           }
@@ -620,8 +620,8 @@ mcmctsir <- function(data, xreg = 'cumcases',
     for (t in 2:(nrow(data))){
       
       if(pred == 'step-ahead'){
-        I <- (adj.rho*data$cases)^alpha
-      }
+        I[t] <- adj.rho[t]*data$cases[t]
+        }
       if(pred == 'forward'){
         I <- I
       }
@@ -648,7 +648,7 @@ mcmctsir <- function(data, xreg = 'cumcases',
       }
       if(epidemics == 'break'){
         
-        t0s <- epitimes(data,threshold)
+        t0s <- epitimes(data,threshold)$start
         if(t %in% t0s){
           I[t] <- adj.rho[t]*data$cases[t]
         }

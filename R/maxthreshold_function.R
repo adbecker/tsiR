@@ -14,12 +14,15 @@
 #' require(kernlab)
 #' Mold <- twentymeas[["Mold"]]
 #' plotdata(Mold)
+#' \dontrun{
 #'parms <- estpars(data=Mold,alpha=0.97)
-#'tau <- maxthreshold(data=Mold,parms=parms,thresholdmin=8,thresholdmax=13,inits.fit=F)
-#'res <- simulatetsir(data=Mold,parms=parms,epidemics='break',threshold=tau,method='negbin',inits.fit=F)
+#'tau <- maxthreshold(data=Mold,parms=parms,
+#'thresholdmin=8,thresholdmax=12,inits.fit=FALSE)
+#'res <- simulatetsir(data=Mold,parms=parms,
+#'epidemics='break',threshold=tau,method='negbin',inits.fit=FALSE)
 #' plotres(res)
-
-maxthreshold <- function(data,nsim=2,IP=2,method='deterministic',inits.fit=F,
+#'}
+maxthreshold <- function(data,nsim=2,IP=2,method='deterministic',inits.fit=FALSE,
                          parms,thresholdmin=2,thresholdmax=20,printon=FALSE){
 
   threshvec <- seq(thresholdmin,thresholdmax,1)

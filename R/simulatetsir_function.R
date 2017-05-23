@@ -14,7 +14,7 @@
 #' @param threshold The cut off for a new epidemic if epidemics = 'break'. Defaults to 1.
 #' @param add.noise.sd The sd for additive noise, defaults to zero.
 #' @param mul.noise.sd The sd for multiplicative noise, defaults to zero.
-#' @param inits.fit Whether or not to fit initial conditions as well. Defaults to TRUE. This parameter is more necessary in more chaotic locations.
+#' @param inits.fit Whether or not to fit initial conditions using simple least squares as well. Defaults to FALSE. This parameter is more necessary in more chaotic locations.
 
 
 simulatetsir <- function(data, nsim = 100, IP=2,
@@ -22,7 +22,7 @@ simulatetsir <- function(data, nsim = 100, IP=2,
                          method='deterministic',
                          epidemics='cont', pred ='forward',
                          threshold=1,
-                         inits.fit=T,
+                         inits.fit=FALSE,
                          add.noise.sd = 0, mul.noise.sd = 0
 ){
 
@@ -94,7 +94,7 @@ simulatetsir <- function(data, nsim = 100, IP=2,
           I[t] <- I[t]
         }
         if(epidemics == 'break'){
-          t0s <- epitimes(data,threshold)
+          t0s <- epitimes(data,threshold)$start
           if(t %in% t0s){
             I[t] <- adj.rho[t]*data$cases[t]
           }
@@ -145,14 +145,16 @@ simulatetsir <- function(data, nsim = 100, IP=2,
     
     for (t in 2:(nrow(data))){
       
-      if(pred == 'step-ahead'){
-        I <- (adj.rho*data$cases)^alpha
-      }
+      
       if(pred == 'forward'){
         I <- I
       }
       
       lambda <- min(S[t-1],unname(beta[period[t-1]] * S[t-1] * (I[t-1])^alpha))
+      
+      if(pred == 'step-ahead'){
+        lambda <- min(S[t-1],unname(beta[period[t-1]] * S[t-1] * (adj.rho[t]*data$cases[t])^alpha))
+      }
       
       #if(lambda < 1 || is.nan(lambda) == T){lambda <- 0}
       if(is.nan(lambda) == T){lambda <- 0}
@@ -174,7 +176,7 @@ simulatetsir <- function(data, nsim = 100, IP=2,
       }
       if(epidemics == 'break'){
         
-        t0s <- epitimes(data,threshold)
+        t0s <- epitimes(data,threshold)$start
         if(t %in% t0s){
           I[t] <- adj.rho[t]*data$cases[t]
         }

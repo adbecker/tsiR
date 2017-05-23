@@ -3,7 +3,7 @@
 #' @param data Data frame with the cases vector.
 #' @param threshold The epidemic threshold, i.e. the number of cases required to spark a new outbreak in the model.
 plotbreaks <- function(data,threshold){
-  t0s <- epitimes(data,threshold)
+  t0s <- epitimes(data,threshold)$start
   ptsdat <- as.data.frame(cbind('t'=data$time[t0s],'cpts'=data$cases[t0s]))
   p <- ggplot()+
     geom_line(data=data, aes_string(x='time',y='cases'),colour='dodgerblue',size=1) +
