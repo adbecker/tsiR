@@ -199,7 +199,7 @@ simulatetsir <- function(data, nsim = 100, IP=2,
 
   res <- as.data.frame(res)
 
-  Sres <- as.data.frame(res)
+  Sres <- as.data.frame(Sres)
 
   Sres$mean <- rowMeans(Sres,na.rm=T)
   Sres$sd   <- apply(Sres, 1, function(row) sd(row[-1],na.rm=T))
