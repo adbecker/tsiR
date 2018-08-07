@@ -82,7 +82,7 @@ plotbeta <- function(dat){
                                                             .(signif(dat$alpha, 3)))) + ylab(bquote(beta))
     }
   }
-  p4 <- p4 + xlab(sprintf("time mod %g", length(dat$contact)))
+  p4 <- p4 + xlab(sprintf("time mod %g", nrow(dat$contact)))
 
 
   print(p4)
