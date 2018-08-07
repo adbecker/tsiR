@@ -549,7 +549,7 @@ runtsir <- function(data, xreg = 'cumcases',
 
   rsquared <- signif(summary(fit)$adj.r.squared, 2)
 
-  return(list('X'=X,'Y'=Y,'Yhat' =Yhat, 'contact'=contact,
+  return(list('X'=X,'Y'=Y,'Yhat' =Yhat, 'contact'=contact,'period'=period,
               'glmfit'=glmfit, 'AIC'=glmAIC,
               'beta'=head(beta[period],52/IP),'rho'=adj.rho,'pop'=pop,
               'Z'=Z,'sbar'=sbar,'alpha'=alpha,

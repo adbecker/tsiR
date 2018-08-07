@@ -222,7 +222,7 @@ simulatetsir <- function(data, nsim = 100, IP=2,
 
 
   return(list(
-    'X'=X,'Y'=Y,'Yhat' =Yhat,'pop'=pop,'Smean'=Smean,
+    'X'=X,'Y'=Y,'Yhat' =Yhat,'pop'=pop,'Smean'=Smean,'IP'=IP,
     'beta'=beta,'rho'=adj.rho,
     'Z'=Z,'sbar'=sbar,'alpha'=alpha,'pop'=pop,
     'alphalow'=alphalow,'alphahigh'=alphahigh,

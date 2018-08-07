@@ -236,83 +236,83 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
    Inew <- log(Inew)
  }
  Inew <- round(Inew)
- 
+
  if(length(input.alpha) == 0 && length(input.sbar) == 0){
-   
+
    for(i in 1:length(Smean)){
      lSminus <- log(Smean[i] + Zminus)
-     
+
      glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
                    family=eval(parse(text=family))(link=link))
-     
+
      loglik[i] <- glmfit$deviance
-     
+
    }
-   
+
    sbar <- Smean[which.min(loglik)]
-   
+
    lSminus <- log(sbar + Zminus)
-   
+
    glmfit <- glm(Inew ~ -1 +as.factor(period)+ (lIminus) + offset(lSminus),
                  family=eval(parse(text=family))(link=link))
-   
-   
+
+
    beta <- exp(head(coef(glmfit),-1))
    alpha <- tail(coef(glmfit),1)
  }
- 
- 
+
+
  if(length(input.alpha) == 1 && length(input.sbar) == 0){
-   
-   
+
+
    for(i in 1:length(Smean)){
      lSminus <- log(Smean[i] + Zminus)
-     
+
      glmfit <- glm(Inew ~ -1 +as.factor(period) + offset(alpha*lIminus) + offset(lSminus),
                    family=eval(parse(text=family))(link=link))
-     
-     
+
+
      loglik[i] <- glmfit$deviance
-     
+
    }
-   
+
    sbar <- Smean[which.min(loglik)]
-   
+
    lSminus <- log(sbar + Zminus)
-   
+
    glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
                  family=eval(parse(text=family))(link=link))
-   
-   
+
+
    beta <- exp(coef(glmfit))
  }
- 
- 
+
+
  if(length(input.alpha) == 0 && length(input.sbar) == 1){
-   
+
    sbar <- sbar * mean(pop)
    lSminus <- log(sbar + Zminus)
-   
-   
+
+
    glmfit <- glm(Inew ~ -1 +as.factor(period) + (lIminus) + offset(lSminus),
                  family=eval(parse(text=family))(link=link))
-   
-   
+
+
    beta <- exp(head(coef(glmfit),-1))
    alpha <- tail(coef(glmfit),1)
  }
- 
- 
+
+
  if(length(input.alpha) == 1 && length(input.sbar) == 1){
-   
+
    sbar <- sbar * mean(pop)
    lSminus <- log(sbar + Zminus)
-   
+
    glmfit <- glm(Inew ~ -1 +as.factor(period)+ offset(alpha*lIminus) + offset(lSminus),
                  family=eval(parse(text=family))(link=link))
-   
+
    beta <- exp(coef(glmfit))
-   
+
  }
 
   if(seasonality == 'none'){
@@ -320,19 +320,19 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
     beta <- mean(beta)
     period <- rep(1,nrow(data)-1)
   }
- 
+
  confinterval <- suppressMessages(confint(glmfit))
  continterval <- confinterval[1:length(unique(period)),]
  betalow <- exp(confinterval[,1])
  betahigh <- exp(confinterval[,2])
- 
+
  contact <- as.data.frame(cbind('time'=seq(1,length(beta[period]),1),
                                 betalow[period],beta[period],betahigh[period]),row.names=F)
  names(contact) <- c('time','betalow','beta','betahigh')
  contact <- head(contact,52/IP)
 
-  return(list('X'=X,'Y'=Y,'Yhat'=Yhat,'Smean'=Smean,'contact'=contact,
-              'beta'=head(beta[period],52/IP),'rho'=adj.rho,'Z'=Z,
+  return(list('X'=X,'Y'=Y,'Yhat'=Yhat,'Smean'=Smean,'contact'=contact,'period'=period,'IP'=IP,
+              'beta'=beta,'rho'=adj.rho,'Z'=Z,
               'sbar'=sbar,'alpha'=alpha,'loglik'=loglik))
 
 }
