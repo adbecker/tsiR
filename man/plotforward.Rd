@@ -14,4 +14,3 @@ plotforward(dat, inverse = F)
 \description{
 Plots the forward simulation from the TSIR model
 }
-

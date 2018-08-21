@@ -43,4 +43,3 @@ epidemics='break',threshold=tau,method='negbin',inits.fit=FALSE)
 plotres(res)
 }
 }
-

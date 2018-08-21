@@ -16,4 +16,3 @@ plotcomp(sim, errtype = "95", max.plot = 10)
 \description{
 Plots just the comparison of the forward simulation fit to the data.
 }
-

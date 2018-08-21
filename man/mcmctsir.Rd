@@ -6,11 +6,11 @@
 \usage{
 mcmctsir(data, xreg = "cumcases", IP = 2, nsim = 100,
   regtype = "gaussian", sigmamax = 3, userYhat = numeric(),
-  update.iter = 10000, n.iter = 30000, n.chains = 3, n.adapt = 1000,
-  burn.in = 100, method = "deterministic", epidemics = "cont",
-  pred = "forward", seasonality = "standard", inits.fit = FALSE,
-  threshold = 1, sbar = NULL, alpha = NULL, add.noise.sd = 0,
-  mul.noise.sd = 0, printon = F)
+  update.iter = 10000, n.iter = 30000, n.chains = 3,
+  n.adapt = 1000, burn.in = 100, method = "deterministic",
+  epidemics = "cont", pred = "forward", seasonality = "standard",
+  inits.fit = FALSE, threshold = 1, sbar = NULL, alpha = NULL,
+  add.noise.sd = 0, mul.noise.sd = 0, printon = F)
 }
 \arguments{
 \item{data}{The data frame containing cases and interpolated births and populations.}
@@ -68,4 +68,3 @@ and 'break' which breaks the epidemics up if there are a lot of zeros. Defaults 
 \description{
 This function runs the TSIR model using a MCMC estimation. The susceptibles are still reconstructed in the same way as the regular tsir model, however beta, alpha, and sbar (or whatever combination you enter) are estimated using rjargs.
 }
-

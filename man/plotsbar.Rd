@@ -12,4 +12,3 @@ plotsbar(dat)
 \description{
 Plots the profile log likelihood calculation for inferred sbar
 }
-

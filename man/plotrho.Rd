@@ -12,4 +12,3 @@ plotrho(dat)
 \description{
 Plots the inferred reporting rate, rho
 }
-

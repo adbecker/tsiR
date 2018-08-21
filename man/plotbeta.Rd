@@ -12,4 +12,3 @@ plotbeta(dat)
 \description{
 Plots the inferred beta with confidence intervals (when they can be calculated)
 }
-

@@ -14,4 +14,3 @@ residual.cases(Yhat, Y)
 \description{
 Computes the residuals for when X is the cumulative cases. Used internally.
 }
-

@@ -12,4 +12,3 @@ plotregression(dat)
 \description{
 Plots the cumulative cases - cumulative births data and regression fit
 }
-

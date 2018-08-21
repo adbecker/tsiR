@@ -16,4 +16,3 @@ residual.births(rho, Yhat, Y)
 \description{
 computes the residuals for when X is the cumulative births. Used internally.
 }
-

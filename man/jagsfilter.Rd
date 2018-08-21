@@ -12,4 +12,3 @@ jagsfilter(mcmcresults)
 \description{
 Used internally to filter jags results to give just the inference well use.
 }
-

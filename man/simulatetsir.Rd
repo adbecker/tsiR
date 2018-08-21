@@ -4,9 +4,10 @@
 \alias{simulatetsir}
 \title{simulatetsir}
 \usage{
-simulatetsir(data, nsim = 100, IP = 2, parms, method = "deterministic",
-  epidemics = "cont", pred = "forward", threshold = 1,
-  inits.fit = FALSE, add.noise.sd = 0, mul.noise.sd = 0)
+simulatetsir(data, nsim = 100, IP = 2, parms,
+  method = "deterministic", epidemics = "cont", pred = "forward",
+  threshold = 1, inits.fit = FALSE, add.noise.sd = 0,
+  mul.noise.sd = 0)
 }
 \arguments{
 \item{data}{The data frame containing cases and interpolated births and populations.}
@@ -37,4 +38,3 @@ and 'break' which breaks the epidemics up if there are a lot of zeros. Defaults 
 \description{
 This function just simulates the forward prediction given the data and a parms list generated from estpars or mcmcestpars.
 }
-

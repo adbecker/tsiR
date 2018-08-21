@@ -14,4 +14,3 @@ derivative(X, Y)
 \description{
 This function computes an 8 point derivative.
 }
-

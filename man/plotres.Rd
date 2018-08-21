@@ -14,4 +14,3 @@ plotres(dat, max.plot = 10)
 \description{
 Plots diagnostics and results of the runtsir function.
 }
-

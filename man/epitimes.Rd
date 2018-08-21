@@ -16,4 +16,3 @@ epitimes(data, threshold, epi.length = 3)
 \description{
 The times at which we declare a new outbreak has started based on the threshold parameter.
 }
-

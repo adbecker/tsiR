@@ -12,4 +12,3 @@ plotcases(data)
 \description{
 Plots just the cases data.
 }
-

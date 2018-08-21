@@ -12,4 +12,3 @@ corr(sim)
 \description{
 Plot the correlation of the true data against the fitted resimulated data.
 }
-

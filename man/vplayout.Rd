@@ -14,4 +14,3 @@ vplayout(x, y)
 \description{
 the function just breaks up the plot area into a grid. Called internally.
 }
-

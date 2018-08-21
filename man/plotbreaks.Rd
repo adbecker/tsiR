@@ -14,4 +14,3 @@ plotbreaks(data, threshold)
 \description{
 Plots the cases data with a line whenever the forward simulation is seeded using the real data.
 }
-

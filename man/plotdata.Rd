@@ -12,4 +12,3 @@ plotdata(data)
 \description{
 Plots the cases data as well as birth and population dynamics.
 }
-

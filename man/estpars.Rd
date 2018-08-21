@@ -6,8 +6,8 @@
 \usage{
 estpars(data, xreg = "cumcases", IP = 2, seasonality = "standard",
   regtype = "gaussian", sigmamax = 3, family = "gaussian",
-  link = "identity", userYhat = numeric(), alpha = NULL, sbar = NULL,
-  printon = F)
+  link = "identity", userYhat = numeric(), alpha = NULL,
+  sbar = NULL, printon = F)
 }
 \arguments{
 \item{data}{The data frame containing cases and interpolated births and populations.}
@@ -54,4 +54,3 @@ sim <- simulatetsir(London,parms=parms,inits.fit=FALSE)
 plotres(sim)
 }
 }
-

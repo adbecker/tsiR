@@ -20,4 +20,3 @@ tsiRdata(time, cases, births, pop, IP = 2)
 \description{
 A function to take in time cases births and pop vectors (of any lengths) and interpolate them using the given infectious period.
 }
-

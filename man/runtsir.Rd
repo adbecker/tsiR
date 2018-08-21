@@ -6,11 +6,11 @@
 \usage{
 runtsir(data, xreg = "cumcases", IP = 2, nsim = 10,
   regtype = "gaussian", sigmamax = 3, userYhat = numeric(),
-  alpha = NULL, sbar = NULL, family = "gaussian", link = "identity",
-  method = "deterministic", inits.fit = FALSE, epidemics = "cont",
-  pred = "forward", threshold = 1, seasonality = "standard",
-  add.noise.sd = 0, mul.noise.sd = 0, printon = F, fit = NULL,
-  fittype = NULL)
+  alpha = NULL, sbar = NULL, family = "gaussian",
+  link = "identity", method = "deterministic", inits.fit = FALSE,
+  epidemics = "cont", pred = "forward", threshold = 1,
+  seasonality = "standard", add.noise.sd = 0, mul.noise.sd = 0,
+  printon = F, fit = NULL, fittype = NULL)
 }
 \arguments{
 \item{data}{The data frame containing cases and interpolated births and populations.}
@@ -76,4 +76,3 @@ res <- runtsir(data=London,method='pois',nsim=10, IP=2,inits.fit=FALSE)
 plotres(res)
 }
 }
-
