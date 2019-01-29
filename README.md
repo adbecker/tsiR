@@ -8,5 +8,8 @@
 
 ## This package can be installed via CRAN. Updates to the package post the PLOS ONE paper will follow below as they occur.
 
+## Update V.0.4.1 : Minor update  01/29/2019
+#### The tsiR package has been updated to include further warning messages, bug fixes, and further annotations.
+
 ## Update V.0.4.0 : Lyapunov Analysis 08/20/2018
 #### The tsiR package has been updated to include Global and Local Lyapunov Exponents. You can learn more and find examples of how to use this function for the London data by typing ?TSIR_LE ?TSIR_LLE and ?plotLLE in the R console. This updateis now on CRAN.
