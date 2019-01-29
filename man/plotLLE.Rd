@@ -20,7 +20,7 @@ ggplot2 options to it if desired.
 require(kernlab)
 require(ggplot2)
 require(kernlab)
-London <- twentymeas[["London"]]
+London <- twentymeas$London
 ## just analyze the biennial portion of the data
 London <- subset(London, time > 1950)
 

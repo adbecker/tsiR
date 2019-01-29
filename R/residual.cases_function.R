@@ -5,7 +5,7 @@
 
 
 residual.cases <- function(Yhat,Y){
-  ## when X is cumcases
+  ## when X is cumcases can do standard calculation
   Z <- Y - Yhat
   return(Z)
 }

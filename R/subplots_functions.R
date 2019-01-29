@@ -24,7 +24,7 @@ plotregression <- function(dat){
 plotrho <- function(dat){
 
   rhodf <- NULL
-  rhodf$time <- dat$res$time
+  rhodf$time <- dat$time
   rhodf$rho <- 1/dat$rho
   rhodf <- as.data.frame(rhodf)
   p2 <- ggplot(rhodf, aes_string("time", "rho")) + geom_line(size = 2) +

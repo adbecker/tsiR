@@ -33,7 +33,7 @@ require(kernlab)
 require(ggplot2)
 require(kernlab)
 require(tsiR)
-London <- twentymeas[["London"]]
+London <- twentymeas$London
 
 London <- subset(London, time > 1950)
 

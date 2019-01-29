@@ -5,6 +5,8 @@
 #' @param X The variable to differentiate with respect to.
 #' @param Y The function / vector to differentiate.
 derivative <- function(X,Y){
+
+  ## compute 9 point derivative
   weights <- c(1/280, -4/105, 1/5, -4/5, 0, 4/5, -1/5, 4/105, -1/280)
 
   x <- seq(X[1], X[(length(X))], length=1e4)
@@ -17,6 +19,8 @@ derivative <- function(X,Y){
   for(i in 5:(length(y)-4)){
     dy[i-4] <- sum(weights * y[(i-4):(i+4)]) / dx
   }
+
+  ## interpolate to match vector length
 
   dy <- approxfun(seq(X[1], X[length(X)], length=length(dy)), dy)(X)
   #dy <- approx(dy,n=length(X))$y

@@ -34,6 +34,7 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
                     userYhat = numeric(),alpha=NULL,sbar=NULL,
                     printon=F){
 
+  ## for better annotations please see runtsir function
 
   datacheck <- c('time','cases','pop','births')
   if(sum(datacheck %in% names(data)) < length(datacheck)){
@@ -332,7 +333,7 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
  contact <- head(contact,52/IP)
 
   return(list('X'=X,'Y'=Y,'Yhat'=Yhat,'Smean'=Smean,'contact'=contact,'period'=period,'IP'=IP,
-              'beta'=beta,'rho'=adj.rho,'Z'=Z,
+              'beta'=beta,'rho'=adj.rho,'Z'=Z,'pop'=pop,'time'=data$time,
               'sbar'=sbar,'alpha'=alpha,'loglik'=loglik))
 
 }

@@ -50,6 +50,7 @@ runtsir <- function(data, xreg = 'cumcases',
                     add.noise.sd = 0, mul.noise.sd = 0,
                     printon=F,fit = NULL,fittype = NULL){
 
+  ## check various function arguments
 
   if( (nsim %% 1 ==0) == F){
     nsim <- round(nsim)
@@ -131,15 +132,20 @@ runtsir <- function(data, xreg = 'cumcases',
          Please use mcmctsir for an mcmc version of the tsir model.')
   }
 
+  ## copy input alpha and sbar so you can pass the estimation (or fixed parm) to the end
 
   input.alpha <- alpha
   input.sbar <- sbar
+
+  ## print warning if too many zeros and the continuous prediction is likely to fail
 
   nzeros <- length(which(data$cases==0))
   ltot <- length(data$cases)
   if(nzeros > 0.3 * ltot && epidemics == 'cont'){
     print(sprintf('time series is %.0f%% zeros, consider using break method',100*nzeros/ltot))
   }
+
+  ## assign cumulative births and cases as X or Y
 
   cumbirths <- cumsum(data$births)
   cumcases <- cumsum(data$cases)
@@ -154,9 +160,13 @@ runtsir <- function(data, xreg = 'cumcases',
     Y <- cumcases
   }
 
+  ## interpolate to smooth a bit
+
   x <- seq(X[1], X[length(X)], length=length(X))
   y <- approxfun(X, Y)(x)
   y[1] <- y[2] - (y[3]-y[2])
+
+  ## do the regression type specified and generated Yhat
 
   if(regtype == 'lm'){
     Yhat <- predict(lm(Y~X))
@@ -173,6 +183,9 @@ runtsir <- function(data, xreg = 'cumcases',
   if(regtype == 'spline'){
     Yhat <- predict(smooth.spline(x,y,df=2.5),X)$y
   }
+
+  ## gaussian regression type is profiled over until a plausible reporting rate is found
+  ## reporting rate is not guaranteed to be 'optimal'
 
   if(regtype == 'gaussian'){
 
@@ -195,6 +208,7 @@ runtsir <- function(data, xreg = 'cumcases',
         Yhat <- predict(loess(y~x,se=T,family='gaussian',degree=1,model=T),X)
       }
 
+      ## generate residuals for gaussian regression
 
       if(xreg == 'cumcases'){
         Z <- residual.cases(Yhat,Y)
@@ -221,6 +235,8 @@ runtsir <- function(data, xreg = 'cumcases',
     }
   }
 
+  ## generate reporting rate and residuals for non gaussian regression types
+
   rho <- derivative(X,Yhat)
 
   if(xreg == 'cumcases'){
@@ -230,6 +246,8 @@ runtsir <- function(data, xreg = 'cumcases',
   if(xreg == 'cumbirths'){
     Z <- residual.births(rho,Yhat,Y)
   }
+
+  ## 'standardize reporting rate at this point to be consistent throughout the rest of the function
 
   if(xreg == 'cumcases'){
     adj.rho <- rho
@@ -243,17 +261,29 @@ runtsir <- function(data, xreg = 'cumcases',
 
   }
 
+  ## warning message if reporting > 100%
+
   if(length(which(adj.rho < 1 )) > 1){
     warning('Reporting exceeds 100% -- use different regression')
   }
 
+  ## adjust cases to be the 'true' incidence, ie I
+
   Iadjusted <- data$cases * adj.rho
+
+  ## copy the data for later
 
   datacopy <- data
 
+  ## declare seasonality type and for each make the period to be used in the GLM to estimate N seas parameters
+
   if(seasonality == 'standard'){
 
+    ## this is the classical TSIR formulation
+
     period <- rep(1:(52/IP), round(nrow(data)+1))[1:(nrow(data)-1)]
+
+    ## if IP == 1 we only estimate 26 pts instead of 52
 
     if(IP == 1){
 
@@ -274,6 +304,8 @@ runtsir <- function(data, xreg = 'cumcases',
 
   }
 
+  ## this is the null model of no seasonality
+
   if(seasonality == 'none'){
 
     period <- rep(1,nrow(data)-1)
@@ -281,11 +313,17 @@ runtsir <- function(data, xreg = 'cumcases',
 
   }
 
+  ## make step ahead I, step back I, Z
+
   Inew <- tail(Iadjusted,-1)+1
   lIminus <- log(head(Iadjusted,-1)+1)
   Zminus <- head(Z,-1)
 
+  ## copy population
+
   pop <- data$pop
+
+  ## declare the limits to profile S on
 
   minSmean <- max(0.01*pop,-(min(Z)+1))
   Smean <- seq(minSmean, 0.4*mean(pop), length=250)
@@ -296,6 +334,9 @@ runtsir <- function(data, xreg = 'cumcases',
     Inew <- log(Inew)
   }
   Inew <- round(Inew)
+
+  ## run through various regression with the permutations of fixed sbar or fixed alpha
+  ## this is estimating both sbar and alpha
 
   if(length(input.alpha) == 0 && length(input.sbar) == 0){
 
@@ -381,6 +422,8 @@ runtsir <- function(data, xreg = 'cumcases',
     period <- rep(1,nrow(data)-1)
   }
 
+  ## generate confidence intervals, calculate AIC, and combine into a DF
+
   confinterval <- suppressMessages(confint(glmfit))
   continterval <- confinterval[1:length(unique(period)),]
   betalow <- exp(confinterval[,1])
@@ -404,6 +447,8 @@ runtsir <- function(data, xreg = 'cumcases',
     S0 = seq(0.01*mean(pop), 0.1*mean(pop), length=nsample),
     I0 = seq(0.01*1e-3*mean(pop), 1*1e-3*mean(pop), length=nsample)
   )
+
+  ## profile over IC combos and evaluate using least squares
 
   if(inits.fit == TRUE){
 
@@ -457,7 +502,12 @@ runtsir <- function(data, xreg = 'cumcases',
 
   }
 
+  ## generate ICS either by profile or by standard formulation
+
   IC <- c(S_start,I_start)
+
+  ## print estimates so far
+  ## now we forward simulate the model
 
   print(c('alpha'=unname(signif(alpha,2)),
           'mean beta'=unname(signif(mean(beta),3)),
@@ -467,10 +517,13 @@ runtsir <- function(data, xreg = 'cumcases',
           'prop. init. inf.' =unname(signif(I_start/mean(pop),3))
   ))
 
+  ## create empty matrixes for simulations
 
   nsim <- nsim
   res <- matrix(0,length(data$cases),nsim)
   Sres <- matrix(0,length(data$cases),nsim)
+
+  ## simulate the model nsim times
 
   for(ct in 1:nsim){
 
@@ -529,6 +582,7 @@ runtsir <- function(data, xreg = 'cumcases',
   res[is.nan(res)] <- 0
   res[res < 1] <- 0
 
+  ## calculate SD, mean
   res <- as.data.frame(res)
   Sres <- as.data.frame(Sres)
   #res$mean <- apply(res, 1, function(row) mean(row[-1],na.rm=T))
@@ -549,13 +603,15 @@ runtsir <- function(data, xreg = 'cumcases',
 
   rsquared <- signif(summary(fit)$adj.r.squared, 2)
 
+  ## store everything into a list
+
   return(list('X'=X,'Y'=Y,'Yhat' =Yhat, 'contact'=contact,'period'=period,
               'glmfit'=glmfit, 'AIC'=glmAIC,
               'beta'=head(beta[period],52/IP),'rho'=adj.rho,'pop'=pop,
               'Z'=Z,'sbar'=sbar,'alpha'=alpha,
               'res'=res,'simS'=Sres,'loglik'=loglik,'Smean'=Smean,
               'nsim'=nsim,'rsquared'=rsquared,
-              'inits.fit'=inits.fit,
+              'inits.fit'=inits.fit,'time'=data$time,
               'inits.grid'=inits.grid,'inits'=IC))
 
 

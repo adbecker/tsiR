@@ -26,7 +26,7 @@ simulatetsir <- function(data, nsim = 100, IP=2,
                          add.noise.sd = 0, mul.noise.sd = 0
 ){
 
-
+  ## for better annotation please see the runtsir function
 
   nzeros <- length(which(data$cases==0))
   ltot <- length(data$cases)
