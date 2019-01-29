@@ -5,7 +5,7 @@
 #' @param Y The cumulative cases.
 
 residual.births <- function(rho,Yhat,Y){
-  ## when X is cumbirths must scale by rho to make units consistent
+  ## when X is cumbirths must scale by rho
   Z <- -(Y-Yhat) / rho
   return(Z)
 }

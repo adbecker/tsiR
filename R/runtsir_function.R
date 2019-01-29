@@ -261,6 +261,13 @@ runtsir <- function(data, xreg = 'cumcases',
 
   }
 
+  ## warning meassure if reporting is very small
+
+  if(any(1/adj.rho < 0.01)){
+    warning('Reporting rate has fallen below 1% -- try lowering the value of sigmamax (default is 3) if you are using
+            regtype="gaussian"')
+  }
+
   ## warning message if reporting > 100%
 
   if(length(which(adj.rho < 1 )) > 1){
