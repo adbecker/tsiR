@@ -598,6 +598,10 @@ mcmctsir <- function(data, xreg = 'cumcases',
 
   IC <- c(S_start,I_start)
 
+  if(any(IC < 0 )){
+    warning('One (or both) initial condition is zero, try fixing or increasing sbar')
+  }
+
   print(c('alpha'=unname(signif(alpha,2)),
           'mean beta'=unname(signif(mean(beta),3)),
           'mean rho' =unname(signif(mean(1/adj.rho),3)),

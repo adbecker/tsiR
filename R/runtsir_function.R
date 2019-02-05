@@ -513,6 +513,10 @@ runtsir <- function(data, xreg = 'cumcases',
 
   IC <- c(S_start,I_start)
 
+  if(any(IC < 0 )){
+    warning('One (or both) initial condition is zero, try fixing or increasing sbar')
+  }
+
   ## print estimates so far
   ## now we forward simulate the model
 
