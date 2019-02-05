@@ -233,7 +233,7 @@ mcmcestpars <- function(data, xreg = 'cumcases',IP = 2,
 
   pop <- data$pop
 
-  minSmean <- max(0.01*pop,-(min(Z)+1))
+  minSmean <- max(0.01*pop,-(min(Z) - 1))
   Smean <- seq(minSmean, 0.4*mean(pop), length=250)
 
   alphalow <- NA

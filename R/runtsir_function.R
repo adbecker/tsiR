@@ -332,7 +332,7 @@ runtsir <- function(data, xreg = 'cumcases',
 
   ## declare the limits to profile S on
 
-  minSmean <- max(0.01*pop,-(min(Z)+1))
+  minSmean <- max(0.01*pop,-(min(Z) - 1))
   Smean <- seq(minSmean, 0.4*mean(pop), length=250)
 
   loglik <- rep(NA, length(Smean))
