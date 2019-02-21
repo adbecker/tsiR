@@ -327,13 +327,15 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
  betalow <- exp(confinterval[,1])
  betahigh <- exp(confinterval[,2])
 
+ glmAIC <- AIC(glmfit)
+
  contact <- as.data.frame(cbind('time'=seq(1,length(beta[period]),1),
                                 betalow[period],beta[period],betahigh[period]),row.names=F)
  names(contact) <- c('time','betalow','beta','betahigh')
  contact <- head(contact,52/IP)
 
   return(list('X'=X,'Y'=Y,'Yhat'=Yhat,'Smean'=Smean,'contact'=contact,'period'=period,'IP'=IP,
-              'beta'=beta,'rho'=adj.rho,'Z'=Z,'pop'=pop,'time'=data$time,
+              'beta'=beta,'rho'=adj.rho,'Z'=Z,'pop'=pop,'time'=data$time,'AIC'=glmAIC,
               'sbar'=sbar,'alpha'=alpha,'loglik'=loglik))
 
 }
