@@ -46,8 +46,8 @@ plotres <- function(dat,max.plot = 10){
     p2 <- ggplot(Sdf,aes_string('time','S'))+geom_line(size=2)+theme_bw()+
       ggtitle(bquote(bar(rho)==.(signif(mean(1/dat$rho),2))))
 
-    p3 <- ggplot(dat$contact,aes_string('time','beta'))+geom_line(size=2)+
-      geom_ribbon(ymin=dat$contact$betalow,ymax=dat$contact$betahigh,alpha=0.5,col='dodgerblue',fill='dodgerblue')+
+    p3 <- ggplot(data = dat$contact,aes_string('time','beta'))+geom_line(size=2)+
+      geom_ribbon(aes(ymin=betalow,ymax=betahigh),alpha=0.5,col='dodgerblue',fill='dodgerblue')+
       ylim(c(min(dat$contact$betalow),max(dat$contact$betahigh)))+theme_bw()+
       ggtitle(bquote(bar(beta)==.(signif(mean(dat$beta),2))~','~alpha==.(signif(dat$alpha,3))))+
       ylab(bquote(beta))
@@ -175,8 +175,8 @@ plotres <- function(dat,max.plot = 10){
 
     if('contact' %in% names(dat)){
 
-      p4 <- ggplot(dat$contact,aes_string('time','beta'))+geom_line(size=2)+
-        geom_ribbon(ymin=dat$contact$betalow,ymax=dat$contact$betahigh,alpha=0.5,col='dodgerblue',fill='dodgerblue')+
+      p4 <- ggplot(data = dat$contact,aes_string('time','beta'))+geom_line(size=2)+
+        geom_ribbon(aes(ymin=betalow,ymax=betahigh),alpha=0.5,col='dodgerblue',fill='dodgerblue')+
         ylim(c(min(dat$contact$betalow),max(dat$contact$betahigh)))+theme_bw()+
         ggtitle(bquote(bar(beta)==.(signif(mean(dat$beta),2))~','~alpha==.(signif(dat$alpha,3))))+
         ylab(bquote(beta))

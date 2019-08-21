@@ -68,9 +68,9 @@ plotbeta <- function(dat){
                                                       2)) ~ "," ~ alpha == .(signif(dat$alpha, 3)))) +
     ylab(bquote(beta))
   if ("contact" %in% names(dat)) {
-    p4 <- ggplot(dat$contact, aes_string("time", "beta")) +
-      geom_line(size = 2) + geom_ribbon(ymin = dat$contact$betalow,
-                                        ymax = dat$contact$betahigh, alpha = 0.5, col = "dodgerblue",
+    p4 <- ggplot(betadf, aes_string("time", "beta")) +
+      geom_line(size = 2) + geom_ribbon(aes(ymin = betalow,
+                                            ymax = betahigh), alpha = 0.5, col = "dodgerblue",
                                         fill = "dodgerblue") + ylim(c(min(dat$contact$betalow),
                                                                       max(dat$contact$betahigh))) + theme_bw() + ggtitle(bquote(bar(beta) ==
                                                                                                                                   .(signif(mean(dat$beta), 2)) ~ "," ~ alpha ==

@@ -1,8 +1,8 @@
 Package: tsiR
 Type: Package
 Title: An Implementation of the TSIR Model
-Version: 0.4.1
-Date: 2019-01-21
+Version: 0.4.2
+Date: 2019-07-09
 Authors@R: c(person("Alexander D.","Becker",role=c("aut","cre"),email="adbecker@princeton.edu"),person("Sinead E.","Morris",role=c("ctb")),person("Ottar N.","Bjornstad",role=c("ctb")))
 Description: An implementation of the time-series Susceptible-Infected-Recovered (TSIR) model using a number of different fitting options for infectious disease time series data. The manuscript based on this package can be found here <https://doi:10.1371/0185528>. The method implemented here is described by Finkenstadt and Grenfell (2000) <DOI: 10.1111/1467-9876.00187>.
 Depends:
@@ -15,4 +15,4 @@ Imports:
     reshape2,
     grid
 Contact: adbecker at princeton dot edu
-RoxygenNote: 6.1.0.9000
+RoxygenNote: 6.1.1
