@@ -67,6 +67,10 @@ plotbeta <- function(dat){
     theme_bw() + ggtitle(bquote(bar(beta) == .(signif(mean(dat$beta),
                                                       2)) ~ "," ~ alpha == .(signif(dat$alpha, 3)))) +
     ylab(bquote(beta))
+
+  ## check in geom_ribbon in future ggplot2 updates
+
+
   if ("contact" %in% names(dat)) {
     p4 <- ggplot(betadf, aes_string("time", "beta")) +
       geom_line(size = 2) + geom_ribbon(aes(ymin = betalow,
