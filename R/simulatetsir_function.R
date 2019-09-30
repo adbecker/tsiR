@@ -148,16 +148,13 @@ simulatetsir <- function(data, nsim = 100, IP=2,
     for (t in 2:(nrow(data))){
 
 
+      if(pred == 'step-ahead'){
+        lambda <- min(S[t-1],unname(beta[period[t-1]] * S[t-1] * (adj.rho[t-1]*data$cases[t-1])^alpha))
+      }
       if(pred == 'forward'){
         I <- I
+        lambda <- min(S[t-1],unname(beta[period[t-1]] * S[t-1] * (I[t-1])^alpha))
       }
-
-      lambda <- min(S[t-1],unname(beta[period[t-1]] * S[t-1] * (I[t-1])^alpha))
-
-      if(pred == 'step-ahead'){
-        lambda <- min(S[t-1],unname(beta[period[t-1]] * S[t-1] * (adj.rho[t]*data$cases[t])^alpha))
-      }
-
       #if(lambda < 1 || is.nan(lambda) == T){lambda <- 0}
       if(is.nan(lambda) == T){lambda <- 0}
 

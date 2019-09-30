@@ -233,10 +233,13 @@ estpars <- function(data, xreg = 'cumcases',IP = 2,seasonality='standard',
 
   loglik <- rep(NA, length(Smean))
 
- if(link == 'identity'){
-   Inew <- log(Inew)
- }
- Inew <- round(Inew)
+  if(link == 'identity'){
+    Inew <- log(Inew)
+  }
+
+  if(family %in% c("poisson", "quasipoisson")) {
+    Inew <- round(Inew)
+  }
 
  if(length(input.alpha) == 0 && length(input.sbar) == 0){
 

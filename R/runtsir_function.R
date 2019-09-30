@@ -340,7 +340,10 @@ runtsir <- function(data, xreg = 'cumcases',
   if(link == 'identity'){
     Inew <- log(Inew)
   }
-  Inew <- round(Inew)
+
+  if(family %in% c("poisson", "quasipoisson")) {
+    Inew <- round(Inew)
+  }
 
   ## run through various regression with the permutations of fixed sbar or fixed alpha
   ## this is estimating both sbar and alpha
